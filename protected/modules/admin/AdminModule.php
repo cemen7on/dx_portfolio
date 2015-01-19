@@ -5,12 +5,19 @@ class AdminModule extends CWebModule{
      *
      * @var string
      */
-    public $defaultController='upload';
+    public $defaultController='auth';
 
     /**
-     * Module's main layout name
-     *
-     * @var string
+     * Initialization method.
+     * Sets import routes for module
      */
-    public $layout='main';
+    protected function init(){
+        // import the module-level models and components
+        $this->setImport(array(
+            'admin.components.*',
+            'admin.models.*',
+        ));
+
+        parent::init();
+    }
 } 

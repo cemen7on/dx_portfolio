@@ -36,6 +36,10 @@ return array(
 		'user'=>array(
 			'allowAutoLogin'=>true,
 		),
+        'admin'=>array(
+            'class'=>'CWebUser',
+            'loginUrl'=>array('/admin/auth'),
+        ),
 		'db'=>array(
 			'connectionString'=>'mysql:host=localhost;dbname=dx_portfolio',
 			'emulatePrepare'=>true,
@@ -59,5 +63,10 @@ return array(
 		),
 	),
 
-	'params'=>array(),
+	'params'=>array(
+        'admin'=>array(
+            'login'=>'root',
+            'password'=>sha1('root')
+        )
+    ),
 );

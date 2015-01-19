@@ -5,21 +5,56 @@ class UploadController extends CController{
      *
      * @var string
      */
-    public $defaultAction='picture';
+    public $defaultAction='pictures';
+
+    /**
+     * Controller view's layout name
+     *
+     * @var string
+     */
+    public $layout='upload';
+
+    /**
+     * Returns list of filters applied to controller
+     *
+     * @return array
+     */
+    public function filters(){
+        return array(
+            'accessControl',
+        );
+    }
+
+    /**
+     * Returns access rules applied to user.
+     * Denies all anonymous users.
+     *
+     * @return array
+     */
+    public function accessRules(){
+        return array(
+            array('allow',
+                'users'=>array('@')
+            ),
+            array('deny',
+                'users'=>array('*')
+            )
+        );
+    }
 
     /**
      * Shows form and process add-picture-form request.
      *
      * @throws Exception
      */
-    public function actionPicture(){
+    public function actionPictures(){
         $pModel=new Pictures();
 
         if(!empty($_POST)){
             $pModel->attributes=$_POST['Pictures'];
 
             if(!$pModel->validate(null, false)){
-                return $this->render('picture', array('model'=>$pModel));
+                return $this->render('pictures', array('model'=>$pModel));
             }
 
             try{
@@ -48,12 +83,12 @@ class UploadController extends CController{
             catch(Exception $e){
                 $pModel->addError('src', $e->getMessage());
 
-                return $this->render('picture', array('model'=>$pModel));
+                return $this->render('pictures', array('model'=>$pModel));
             }
 
         }
 
-        return $this->render('picture', array('model'=>$pModel));
+        return $this->render('pictures', array('model'=>$pModel));
     }
 
     /**
@@ -61,14 +96,14 @@ class UploadController extends CController{
      *
      * @throws Exception
      */
-    public function actionVideo(){
+    public function actionVideos(){
         if(!empty($_POST)){
             $vModel=new Videos('input');
 
             $vModel->attributes=$_POST['Videos'];
 
             if(!$vModel->validate()){
-                return $this->render('video', array('model'=>$vModel));
+                return $this->render('videos', array('model'=>$vModel));
             }
 
             try{
@@ -125,102 +160,12 @@ class UploadController extends CController{
             catch(Exception $e){
                 $vModel->addError('link', $e->getMessage());
 
-                return $this->render('video', array('model'=>$vModel));
+                return $this->render('videos', array('model'=>$vModel));
             }
         }
 
         $vModel=new Videos();
 
-        return $this->render('video', array('model'=>$vModel));
-    }
-
-    /**
-     * Add video on youtube.
-     * Устаревший! Загруженное видео долго обрабатывается и нельзя сразу получить скриншоты выскоого качества.
-     * Поэтому обрабатывать нужно только загруженные видео и наверняка уже обработанные видео !!!
-     */
-    public function addVideo(){
-        if(!empty($_POST)){
-            Yii::app()->google->client->setAccessToken(Yii::app()->session->get('oauthToken'));
-
-            $videoPath=$_FILES['src']['tmp_name'];
-
-            ini_set("max_execution_time", "600");
-
-            // Create a snippet with title, description, tags and category ID
-            // Create an asset resource and set its snippet metadata and type.
-            // This example sets the video's title, description, keyword tags, and
-            // video category.
-            $snippet=new Google_Service_YouTube_VideoSnippet();
-            $snippet->setTitle(Yii::app()->request->getPost('title'));
-            $snippet->setDescription(Yii::app()->request->getPost('description'));
-
-            // Numeric video category. See
-            // https://developers.google.com/youtube/v3/docs/videoCategories/list
-            $snippet->setCategoryId("22");
-
-            // Set the video's status to "public". Valid statuses are "public",
-            // "private" and "unlisted".
-            $status=new Google_Service_YouTube_VideoStatus();
-            $status->privacyStatus = "public";
-
-            // Associate the snippet and status objects with a new video resource.
-            $video=new Google_Service_YouTube_Video();
-            $video->setSnippet($snippet);
-            $video->setStatus($status);
-
-            // Specify the size of each chunk of data, in bytes. Set a higher value for
-            // reliable connection as fewer chunks lead to faster uploads. Set a lower
-            // value for better recovery on less reliable connections.
-            $chunkSizeBytes=1*1024*1024;
-
-            // Setting the defer flag to true tells the client to return a request which can be called
-            // with ->execute(); instead of making the API call immediately.
-            Yii::app()->google->client->setDefer(true);
-
-            // Create a request for the API's videos.insert method to create and upload the video.
-            $insertRequest=Yii::app()->youtube->sdk->videos->insert("status, snippet", $video);
-
-            // Create a MediaFileUpload object for resumable uploads.
-            $media=new Google_Http_MediaFileUpload(
-                Yii::app()->google->client,
-                $insertRequest,
-                'video/*',
-                null,
-                true,
-                $chunkSizeBytes
-            );
-            $media->setFileSize(filesize($videoPath));
-
-
-            // Read the media file and upload it chunk by chunk.
-            $status=false;
-            $handle=fopen($videoPath, "rb");
-            while(!$status && !feof($handle)) {
-                $chunk=fread($handle, $chunkSizeBytes);
-                $status=$media->nextChunk($chunk);
-            }
-
-            fclose($handle);
-
-            // If you want to make other calls after the file upload, set setDefer back to false
-            Yii::app()->google->client->setDefer(false);
-
-            // TODO: server sdk does not return big thumb nail !!!! js returns. разобраться
-
-            echo '<pre>';
-            print_r($status);
-            echo '</pre>';
-
-            echo '**************************************************';
-
-            $record=Yii::app()->youtube->sdk->videos->listVideos('snippet', array('id'=>$status['id']));
-
-            echo '<pre>';
-            print_r($record);
-            echo '</pre>'; exit;
-
-            // $vModel->create();
-        }
+        return $this->render('videos', array('model'=>$vModel));
     }
 }

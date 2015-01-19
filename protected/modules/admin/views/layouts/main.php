@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Admin</title>
+        <title>DiMaX Portfolio - Admin</title>
     </head>
 
     <body>
