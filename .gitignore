@@ -1,0 +1,4 @@
+.idea/*
+/framework/*
+/assets/*
+/protected/runtime/*

@@ -1,0 +1,14 @@
+.nav-menu-item-pic-container {
+    position:relative;
+}
+
+.nav-menu-item-pic {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+	background-position:50% 0;
+	background-repeat:no-repeat;
+
+    cursor:pointer;
+}

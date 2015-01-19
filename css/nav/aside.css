@@ -1,0 +1,43 @@
+/* SIDE BAR MENU */
+
+#asideNavMenu{
+    left:40px;
+    z-index:4;
+}
+
+#asideNavMenu ul{
+    color:white;
+    list-style:none;
+    margin:0;
+    padding:0;
+    position:relative;
+}
+
+#asideNavMenu a{
+    color:white;
+    display:block;
+    font-size:15px;
+    max-width:300px;
+    overflow: hidden;
+    padding:8px 0;
+    text-decoration:none;
+    text-overflow:ellipsis;
+    transition:all 0.2s ease 0s;
+    -webkit-transition:all 0.2s ease 0s; /* Chrome, Safari, Opera */
+    white-space:nowrap;
+}
+
+#asideNavMenu a:hover, #asideNavMenu a.hover{
+    /* font-weight:bolder; */
+    color:#7e7e7e;
+}
+
+#asideNavMenu .caption{
+    border-bottom:2px solid red;
+    color:white;
+    font-size:20px;
+    margin-bottom:8px;
+    padding-bottom:8px;
+    text-transform:uppercase;
+    text-align:left;
+}

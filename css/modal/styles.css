@@ -1,0 +1,124 @@
+/** COMMON MODAL WINDOW STYLES **/
+#modal{
+    position:fixed;
+
+    overflow:hidden;
+    z-index:1000;
+
+    font-family:Kalinga;
+}
+
+#modal > .overlay{
+    background:rgba(0,0,0,0.5);
+
+    z-index:1001;
+}
+
+#modal .window{
+    position:relative;
+}
+
+#modal .window > .content{
+    position:relative;
+
+    background:black;
+
+    z-index:1002;
+}
+
+#modal .window > .controls{
+    position:absolute;
+
+    top:0;
+    height:100%;
+
+    transition:all 0.2s ease 0s;
+    -webkit-transition:all 0.2s ease 0s; /* Chrome, Safari, Opera */
+
+    opacity:0;
+
+    z-index:1003;
+}
+
+#modal .window > .controls .fa{
+    position:absolute;
+
+    top:50%;
+    margin-top:-30px;
+
+    color:white;
+    font-size:60px;
+    text-shadow:0 0 4px rgb(0,0,0);
+
+    display:block;
+}
+
+#modal .window > .controls.prev{
+    left:0;
+
+    width:25%;
+}
+
+#modal .window > .controls.prev > .fa{
+    left:15px;
+}
+
+#modal .window > .controls.next{
+    right:0;
+
+    width:75%;
+}
+
+#modal .window > .controls.next > .fa{
+    right:15px;
+}
+
+#modal .window:hover > .controls{
+    opacity:0.3;
+}
+
+#modal .window > .controls:hover{
+    opacity:1;
+}
+
+#modal .window > .source{
+    position:absolute;
+    top:0;
+    right:0;
+
+    padding:5px;
+
+    opacity:0;
+    text-decoration:none;
+
+    transition:all 0.2s ease 0s;
+    -webkit-transition:all 0.2s ease 0s; /* Chrome, Safari, Opera */
+
+    z-index:1004;
+}
+
+#modal .window > .source .fa{
+    background:rgba(0, 0, 0, 0.4);
+
+    color:white;
+    font-size:15px;
+    padding:8px;
+    display:block;
+}
+
+#modal .window:hover > .source{
+    opacity:0.3;
+}
+
+#modal .window > .source:hover{
+    opacity:1;
+}
+
+/** PREVIEW MODAL WINDOW STYLES **/
+
+#modal #preview.window > .content img{
+    max-width:100%;
+    max-height:100%;
+
+    vertical-align:middle;
+}
