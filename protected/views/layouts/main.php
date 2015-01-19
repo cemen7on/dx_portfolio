@@ -7,6 +7,7 @@
 	Yii::app()->clientScript->registerScriptFile('/js/common.js');
 
 	Yii::app()->clientScript->registerCssFile('/css/font-awesome/css/font-awesome.min.css');
+	Yii::app()->clientScript->registerCssFile('/css/main.css');
 	Yii::app()->clientScript->registerCssFile('/css/common.css');
 ?>
 

@@ -1,3 +1,9 @@
+<?php
+    /** * @var ModuleController $this */
+
+    $this->registerRootCssFile('/css/main.css');
+?>
+
 <!DOCTYPE html>
 <html>
     <head>

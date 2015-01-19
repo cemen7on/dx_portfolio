@@ -1,0 +1,81 @@
+.float-left{
+    float:left;
+}
+
+.float-right{
+    float:right;
+}
+
+.float-clear{
+    clear:both;
+}
+
+.button{
+    cursor:pointer;
+}
+
+.centric{
+    margin:0 auto;
+}
+
+.vertical-align{
+    display:table;
+}
+
+.vertical-align > .center{
+    display:table-cell;
+    vertical-align:middle;
+}
+
+.absolute-size{
+    position:absolute;
+    top:0;
+    left:0;
+
+    height:100%;
+    width:100%;
+}
+
+.absolute-height{
+    position:absolute;
+    top:0;
+
+    height:100%;
+    width:auto;
+}
+
+.inline{
+    display:inline-block;
+}
+
+.block{
+    display:block;
+}
+
+.none{
+    display:none;
+}
+
+.align-top{
+    vertical-align:top;
+}
+
+.align-middle{
+    vertical-align:middle;
+}
+
+.align-bottom{
+    vertical-align:middle;
+}
+
+.align-left{
+    text-align:left;
+}
+
+.align-center{
+    text-align:center;
+}
+
+.align-right{
+    text-align:right;
+}

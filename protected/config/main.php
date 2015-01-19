@@ -35,6 +35,7 @@ return array(
         ),
 		'user'=>array(
 			'allowAutoLogin'=>true,
+            'loginUrl'=>array('/admin/auth')
 		),
         'admin'=>array(
             'class'=>'CWebUser',

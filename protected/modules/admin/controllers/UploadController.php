@@ -1,5 +1,5 @@
 <?php
-class UploadController extends CController{
+class UploadController extends ModuleController{
     /**
      * Controller's default action name
      *

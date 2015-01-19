@@ -1,5 +1,5 @@
 <?php
-class AuthController extends CController{
+class AuthController extends ModuleController{
     /**
      * Default action name
      *
