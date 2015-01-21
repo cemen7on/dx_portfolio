@@ -22,3 +22,14 @@ ul.breadcrumbs:after{
 
     visibility:hidden;
 }
+
+table.content{
+    border:1px solid black;
+    border-collapse:collapse;
+
+    width:100%;
+}
+
+table.content td, table.content th{
+    border:1px solid black;
+}

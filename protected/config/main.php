@@ -55,6 +55,12 @@ return array(
 			'urlFormat'=>'path',
             'showScriptName'=>false,
 			'rules'=>array(
+                array(
+                    'admin/<controller>/delete',
+                    'pattern'=>'admin/<controller:(pictures|videos)>/<id:\d+>',
+                    'verb'=>'DELETE'
+                ),
+
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
 

@@ -6,26 +6,30 @@
 
     $this->beginContent('/layouts/main');
 
-    $this->registerModuleCssFile('/css/upload.css'); ?>
+    $this->registerModuleScriptFile('/js/upload.js');
+    $this->registerModuleCssFile('/css/upload.css');
+
+    $this->registerModuleScriptFile('/js/extensions/jquery.dataTables.min.js');
+    $this->registerModuleCssFile('/css/extensions/jquery.dataTables.min.css'); ?>
 
     <ul class="breadcrumbs">
         <li><?php
-            if($this->action->id=='pictures'){ ?>
+            if($this->id=='pictures'){ ?>
                 Pictures<?php
             }
             else{ ?>
-                <a href="<?php echo Yii::app()->createAbsoluteUrl('/admin/upload/pictures');?>">Pictures</a><?php
+                <a href="<?php echo Yii::app()->createAbsoluteUrl('/admin/pictures');?>">Pictures</a><?php
             } ?>
         </li>
 
         <li class="divider">|</li>
 
         <li><?php
-            if($this->action->id=='videos'){ ?>
+            if($this->id=='videos'){ ?>
                 Videos<?php
             }
             else{ ?>
-                <a href="<?php echo Yii::app()->createAbsoluteUrl('/admin/upload/videos');?>">Videos</a><?php
+                <a href="<?php echo Yii::app()->createAbsoluteUrl('/admin/videos');?>">Videos</a><?php
             } ?>
         </li>
 

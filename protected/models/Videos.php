@@ -7,6 +7,64 @@ class Videos extends CActiveRecord{
      */
     public $link=null;
 
+    /**
+     * Columns description. Is used for building dataTables requests
+     *
+     * @var array
+     */
+    private static $_DT_COLUMNS=array();
+
+    /**
+     * Returns dataTables columns configuration
+     *
+     * @return array
+     */
+    public static function DT_COLUMNS(){
+        if(empty(self::$_DT_COLUMNS)){
+            self::$_DT_COLUMNS=array(
+                array('index'=>0, 'name'=>'id', 'alias'=>'t.id', 'caption'=>'Id'),
+                array(
+                    'index'=>1,
+                    'name'=>'creation_date',
+                    'caption'=>'Created',
+                    'formatter'=>function($date){
+                        return date('d F Y H:i', strtotime($date));
+                    }
+                ),
+                array(
+                    'index'=>2,
+                    'name'=>'youtube_id',
+                    'caption'=>'Link',
+                    'formatter'=>function($youtubeId){
+                        $link='https://youtube.com/watch?v='.$youtubeId;
+
+                        return CHtml::link($link, $link, array('target'=>'_blank'));
+                    }
+                ),
+                array('index'=>3, 'name'=>'title', 'caption'=>'Title'),
+                array('index'=>4, 'name'=>'description', 'caption'=>'Description'),
+                array(
+                    'index'=>5,
+                    'name'=>'thumb_small',
+                    'caption'=>'Preview',
+                    'formatter'=>function($thumbIndex, $data){
+                        return CHtml::image(CVideos::createSmallThumbUrl($data->thumbSmall->name));
+                    }
+                ),
+                array(
+                    'index'=>6,
+                    'name'=>'id',
+                    'caption'=>'Delete',
+                    'formatter'=>function($id){
+                        return CHtml::link('Remove', Yii::app()->createAbsoluteUrl('/admin/videos/'.$id), array('class'=>'remove-link'));
+                    }
+                )
+            );
+        }
+
+        return self::$_DT_COLUMNS;
+    }
+
 	/**
 	 * @param string $className
 	 * @return Videos
@@ -32,7 +90,7 @@ class Videos extends CActiveRecord{
     public function rules(){
         return array(
             array('link', 'required', 'on'=>'input'),
-            array('youtube_id, title', 'required', 'on'=>'create'),
+            array('youtube_id, title, creation_date', 'required', 'on'=>'create'),
             array('description', 'safe', 'on'=>'create')
         );
     }
@@ -96,7 +154,8 @@ class Videos extends CActiveRecord{
         $this->setAttributes(array(
             'youtube_id'=>$videoId,
             'title'=>$title,
-            'description'=>$description
+            'description'=>$description,
+            'creation_date'=>new CDbExpression('NOW()')
         ));
 
         if(!$this->save()){

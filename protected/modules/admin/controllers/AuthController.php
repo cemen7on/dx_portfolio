@@ -20,7 +20,7 @@ class AuthController extends ModuleController{
      */
     public function actionLogin(){
         if(!Yii::app()->admin->isGuest){
-            $this->redirect('/admin/upload');
+            $this->redirect('/admin/pictures');
         }
 
         $aModel=new Admins();
@@ -35,7 +35,7 @@ class AuthController extends ModuleController{
                     Yii::app()->admin->login($identity);
 
                     // Authorization succeeded. Quit point
-                    $this->redirect('/admin/upload');
+                    $this->redirect('/admin/pictures');
                 }
                 else{
                     switch($identity->errorCode){
