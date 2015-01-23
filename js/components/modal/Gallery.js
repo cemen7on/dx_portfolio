@@ -99,6 +99,15 @@ function Gallery(pagination){
     var _siblingImage=new Image();
 
     /**
+     * Images switching direction.
+     * Possible values +1 or -1
+     *
+     * @type {number}
+     * @private
+     */
+    var _direction=1;
+
+    /**
      * Current picture jQuery object
      *
      * @type {jQuery}
@@ -219,9 +228,13 @@ function Gallery(pagination){
      */
     var addDefaultsEvents=function(){
         var setPrevious=function(){
+                setDirection('backward');
+
                 _this.goTo(--_item);
             },
             setNext=function(){
+                setDirection('forward');
+
                 _this.goTo(++_item);
             };
 
@@ -260,6 +273,26 @@ function Gallery(pagination){
         _siblingImage.addEventListener('load', function(){
             _siblingImage.isLoaded=true;
         });
+    };
+
+    /**
+     * Sets switching direction by value
+     *
+     * @param {*} value. Value to define direction by
+     */
+    var setDirection=function(value){
+        var dir;
+        if(value=='forward' || (value && value>0)){
+            dir=1;
+        }
+        else if(value=='backward' || (value && value<=0) || !value){
+            dir=-1;
+        }
+        else{
+            throw new Error('Undefined direction index');
+        }
+
+        _direction=dir;
     };
 
     /**
@@ -445,10 +478,10 @@ function Gallery(pagination){
                 _pagination.load(_page+1);
             }
 
-            // Load next picture in browser cache
+            // Load next or previous picture (depending on direction) in browser cache
             _siblingImage.isLoaded=false;
-            if(_items[item+1]){
-                var nextSrc=$(_items[item+1]).find('img').attr('src') || '';
+            if(_items[item+1*_direction]){
+                var nextSrc=$(_items[item+1*_direction]).find('img').attr('src') || '';
 
                 _siblingImage.src=nextSrc.replace('thumb_small', 'thumb_big');
             }
