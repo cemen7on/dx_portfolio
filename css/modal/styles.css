@@ -9,20 +9,13 @@
 }
 
 #modal > .overlay{
-    background:rgba(0,0,0,0.5);
+    background:rgba(0,0,0,0.7);
 
     z-index:1001;
 }
 
-#modal .window{
-    position:relative;
-}
-
 #modal .window > .content{
     position:relative;
-
-    background:black;
-
     z-index:1002;
 }
 
@@ -31,6 +24,8 @@
 
     top:0;
     height:100%;
+
+    width:50%;
 
     transition:all 0.2s ease 0s;
     -webkit-transition:all 0.2s ease 0s; /* Chrome, Safari, Opera */
@@ -55,36 +50,31 @@
 
 #modal .window > .controls.prev{
     left:0;
-
-    width:25%;
 }
 
 #modal .window > .controls.prev > .fa{
-    left:15px;
+    left:13px;
 }
 
 #modal .window > .controls.next{
     right:0;
-
-    width:75%;
 }
 
 #modal .window > .controls.next > .fa{
-    right:15px;
+    right:13px;
 }
 
 #modal .window:hover > .controls{
-    opacity:0.3;
+    opacity:0.15;
 }
 
 #modal .window > .controls:hover{
     opacity:1;
 }
 
-#modal .window > .source{
+#modal .window > .source, #modal .window > .close{
     position:absolute;
-    top:0;
-    right:0;
+    top:5px;
 
     padding:5px;
 
@@ -97,7 +87,15 @@
     z-index:1004;
 }
 
-#modal .window > .source .fa{
+#modal .window > .close{
+    right:5px;
+}
+
+#modal .window > .source{
+    right:43px;
+}
+
+#modal .window > .source .fa, #modal .window > .close .fa{
     background:rgba(0, 0, 0, 0.4);
 
     color:white;
@@ -106,11 +104,11 @@
     display:block;
 }
 
-#modal .window:hover > .source{
+#modal .window:hover > .source, #modal .window:hover > .close{
     opacity:0.3;
 }
 
-#modal .window > .source:hover{
+#modal .window > .source:hover, #modal .window > .close:hover{
     opacity:1;
 }
 

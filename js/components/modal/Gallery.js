@@ -75,22 +75,6 @@ function Gallery(pagination){
     var _modal=null;
 
     /**
-     * Current window width value
-     *
-     * @type {number}
-     * @private
-     */
-    var _width=0;
-
-    /**
-     * Current window height value
-     *
-     * @type {number}
-     * @private
-     */
-    var _height=0;
-
-    /**
      * Sibling image object
      *
      * @type {Image}
@@ -354,12 +338,6 @@ function Gallery(pagination){
             height=_this.default.maxHeight;
             width=width*ratio;
         }
-
-        width=Math.max(width, _this.default.minWidth, _width);
-        height=Math.max(height, _this.default.minHeight, _height);
-
-        _width=width;
-        _height=height;
 
         _this.toModal().width(width);
         _this.toModal().height(height);

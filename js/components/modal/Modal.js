@@ -168,6 +168,15 @@ function Modal(data){
      */
     var _$content=null;
 
+
+    /**
+     * jQuery close btn
+     *
+     * @type {jQuery}
+     * @private
+     */
+    var _$closeBtn=null;
+
     /**
      * On hide custom event handler
      *
@@ -189,6 +198,12 @@ function Modal(data){
     var addDefaultEvents=function(){
         events.push(
             new WindowEvent(_this.overlay(), 'click', function(){
+                _this.hide();
+            })
+        );
+
+        events.push(
+            new WindowEvent(_this.closeBtn(), 'click', function(){
                 _this.hide();
             })
         );
@@ -306,6 +321,23 @@ function Modal(data){
     };
 
     /**
+     * Sets close button object
+     *
+     * @param $closeBtn
+     * @private
+     */
+    var _setCloseBtn=function($closeBtn){
+        _$closeBtn=$closeBtn;
+    };
+
+    /**
+     * Returns close btn jQuery object
+     *
+     * @returns {jQuery}
+     */
+    _this.closeBtn=function(){ return _$closeBtn; };
+
+    /**
      * Creates and compiles modal window's objects
      *
      * @private
@@ -337,8 +369,11 @@ function Modal(data){
         // Set window's content
         _setContent($('<div class="content"></div>'));
 
+        // Set window's close btn
+        _setCloseBtn($('<a class="close" href="javascript:void(0);"><i class="fa fa-times"></i></a>'));
+
         // Set structure
-        _$window.append(_$title).append(_$content);
+        _$window.append(_$title).append(_$content).append(_$closeBtn);
         _$container.children('.center').append(_$window);
     };
 
@@ -377,6 +412,8 @@ function Modal(data){
         _setTitle($window.children('.title'));
         // Set content object
         _setContent($window.children('.content'));
+        // Set close button
+        _setCloseBtn($window.children('.close'));
     };
 
     /**
