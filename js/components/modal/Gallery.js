@@ -446,10 +446,10 @@ function Gallery(pagination){
             }
 
             // Load next picture in browser cache
+            _siblingImage.isLoaded=false;
             if(_items[item+1]){
                 var nextSrc=$(_items[item+1]).find('img').attr('src') || '';
 
-                _siblingImage.isLoaded=false;
                 _siblingImage.src=nextSrc.replace('thumb_small', 'thumb_big');
             }
         }
