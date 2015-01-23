@@ -30,6 +30,6 @@ class GoogleController extends CController{
 
         Yii::app()->session->add('oauthToken', Yii::app()->google->client->authenticate($_GET['code']));
 
-        $this->redirect('/admin/upload/video');
+        $this->redirect('/admin/videos');
     }
 } 
