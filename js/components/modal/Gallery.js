@@ -91,6 +91,14 @@ function Gallery(pagination){
     var _height=0;
 
     /**
+     * Sibling image object
+     *
+     * @type {Image}
+     * @private
+     */
+    var _siblingImage=new Image();
+
+    /**
      * Current picture jQuery object
      *
      * @type {jQuery}
@@ -235,6 +243,22 @@ function Gallery(pagination){
             }
 
             setNext();
+        });
+    };
+
+    /**
+     * Initialization method for sibling image object.
+     * Setups properties, registers callbacks
+     */
+    var initSiblingImage=function(){
+        /**
+         * Shows whether sibling image has be loaded already or not.
+         *
+         * @type {boolean}
+         */
+        _siblingImage.isLoaded=false;
+        _siblingImage.addEventListener('load', function(){
+            _siblingImage.isLoaded=true;
         });
     };
 
@@ -402,6 +426,13 @@ function Gallery(pagination){
                 src=$thumb.find('img').attr('src') || '';
 
             // Set new picture
+
+            // If sibling image has not been loaded yet
+            // remove whole picture object in order to show picture loading process
+            if(!_siblingImage.isLoaded){
+                _this.picture(null);
+            }
+
             _this.size($thumb.data('width'), $thumb.data('height'));
             _this.picture(src.replace('thumb_small', 'thumb_big'));
 
@@ -415,11 +446,11 @@ function Gallery(pagination){
             }
 
             // Load next picture in browser cache
-            if(Image && _items[item+1]){
-                var nextSrc=$(_items[item+1]).find('img').attr('src') || '',
-                    nextImage=new Image();
+            if(_items[item+1]){
+                var nextSrc=$(_items[item+1]).find('img').attr('src') || '';
 
-                nextImage.src=nextSrc.replace('thumb_small', 'thumb_big');
+                _siblingImage.isLoaded=false;
+                _siblingImage.src=nextSrc.replace('thumb_small', 'thumb_big');
             }
         }
 
@@ -476,6 +507,8 @@ function Gallery(pagination){
 
         // Add event listeners
         addDefaultsEvents();
+
+        initSiblingImage();
 
         // Save pagination object
         _pagination=pagination;
