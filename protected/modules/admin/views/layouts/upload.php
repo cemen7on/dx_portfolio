@@ -6,6 +6,9 @@
 
     $this->beginContent('/layouts/main');
 
+    $this->registerRootScriptFile('/js/components/Core.js');
+    $this->registerRootScriptFile('/js/components/define.js');
+
     $this->registerModuleScriptFile('/js/upload.js');
     $this->registerModuleCssFile('/css/upload.css');
 

@@ -1,6 +1,23 @@
 <?php
 class PicturesController extends UploadController{
     /**
+     * Picture api component instance
+     *
+     * @var null|SPictures
+     */
+    protected $api=null;
+
+    /**
+     * Initialization method.
+     * Initializes picture api component
+     */
+    public function init(){
+        parent::init();
+
+        $this->api=new SPictures();
+    }
+
+    /**
      * Handles usual request for pictures.
      * Renders and processes form
      *
@@ -53,14 +70,43 @@ class PicturesController extends UploadController{
      * Returns json encoded content for pictures table
      */
     public function actionContent(){
-        $criteria=new CDbCriteria();
-        $criteria->with=array(
-            'thumbSmall'=>array('select'=>'thumbSmall.name')
-        );
+        REST::execute($this->api, 'content');
+    }
 
-        $dataTable=new DataTables(Pictures::DT_COLUMNS(), new Pictures(), $criteria);
+    /**
+     * Updates record by specific key
+     *
+     * @get int id. Record id
+     * @put int type_id. New picture's type
+     * @put string title. New picture's title
+     * @put string description. New picture's description
+     */
+    public function actionUpdate(){
+        $pictureId=Yii::app()->rest->requireQuery('id');
 
-        REST::sendResponse($dataTable->request()->format());
+        $typeId=Yii::app()->rest->getPut('type_id');
+        $title=Yii::app()->rest->getPut('title');
+        $description=Yii::app()->rest->getPut('description');
+
+        $attributes=array();
+
+        if(isset($typeId)){
+            $attributes['type_id']=$typeId;
+        }
+
+        if(isset($title)){
+            if(empty($title)){
+                throw new RestException('Title can not be blank');
+            }
+
+            $attributes['title']=$title;
+        }
+
+        if(isset($description)){
+            $attributes['description']=$description;
+        }
+
+        REST::execute($this->api, 'update', array($pictureId, $attributes));
     }
 
     /**
@@ -69,23 +115,8 @@ class PicturesController extends UploadController{
      * @get int id. Picture id
      */
     public function actionDelete(){
-        try{
-            $id=Yii::app()->request->getQuery('id');
-
-            if(!$id){
-                throw new Exception('$_GET[id] was not received');
-            }
-
-            $vModel=new Pictures();
-            $result=$vModel->deleteByPk($id);
-            if(!$result){
-                throw new Exception('Failed to remove record');
-            }
-
-            REST::successResponse(true);
-        }
-        catch(Exception $e){
-            REST::errorResponse($e);
-        }
+        REST::execute($this->api, 'delete', array(
+            Yii::app()->rest->requireQuery('id'))
+        );
     }
 } 

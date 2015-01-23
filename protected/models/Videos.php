@@ -41,8 +41,26 @@ class Videos extends CActiveRecord{
                         return CHtml::link($link, $link, array('target'=>'_blank'));
                     }
                 ),
-                array('index'=>3, 'name'=>'title', 'caption'=>'Title'),
-                array('index'=>4, 'name'=>'description', 'caption'=>'Description'),
+                array(
+                    'index'=>3,
+                    'name'=>'title',
+                    'caption'=>'Title',
+                    /*
+                    'formatter'=>function($title){
+                        return CHtml::tag('div', array('class'=>'editable-title'), $title);
+                    }
+                    */
+                ),
+                array(
+                    'index'=>4,
+                    'name'=>'description',
+                    'caption'=>'Description',
+                    /*
+                    'formatter'=>function($description){
+                        return CHtml::tag('div', array('class'=>'editable-description'), $description);
+                    }
+                    */
+                ),
                 array(
                     'index'=>5,
                     'name'=>'thumb_small',

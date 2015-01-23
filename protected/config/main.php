@@ -51,6 +51,12 @@ return array(
 		'errorHandler'=>array(
 			'errorAction'=>'main/error',
 		),
+        'request'=>array(
+            'class'=>'HttpRequest'
+        ),
+        'rest'=>array(
+            'class'=>'RestRequest'
+        ),
 		'urlManager'=>array(
 			'urlFormat'=>'path',
             'showScriptName'=>false,
@@ -59,6 +65,11 @@ return array(
                     'admin/<controller>/delete',
                     'pattern'=>'admin/<controller:(pictures|videos)>/<id:\d+>',
                     'verb'=>'DELETE'
+                ),
+                array(
+                    'admin/<controller>/update',
+                    'pattern'=>'admin/<controller:(pictures|videos)>/<id:\d+>',
+                    'verb'=>'PUT'
                 ),
 
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',

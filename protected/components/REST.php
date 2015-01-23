@@ -3,7 +3,6 @@
  * Class for sending REST response.
  *
  * Class REST
- * @package application\components\api
  */
 class REST{
     /**

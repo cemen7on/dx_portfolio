@@ -33,3 +33,7 @@ table.content{
 table.content td, table.content th{
     border:1px solid black;
 }
+
+.editable-title, .editable-description{
+    cursor:pointer;
+}

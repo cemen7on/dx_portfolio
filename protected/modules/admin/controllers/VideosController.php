@@ -1,6 +1,23 @@
 <?php
 class VideosController extends UploadController{
     /**
+     * Video api component instance
+     *
+     * @var null|SVideos
+     */
+    protected $api=null;
+
+    /**
+     * Initialization method.
+     * Initializes video api component
+     */
+    public function init(){
+        parent::init();
+
+        $this->api=new SVideos();
+    }
+
+    /**
      * Handles usual request for videos.
      * Renders and processes form
      *
@@ -80,12 +97,37 @@ class VideosController extends UploadController{
      * Returns json encoded content for videos table
      */
     public function actionContent(){
-        $criteria=new CDbCriteria();
-        $criteria->with='thumbSmall';
+        REST::execute($this->api, 'content');
+    }
 
-        $dataTable=new DataTables(Videos::DT_COLUMNS(), new Videos(), $criteria);
+    /**
+     * Updates record by specific key
+     *
+     * @get int id. Record id
+     * @put string title. New picture's title
+     * @put string description. New picture's description
+     */
+    public function actionUpdate(){
+        $videoId=Yii::app()->rest->requireQuery('id');
 
-        REST::sendResponse($dataTable->request()->format());
+        $title=Yii::app()->rest->getPut('title');
+        $description=Yii::app()->rest->getPut('description');
+
+        $attributes=array();
+
+        if(isset($title)){
+            if(empty($title)){
+                throw new RestException('Title can not be blank');
+            }
+
+            $attributes['title']=$title;
+        }
+
+        if(isset($description)){
+            $attributes['description']=$description;
+        }
+
+        REST::execute($this->api, 'update', array($videoId, $attributes));
     }
 
     /**
@@ -94,23 +136,8 @@ class VideosController extends UploadController{
      * @get int id. Video id
      */
     public function actionDelete(){
-        try{
-            $id=Yii::app()->request->getQuery('id');
-
-            if(!$id){
-                throw new Exception('$_GET[id] was not received');
-            }
-
-            $vModel=new Videos();
-            $result=$vModel->deleteByPk($id);
-            if(!$result){
-                throw new Exception('Failed to remove record');
-            }
-
-            REST::successResponse(true);
-        }
-        catch(Exception $e){
-            REST::errorResponse($e);
-        }
+        REST::execute($this->api, 'delete', array(
+            Yii::app()->rest->requireQuery('id'))
+        );
     }
 } 

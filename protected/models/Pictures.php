@@ -24,9 +24,34 @@ class Pictures extends CActiveRecord{
                         return date('d F Y H:i', strtotime($date));
                     }
                 ),
-                array('index'=>2, 'name'=>'type_id', 'caption'=>'Type'),
-                array('index'=>3, 'name'=>'title', 'caption'=>'Title'),
-                array('index'=>4, 'name'=>'description', 'caption'=>'Description'),
+                array(
+                    'index'=>2,
+                    'name'=>'type_id',
+                    'caption'=>'Type',
+                    'formatter'=>function($typeId){
+                        return CHtml::dropDownList('type_id', $typeId, PicturesType::model()->findAllIndexByPk(), array('class'=>'dropdown-type'));
+                    }
+                ),
+                array(
+                    'index'=>3,
+                    'name'=>'title',
+                    'caption'=>'Title',
+                    /*
+                    'formatter'=>function($title){
+                        return CHtml::tag('div', array('class'=>'editable-title'), $title);
+                    }
+                    */
+                ),
+                array(
+                    'index'=>4,
+                    'name'=>'description',
+                    'caption'=>'Description',
+                    /*
+                    'formatter'=>function($description){
+                        return CHtml::tag('div', array('class'=>'editable-description'), $description);
+                    }
+                    */
+                ),
                 array(
                     'index'=>5,
                     'name'=>'thumb_small',
