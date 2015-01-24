@@ -11,8 +11,11 @@
 .art-medium-preview > .thumb{
     position:relative;
 
-    width:200px;
-    height:140px;
+    min-width:200px;
+    min-height:140px;
+
+    max-width:300px;
+    max-height:210px;
 
     float:left;
 
@@ -43,7 +46,6 @@
 
 .art-medium-preview > .thumb > .image > img{
     width:100%;
-    height:140px;
 }
 
 .art-medium-preview > .thumb:hover, .art-medium-preview > .thumb.hover{

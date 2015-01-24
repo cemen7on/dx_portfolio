@@ -64,9 +64,19 @@ class ArtController extends CController{
         $aside=new AsideNavMenu();
         $aside->items=$data;
 
+        // Client width and height params.
+        // Is the preferable size for thumbs.
+        // (size of thumb is defined on client size)
+        $width=Yii::app()->request->getQuery('width');
+        $height=Yii::app()->request->getQuery('height');
+
         REST::successResponse(array(
             'aside'=>$aside->render('aside_item', null, true),
-            'preview'=>$this->renderPartial($view, array('works'=>$data), true)
+            'preview'=>$this->renderPartial(
+                $view,
+                array('works'=>$data, 'width'=>$width, 'height'=>$height),
+                true
+            )
         ));
     }
 

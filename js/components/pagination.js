@@ -192,6 +192,10 @@ function Pagination(){
      */
     var onNavigate=function(index){
         _this.load(index, {
+            data:{
+                width:Art.thumbWidth,
+                height:Art.thumbHeight
+            },
             beforeSend:function(){
                 Environment.loading=true;
 
