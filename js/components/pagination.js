@@ -192,10 +192,6 @@ function Pagination(){
      */
     var onNavigate=function(index){
         _this.load(index, {
-            data:{
-                width:Art.thumbWidth,
-                height:Art.thumbHeight
-            },
             beforeSend:function(){
                 Environment.loading=true;
 
@@ -251,6 +247,10 @@ function Pagination(){
         else{
             var params={
                 url:location.origin+location.pathname+'?page='+index,
+                data:{
+                    width:Art.thumbWidth,
+                    height:Art.thumbHeight
+                },
                 type:'GET',
                 dataType:'json',
                 success:function(data){
