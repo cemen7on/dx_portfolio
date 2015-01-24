@@ -16,71 +16,30 @@ Environment={
 /**
  * When DOM is ready do not immediately execute javascript code - this will lead to animation slowdown.
  * That is why next code waits until css animation complete and then fire event to dispatch js code execution.
- * In case browser do not support neither of animation-end property - set up timeout for approximate number of seconds
- * when animation should be done
  */
 $(document).ready(function(){
-    // Set delay for animated thumb appearance
-    // (animated css class)
-    // TODO: WARNING: Code is saved on case if css delay (0.1s) would be not enough
-    /*
-    var thumbs=$('.art-medium-preview .thumb'),
-        max=thumbs.length-1;
-    for(var i=0; i<=max; i++){
-        (function(){
-            var j=i;
+    var MIN_DROP_DURATION=300,
+        MAX_DROP_DURATION=700,
+        images=document.querySelectorAll('.art-medium-preview > .thumb > .image'),
+        total=images.length,
+        animated=0;
 
-            setTimeout(function(){
-                $(thumbs[j]).addClass('animated');
+    // Enable previews slide down animation
+    for(var i=0; i<=total-1; i++){
+        $(images[i]).animate(
+            {height:140},
+            {
+                duration:Math.random()*(MAX_DROP_DURATION-MIN_DROP_DURATION)+MIN_DROP_DURATION,
+                complete:function(){
+                    this.classList.add('animated');
 
-                if(j>=max){
-                    // After animation complete - create youtube player if it's ready
-                    // Or set up a flag
-                    if(isIframeReady){
-                        createYouTubePlayer();
-                    }
-                    else{
-                        isAnimated=true;
+                    if(++animated==total){
+                        // Animation was commented
+                        $(document).trigger('animated');
                     }
                 }
-            }, 50*i);
-        })();
-    }
-    */
-
-    var $lastThumb=$('.art-medium-preview .thumb:last'),
-        lastThumb=$lastThumb[0],
-        supportedEvents={
-            animation:'animationend',
-            MSAnimation:'MSAnimationEnd',
-            OAnimation:'oTransitionEnd',
-            MozAnimation:'animationend',
-            WebkitAnimation:'webkitAnimationEnd'
-        },
-        eventName;
-
-    // No previews on page
-    if(!lastThumb){
-        return ;
-    }
-
-    for(property in supportedEvents){
-        if(!lastThumb.style.hasOwnProperty(property)){
-            continue;
-        }
-
-        eventName=supportedEvents[property];
-    }
-
-    if(eventName){
-        $lastThumb.bind(eventName, function(){
-            $(document).trigger('animated');
-        });
-    }
-    else{
-        setTimeout(function(){
-            $(document).trigger('animated');
-        }, ($lastThumb.index()+1)*100);
+            }
+        );
     }
 });
 

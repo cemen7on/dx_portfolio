@@ -23,170 +23,34 @@
     clear:both;
 }
 
-.art-medium-preview > .thumb.animated{
-    /* Start position of all thumbs */
-    -webkit-transform:rotateY(90deg); /* Opera, Chrome and Safari */
-    -moz-transform:rotateY(90deg); /* FireFox */
-    -o-transform:rotateY(90deg); /* Opera */
-    -ms-transform:rotateY(90deg); /* IE */
-    transform:rotateY(90deg);
-
-    /* Enable animation */
-    -webkit-animation:appear 0.5s ease; /* Opera, Chrome and Safari */
-    -moz-animation:appear 0.5s ease; /* FireFox */
-    -o-animation:appear 0.5s ease; /* Opera */
-    -ms-animation:appear 0.5s ease; /* IE */
-    animation:appear 0.5s ease;
-
-    /* Save state after animation complete */
-    -webkit-animation-fill-mode:forwards; /* Opera, Chrome and Safari */
-    -moz-animation-fill-mode:forwards; /* FireFox */
-    -o-animation-fill-mode:forwards; /* Opera */
-    -ms-animation-fill-mode:forwards; /* IE */
-    animation-fill-mode:forwards;
-}
-
-.art-medium-preview > .thumb.animated:nth-child(2){
-    -webkit-animation-delay:0.1s; /* Opera, Chrome and Safari */
-    -moz-animation-delay:0.1s; /* FireFox */
-    -o-animation-delay:0.1s; /* Opera */
-    -ms-animation-delay:0.1s; /* IE */
-    animation-delay:0.1s;
-}
-
-.art-medium-preview > .thumb.animated:nth-child(3){
-    -webkit-animation-delay:0.2s; /* Opera, Chrome and Safari */
-    -moz-animation-delay:0.2s; /* FireFox */
-    -o-animation-delay:0.2s; /* Opera */
-    -ms-animation-delay:0.2s; /* IE */
-    animation-delay:0.2s;
-}
-
-.art-medium-preview > .thumb.animated:nth-child(4){
-    -webkit-animation-delay:0.3s; /* Opera, Chrome and Safari */
-    -moz-animation-delay:0.3s; /* FireFox */
-    -o-animation-delay:0.3s; /* Opera */
-    -ms-animation-delay:0.3s; /* IE */
-    animation-delay:0.3s;
-}
-
-.art-medium-preview > .thumb.animated:nth-child(4){
-    -webkit-animation-delay:0.35s; /* Opera, Chrome and Safari */
-    -moz-animation-delay:0.35s; /* FireFox */
-    -o-animation-delay:0.35s; /* Opera */
-    -ms-animation-delay:0.35s; /* IE */
-    animation-delay:0.35s;
-}
-
-.art-medium-preview > .thumb.animated:nth-child(5){
-    -webkit-animation-delay:0.5s; /* Opera, Chrome and Safari */
-    -moz-animation-delay:0.5s; /* FireFox */
-    -o-animation-delay:0.5s; /* Opera */
-    -ms-animation-delay:0.5s; /* IE */
-    animation-delay:0.5s;
-}
-
-.art-medium-preview > .thumb.animated:nth-child(6){
-    -webkit-animation-delay:0.6s; /* Opera, Chrome and Safari */
-    -moz-animation-delay:0.6s; /* FireFox */
-    -o-animation-delay:0.6s; /* Opera */
-    -ms-animation-delay:0.6s; /* IE */
-    animation-delay:0.6s;
-}
-
-.art-medium-preview > .thumb.animated:nth-child(7){
-    -webkit-animation-delay:0.7s; /* Opera, Chrome and Safari */
-    -moz-animation-delay:0.7s; /* FireFox */
-    -o-animation-delay:0.7s; /* Opera */
-    -ms-animation-delay:0.7s; /* IE */
-    animation-delay:0.7s;
-}
-
-.art-medium-preview > .thumb.animated:nth-child(8){
-    -webkit-animation-delay:0.8s; /* Opera, Chrome and Safari */
-    -moz-animation-delay:0.8s; /* FireFox */
-    -o-animation-delay:0.8s; /* Opera */
-    -ms-animation-delay:0.8s; /* IE */
-    animation-delay:0.8s;
-}
-
-.art-medium-preview > .thumb.animated:nth-child(9){
-    -webkit-animation-delay:0.9s; /* Opera, Chrome and Safari */
-    -moz-animation-delay:0.9s; /* FireFox */
-    -o-animation-delay:0.9s; /* Opera */
-    -ms-animation-delay:0.9s; /* IE */
-    animation-delay:0.9s;
-}
-
-@-webkit-keyframes appear{ /* Opera, Chrome and Safari */
-    0%{
-        -webkit-transform:perspective(150px) scale(0.2) rotateY(90deg);
-    }
-    100%{
-        -webkit-transform:perspective(150px) scale(1) rotateY(0deg);
-    }
-}
-
-@-moz-keyframes appear{ /* FireFox */
-    0%{
-        -moz-transform:perspective(200px) scale(0.2) rotateY(90deg);
-    }
-    100%{
-        -moz-transform:perspective(200px) scale(1) rotateY(0deg);
-    }
-}
-
-@-o-keyframes appear{ /* Opera */
-    0%{
-        -o-transform:perspective(200px) scale(0.2) rotateY(90deg);
-    }
-    100%{
-        -o-transform:perspective(200px) scale(1) rotateY(0deg);
-    }
-}
-
-@-ms-keyframes appear{ /* IE */
-    0%{
-        -ms-transform:perspective(200px) scale(0.2) rotateY(90deg);
-    }
-    100%{
-        -ms-transform:perspective(200px) scale(1) rotateY(0deg);
-    }
-}
-
-@keyframes appear{
-    0%{
-        transform:perspective(200px) scale(0.2) rotateY(90deg);
-    }
-    100%{
-        transform:perspective(200px) scale(1) rotateY(0deg);
-    }
-}
-
 .art-medium-preview > .thumb > .image{
     position:absolute;
 
     width:100%;
-    height:100%;
+    height:0;
 
     overflow:hidden;
 
     z-index:2;
+}
 
-    transition:all 0.2s ease 0s;
+.art-medium-preview > .thumb > .image.animated{
+    height:100%;
+
     -webkit-transition:all 0.2s ease 0s; /* Chrome, Safari, Opera */
+    transition:all 0.2s ease 0s;
 }
 
 .art-medium-preview > .thumb > .image > img{
     width:100%;
-    height:100%;
+    height:140px;
 }
 
 .art-medium-preview > .thumb:hover, .art-medium-preview > .thumb.hover{
     z-index:4;
 }
 
-.art-medium-preview > .thumb:hover > .image, .art-medium-preview > .thumb.hover > .image{
+.art-medium-preview > .thumb:hover > .image.animated, .art-medium-preview > .thumb.hover > .image.animated{
     -ms-transform:scale(1.1); /* IE */
     -webkit-transform:scale(1.1); /* Opera, Chrome, and Safari */
     transform:scale(1.1);
