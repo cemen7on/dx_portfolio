@@ -6,7 +6,6 @@
 
 .art-medium{
     position:relative;
-    max-width:600px;
 }
 
 .art-medium-preview > .thumb{
@@ -15,7 +14,13 @@
     width:200px;
     height:140px;
 
+    float:left;
+
     z-index:3;
+}
+
+.art-medium-preview > .thumb:nth-child(3n+1){
+    clear:both;
 }
 
 .art-medium-preview > .thumb.animated{
