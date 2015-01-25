@@ -31,14 +31,21 @@ function onYouTubeIframeAPIReady(){
 }
 
 $(document).bind('animated', function(){
-    // Define pagination object
-    var pagination=new Pagination(),
-        $window=$(window);
+    var $window=$(window);
 
     // Create and configure video modal window instance
     video=new Modal();
-    video.width($window.width()-300);
-    video.height($window.height()-100);
+
+    /**
+     * Adjusts size of modal window according to current sizes of screen
+     */
+    function adjustSize(){
+        video.width($window.width()-300);
+        video.height($window.height()-100);
+    }
+
+    adjustSize();
+    $(window).resize(adjustSize);
 
     // Load youtube components in async way
     // So this would not interrupt thu,b animation
