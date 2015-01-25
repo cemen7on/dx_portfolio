@@ -30,7 +30,7 @@
     transition:all 0.2s ease 0s;
     -webkit-transition:all 0.2s ease 0s; /* Chrome, Safari, Opera */
 
-    opacity:0;
+    opacity:0.15;
 
     z-index:1003;
 }
@@ -64,10 +64,6 @@
     right:13px;
 }
 
-#modal .window:hover > .controls{
-    opacity:0.15;
-}
-
 #modal .window > .controls:hover{
     opacity:1;
 }
@@ -78,7 +74,7 @@
 
     padding:5px;
 
-    opacity:0;
+    opacity:0.3;
     text-decoration:none;
 
     transition:all 0.2s ease 0s;
@@ -102,10 +98,6 @@
     font-size:15px;
     padding:8px;
     display:block;
-}
-
-#modal .window:hover > .source, #modal .window:hover > .close{
-    opacity:0.3;
 }
 
 #modal .window > .source:hover, #modal .window > .close:hover{
