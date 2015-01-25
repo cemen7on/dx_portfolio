@@ -23,6 +23,7 @@ body{
 	background:-webkit-radial-gradient(50% 0, farthest-side, #7d7d7d, #3b3b3b); /* Chrome, and Safari */
 	background:-moz-radial-gradient(50% 0, farthest-side, #666666, #3b3b3b); /* FireFox */
 	background:-o-radial-gradient(50% 0, farthest-side, #666666, #3b3b3b); /* Opera */
+    background-image:radial-gradient(farthest-side circle at 50% 0, #666666 0%, #3b3b3b 100%); /* IE */
 	background:radial-gradient(50% 0, farthest-side, #666666, #3b3b3b);
 	z-index:0;
 }
