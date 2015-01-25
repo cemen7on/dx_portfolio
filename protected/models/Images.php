@@ -3,12 +3,12 @@ class Images extends CActiveRecord{
     /**
      * Small thumb's width
      */
-    const SMALL_THUMB_WIDTH=200;
+    const SMALL_THUMB_WIDTH=300;
 
     /**
      * Small thumb's height
      */
-    const SMALL_THUMB_HEIGHT=140;
+    const SMALL_THUMB_HEIGHT=210;
 
     /**
      * Big thumb's max width
