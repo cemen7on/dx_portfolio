@@ -62,7 +62,7 @@ var Art={
         callback=callback || function(){};
 
         var MIN_DROP_DURATION=300,
-            MAX_DROP_DURATION=700,
+            MAX_DROP_DURATION=1000,
             total=images.length,
             animated=0;
 
