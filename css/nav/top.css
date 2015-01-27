@@ -14,6 +14,8 @@
 #topNavMenu li{
     position:relative;
     display:block;
+
+    width:170px;
 }
 #topNavMenu li a{
     margin:10px 0;

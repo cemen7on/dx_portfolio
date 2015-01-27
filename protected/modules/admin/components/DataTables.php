@@ -42,7 +42,7 @@ class DataTables{
      * @param CActiveRecord $model. Model instance to fetch records from
      * @param CDbCriteria $criteria. Query criteria
      */
-    public function __construct($columns, CActiveRecord $model, CDbCriteria $criteria=null){
+    public function __construct($columns, CActiveRecord $model=null, CDbCriteria $criteria=null){
         $this->request=Yii::app()->request;
 
         $this->columns=$columns;
@@ -80,7 +80,7 @@ class DataTables{
             'draw'=>$this->request->getQuery('draw'),
             'recordsTotal'=>$total,
             'recordsFiltered'=>$total, // No filtering is used
-            'data'=>$this->formatData()
+            'data'=>$this->formatData($this->data)
         );
     }
 
@@ -154,12 +154,13 @@ class DataTables{
     /**
      * Formats data in a necessary way
      *
+     * @param array $data. Data to format
      * @return array
      */
-    protected function formatData(){
+    public function formatData($data){
         $out=array();
 
-        for($i=0, $imax=count($this->data); $i<=$imax-1; $i++){
+        for($i=0, $imax=count($data); $i<=$imax-1; $i++){
             $row=array();
 
             for($j=0, $jmax=count($this->columns); $j<=$jmax-1; $j++){
@@ -167,10 +168,10 @@ class DataTables{
 
                 if(isset($column['formatter'])){
                     // Execute formatter callback
-                    $row[$column['index']]=$column['formatter']($this->data[$i][$column['name']], $this->data[$i]);
+                    $row[$column['index']]=$column['formatter']($data[$i][$column['name']], $data[$i]);
                 }
                 else{
-                    $row[$column['index']]=$this->data[$i][$column['name']];
+                    $row[$column['index']]=$data[$i][$column['name']];
                 }
             }
 

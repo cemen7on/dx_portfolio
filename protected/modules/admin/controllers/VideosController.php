@@ -24,72 +24,15 @@ class VideosController extends UploadController{
      * @throws Exception
      */
     public function actionIndex(){
-        $vModel=new Videos();
+        $this->render('index', array('model'=>new Videos()));
+    }
 
-        if(!empty($_POST)){
-            $vModel=new Videos('input');
-
-            $vModel->attributes=$_POST['Videos'];
-
-            if($vModel->validate()){
-                try{
-                    $videoId=$vModel->getIdFromLink();
-
-                    if(empty($videoId)){
-                        throw new Exception('Invalid link format. Failed to fetch video id');
-                    }
-
-                    Yii::app()->google->client->setAccessToken(Yii::app()->session->get('oauthToken'));
-
-                    $videos=Yii::app()->youtube->sdk->videos->listVideos('snippet', array('id'=>$videoId));
-
-                    if(!isset($videos['items'][0])){
-                        throw new Exception('Video was not found!');
-                    }
-
-                    $video=$videos['items'][0];
-                    if(!isset($video['snippet']['thumbnails']['maxres'])){
-                        throw new Exception('Videos quality is too low for fetching big thumb!');
-                    }
-
-                    if(!isset($video['snippet']['title'])){
-                        throw new Exception('Video must have a title');
-                    }
-
-                    $title=$video['snippet']['title'];
-                    $description=isset($video['snippet']['description'])?$video['snippet']['description']:null;
-                    $source=$video['snippet']['thumbnails']['maxres']['url'];
-
-                    $vModel=new Videos('create');
-                    $id=$vModel->create($videoId, $title, $description);
-
-                    $fileName="{$id}.jpg";
-                    $temp=CVideos::createTmpPath($fileName);
-
-                    // Copy source to temp directory.
-                    // It is needed, because Image extension only works with files on local machine
-                    copy($source, $temp);
-
-                    $iModel=new Images();
-                    $vModel->thumb_small=$iModel->saveSmallThumb($temp, CVideos::createSmallThumbPath($fileName));
-                    $vModel->thumb_big=$iModel->saveBigThumb($temp, CVideos::createBigThumbPath($fileName));
-
-                    // Remove temporary file
-                    @unlink($temp);
-
-                    if(!$vModel->save()){
-                        throw new Exception('Failed to update record with images');
-                    }
-
-                    $this->refresh();
-                }
-                catch(Exception $e){
-                    $vModel->addError('link', $e->getMessage());
-                }
-            }
-        }
-
-        $this->render('index', array('model'=>$vModel));
+    /**
+     * Handles POST request.
+     * Uploads video
+     */
+    public function actionUpload(){
+        REST::execute($this->api, 'upload');
     }
 
     /**
@@ -131,6 +74,18 @@ class VideosController extends UploadController{
     }
 
     /**
+     * Updates cover of specified record
+     *
+     * @get int id. Video id to update cover of
+     * @files cover. Uploaded cover
+     */
+    public function actionCover(){
+        REST::execute($this->api, 'updateCover', array(
+            Yii::app()->rest->requireQuery('id')
+        ));
+    }
+
+    /**
      * Removes video record
      *
      * @get int id. Video id
@@ -139,5 +94,16 @@ class VideosController extends UploadController{
         REST::execute($this->api, 'delete', array(
             Yii::app()->rest->requireQuery('id'))
         );
+    }
+
+    /**
+     * Removes videos's cover
+     *
+     * @get int id. Video id
+     */
+    public function actionDeleteCover(){
+        REST::execute($this->api, 'deleteCover', array(
+            Yii::app()->rest->requireQuery('id')
+        ));
     }
 } 

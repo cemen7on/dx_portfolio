@@ -17,6 +17,11 @@ class CUpload extends CComponent{
     const THUMB_BIG_DIRECTORY='thumb_big';
 
     /**
+     * Upload cover directory name
+     */
+    const COVER_DIRECTORY='cover';
+
+    /**
      * Upload directory name
      */
     const UPLOAD_DIRECTORY=null;
@@ -81,6 +86,17 @@ class CUpload extends CComponent{
     }
 
     /**
+     * Returns upload cover url
+     *
+     * @param string $filename. File's name create url for
+     * @param bool $isAbsolute. Whether return absolute or relative url
+     * @return string
+     */
+    public static function createCoverUrl($filename, $isAbsolute=true){
+        return self::createUrl(self::COVER_DIRECTORY, $filename, $isAbsolute);
+    }
+
+    /**
      * Creates root file path
      *
      * @param string $directory. Directory name
@@ -111,5 +127,15 @@ class CUpload extends CComponent{
      */
     public static function createSmallThumbPath($filename){
         return self::createPath(self::THUMB_SMALL_DIRECTORY, $filename);
+    }
+
+    /**
+     * Returns upload cover path
+     *
+     * @param string $filename. File name
+     * @return string
+     */
+    public static function createCoverPath($filename){
+        return self::createPath(self::COVER_DIRECTORY, $filename);
     }
 }

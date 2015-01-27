@@ -24,45 +24,26 @@ class PicturesController extends UploadController{
      * @throws Exception
      */
     public function actionIndex(){
-        $pModel=new Pictures();
+        $this->render('index', array('model'=>new Pictures()));
+    }
 
-        if(!empty($_POST)){
-            $pModel=new Pictures('input');
-            $pModel->attributes=$_POST['Pictures'];
+    /**
+     * Handles POST request.
+     * Uploads picture
+     */
+    public function actionUpload(){
+        REST::execute($this->api, 'upload');
+    }
 
-            if($pModel->validate()){
-                try{
-                    $pModel->setScenario('create');
-                    if(!$pModel->create()){
-                        throw new Exception('Failed to save picture record');
-                    }
-
-                    // Save as image source
-                    $upload=CUploadedFile::getInstance($pModel, 'src');
-                    $fileName="{$pModel->id}.{$upload->getExtensionName()}";
-                    $src=CPictures::createSrcPath($fileName);
-                    $upload->saveAs($src);
-
-                    $iModel=new Images();
-
-                    $pModel->src=$iModel->saveSrc($src);
-                    $pModel->thumb_small=$iModel->saveSmallThumb($src, CPictures::createSmallThumbPath($fileName));
-                    $pModel->thumb_big=$iModel->saveBigThumb($src, CPictures::createBigThumbPath($fileName));
-
-                    if(!$pModel->save()){
-                        throw new Exception('Failed to update record with images');
-                    }
-
-                    $this->refresh();
-                }
-                catch(Exception $e){
-                    $pModel->addError('src', $e->getMessage());
-                }
-            }
-
-        }
-
-        $this->render('index', array('model'=>$pModel));
+    /**
+     * Handles crop request for big thumb.
+     * Crops big thumb for front preview
+     */
+    public function actionCrop(){
+        REST::execute($this->api, 'crop', array(
+            Yii::app()->rest->requireQuery('id'),
+            Yii::app()->rest->requirePost('left')
+        ));
     }
 
     /**
@@ -110,6 +91,18 @@ class PicturesController extends UploadController{
     }
 
     /**
+     * Updates cover of specified record
+     *
+     * @get int id. Picture id to update cover of
+     * @files cover. Uploaded cover
+     */
+    public function actionCover(){
+        REST::execute($this->api, 'updateCover', array(
+            Yii::app()->rest->requireQuery('id')
+        ));
+    }
+
+    /**
      * Removes picture record
      *
      * @get int id. Picture id
@@ -118,5 +111,16 @@ class PicturesController extends UploadController{
         REST::execute($this->api, 'delete', array(
             Yii::app()->rest->requireQuery('id'))
         );
+    }
+
+    /**
+     * Removes picture's cover
+     *
+     * @get int id. Picture id
+     */
+    public function actionDeleteCover(){
+        REST::execute($this->api, 'deleteCover', array(
+            Yii::app()->rest->requireQuery('id')
+        ));
     }
 } 

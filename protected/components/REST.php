@@ -28,7 +28,7 @@ class REST{
             );
         }
         catch(Exception $e){
-            self::errorResponse($e->getMessage(), $e->getCode());
+            self::errorResponse($e);
         }
     }
 
@@ -58,17 +58,24 @@ class REST{
     /**
      * Converts passed data to error formatted data
      *
-     * @param $message
+     * @param string $message
      * @param int $code
+     * @param null|array $data
      * @return array
      */
-    private static function _toErrorFormat($message, $code=0){
-        return array(
+    private static function _toErrorFormat($message, $code=0, $data=null){
+        $response=array(
             'error'=>array(
                 'message'=>$message,
                 'code'=>$code
             )
         );
+
+        if(!empty($data)){
+            $response['error']['data']=$data;
+        }
+
+        return $response;
     }
 
     /**
@@ -78,9 +85,15 @@ class REST{
      * @return array
      */
     private static function _parseException(\Exception $e){
+        $data=null;
+        if($e instanceof ApiException){
+            $data=$e->getData();
+        }
+
         return self::_toErrorFormat(
             $e->getMessage(),
-            $e->getCode()
+            $e->getCode(),
+            $data
         );
     }
 
@@ -95,10 +108,19 @@ class REST{
             $error=self::_parseException($first);
         }
         else{
-            $code=func_get_arg(1);
-            $code===false?$code=0:null;
+            $argsNumber=func_num_args();
 
-            $error=self::_toErrorFormat($first, $code);
+            $code=0;
+            if($argsNumber>1){
+                $code=func_get_arg(1);
+            }
+
+            $data=null;
+            if($argsNumber>2){
+                $data=func_get_arg(2);
+            }
+
+            $error=self::_toErrorFormat($first, $code, $data);
         }
 
         self::sendResponse($error);

@@ -71,6 +71,12 @@ return array(
                     'pattern'=>'admin/<controller:(pictures|videos)>/<id:\d+>',
                     'verb'=>'PUT'
                 ),
+                array(
+                    'admin/<controller>/deleteCover',
+                    'pattern'=>'admin/<controller:(pictures|videos)>/<id:\d+>/cover',
+                    'verb'=>'DELETE'
+                ),
+                'admin/<controller:(pictures|videos)>/<id:\d+>/<action:\w+>'=>'admin/<controller>/<action>',
 
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',

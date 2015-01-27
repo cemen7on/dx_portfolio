@@ -5,12 +5,18 @@
      * @var CActiveForm $form
      */
 
-    $form=$this->beginWidget('CActiveForm', array('htmlOptions'=>array(
-        'action'=>'/admin/pictures',
-        'enctype'=>'multipart/form-data'
-    )));
+    $this->registerModuleScriptFile('/js/extensions/cropper.js');
+    $this->registerModuleCssFile('/css/extensions/cropper.css');
 
-    echo $form->errorSummary($model); ?>
+    $this->registerModuleScriptFile('/js/pictures.js');
+
+    $form=$this->beginWidget('CActiveForm', array(
+        'action'=>'/admin/pictures/upload',
+        'htmlOptions'=>array(
+            'enctype'=>'multipart/form-data',
+            'class'=>'upload-form'
+        )
+    )); ?>
 
     <div><?php echo $form->fileField($model, 'src');?></div>
     <div><?php echo $form->dropDownList($model, 'type_id', PicturesType::model()->findAllIndexByPk());?></div>

@@ -1,5 +1,5 @@
 <?php
-class PicturesType extends CActiveRecord{
+class PicturesType extends ActiveRecord{
     /**
      * Id of "2d Picture" type
      */

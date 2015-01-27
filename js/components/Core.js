@@ -77,7 +77,7 @@ Core.Request=new function(){
         var call=function(context, func, arguments){
                 $.proxy(func, context).apply(context, arguments);
             },
-            error=function(message, code, status, jXHR){
+            error=function(message, code, data, status, jXHR){
                 // If ajax request was cancelled - do not trigger error handler
                 if(status=='abort'){
                     return ;
@@ -87,15 +87,15 @@ Core.Request=new function(){
                     Core.Notification.error(message);
                 }
 
-                call(this, custom.error, [message, code || 0, status, jXHR]);
+                call(this, custom.error, [message, code || 0, data || null, status, jXHR]);
             };
 
         params.success=function(response, status, jXHR){
             if(Object.isUndefined(response)){
-                call(this, error, ['No data was received', 500, status, jXHR]);
+                call(this, error, ['No data was received', 500, null, status, jXHR]);
             }
             else if(response.error){
-                call(this, error, [response.error.message, response.error.code || 500, status, jXHR]);
+                call(this, error, [response.error.message, response.error.code || 500, response.error.data || null, status, jXHR]);
             }
             else{
                 call(this, custom.success, [response, status, jXHR]);
@@ -103,7 +103,7 @@ Core.Request=new function(){
         };
 
         params.error=function(jXHR, status, message){
-            call(this, error, [message, jXHR.status, status, jXHR]);
+            call(this, error, [message, jXHR.status, null, status, jXHR]);
         };
 
         return $.ajax(params);

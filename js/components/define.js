@@ -95,3 +95,14 @@ Object.isNumber=function(value){
 Object.isFunction=function(value){
     return this.getType(value)=='function';
 };
+
+/**
+ * Converts first char of to string to upper case
+ *
+ * @returns {string}
+ */
+String.prototype.firstToUpper=function(){
+    var f=this.charAt(0).toUpperCase();
+
+    return f+this.substr(1, this.length-1);
+};

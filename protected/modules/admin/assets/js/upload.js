@@ -1,4 +1,48 @@
 $(document).ready(function(){
+    // Submit upload form asynchronously
+    $('.upload-form').submit(function(event){
+        event.preventDefault();
+
+        var _this=this,
+            $this=$(_this),
+            data=new FormData(_this),
+            submitBtn=$this.find('[type=submit]')[0],
+            $contentTable=$('table.content'),
+            contentTable=$contentTable.data('dataTable');
+
+        Core.Request.send({
+            url:this.action,
+            type:this.method,
+            data:data,
+            beforeSend:function(){
+                submitBtn.setAttribute('disabled', 'disabled');
+            },
+            success:function(response){
+                if(!response.row || !response.data){
+                    throw new Error('Invalid response. response.row and response.data must be specified');
+                }
+
+                // Add row to table
+                contentTable.row.add(response.row).draw();
+
+                $this.trigger('file.upload', response.data);
+
+                _this.reset();
+            },
+            error:function(message, code, data){
+                alert('Upload failed. Reason: '+message+'. Look console for more information');
+                console.log(data);
+            },
+            complete:function(){
+                submitBtn.removeAttribute('disabled');
+            },
+            // Options to tell jQuery not to process data or worry about content-type
+            cache:false,
+            contentType:false,
+            processData:false
+        });
+    });
+
     /**
      * Enables dataTables plugin for passed table jQuery object
      *
@@ -13,9 +57,10 @@ $(document).ready(function(){
             serverSide:true,
             searching:false,
             columnDefs:[
-                {targets:[5, 6], orderable:false}, // Disable order in "Preview" and "Delete" columns
+                {targets:[5, 6, 7], orderable:false}, // Disable order in "Preview", "Cover" and "Delete" columns
                 {targets:[3], className:'editable-title'},
-                {targets:[4], className:'editable-description'}
+                {targets:[4], className:'editable-description'},
+                {targets:[6], className:'editable-cover'}
             ],
             order:[[0, 'desc']], // set default DESC sort by id
             ajax:'/admin/'+id+'/content'
@@ -48,28 +93,6 @@ $(document).ready(function(){
             success:function(){
                 // Destroy removed item and redraw table
                 table.row($row).remove().draw(false);
-            }
-        });
-    });
-
-    // Change picture type.
-    // Save previous value
-    $document.on('focusin', '.dropdown-type', function(){
-        this.previousValue=this.value; // Save current value as previous for future select
-    });
-    // Change value
-    $document.on('change', '.dropdown-type', function(){
-        var _this=this,
-            $this=$(_this),
-            typeId=$this.val(),
-            id=parseInt($this.parents('td').siblings('td:first').text()); // Id of record
-
-        Core.Request.send({
-            type:'PUT',
-            url:'/admin/pictures/'+id,
-            data:{type_id:typeId},
-            error:function(){
-                $this.val(_this.previousValue); // Go back to the previous state
             }
         });
     });
@@ -159,18 +182,73 @@ $(document).ready(function(){
     $document.on('focusout', '.edit-field', function(){
             editField(this);
         })
-        /*
-        .on('keydown', '.edit-field', function(event){
-            if(event.which!=13 || !event.ctrlKey){
-                return ;
-            }
-
-            editField(this);
-
-            event.preventDefault();
-        })
-        */
         .on('click', '.edit-field', function(event){
             event.stopImmediatePropagation();
         });
+
+    // Edit cover for specific record
+    $document.on('click', '.editable-cover', function(){
+        var $coverForm,
+            $coverInput=$('#coverInput');
+
+        if(!$coverInput.size()){
+            $coverInput=$('<input id="coverInput" type="file" name="'+$(this).parents('table').attr('id').firstToUpper()+'[cover]" />');
+            $coverForm=$('<form id="coverForm" enctype="multipart/form-data"></form>');
+
+            $('body').append($coverForm.append($coverInput));
+        }
+
+        $coverInput.data('target', this);
+        $coverInput.click();
+    });
+    // Send ajax request to update cover
+    $document.on('change', '#coverInput', function(){
+        var $this=$(this),
+            $target=$($this.data('target')),
+            coverForm=$('#coverForm')[0],
+            recordId=parseInt($target.siblings('td:first').text());
+
+        var data=new FormData(coverForm);
+
+        Core.Request.send({
+            url:location.pathname+'/'+recordId+'/cover',
+            data:data,
+            success:function(data){
+                $target.html(data.html);
+            },
+            error:function(message, code, data){
+                alert('Upload failed. Reason: '+message+'. Look console for more information');
+                console.log(data);
+            },
+            complete:function(){
+                coverForm.reset();
+            },
+
+            // Options to tell jQuery not to process data or worry about content-type
+            cache:false,
+            contentType:false,
+            processData:false
+        });
+    });
+
+    // Remove record's cover
+    $document.on('click', '.remove-cover', function(event){
+        event.stopImmediatePropagation();
+
+        if(!confirm('Are you sure?')){
+            return ;
+        }
+
+        var $this=$(this),
+            $td=$this.parents('td'),
+            recordId=parseInt($td.siblings('td:first').text());
+
+        Core.Request.send({
+            url:location.pathname+'/'+recordId+'/cover',
+            type:'DELETE',
+            success:function(){
+                $td.empty();
+            }
+        });
+    });
 });

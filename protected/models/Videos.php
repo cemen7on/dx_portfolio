@@ -1,5 +1,5 @@
 <?php
-class Videos extends CActiveRecord{
+class Videos extends ActiveRecord{
     /**
      * YouTube video link
      *
@@ -41,26 +41,8 @@ class Videos extends CActiveRecord{
                         return CHtml::link($link, $link, array('target'=>'_blank'));
                     }
                 ),
-                array(
-                    'index'=>3,
-                    'name'=>'title',
-                    'caption'=>'Title',
-                    /*
-                    'formatter'=>function($title){
-                        return CHtml::tag('div', array('class'=>'editable-title'), $title);
-                    }
-                    */
-                ),
-                array(
-                    'index'=>4,
-                    'name'=>'description',
-                    'caption'=>'Description',
-                    /*
-                    'formatter'=>function($description){
-                        return CHtml::tag('div', array('class'=>'editable-description'), $description);
-                    }
-                    */
-                ),
+                array('index'=>3, 'name'=>'title', 'caption'=>'Title'),
+                array('index'=>4, 'name'=>'description', 'caption'=>'Description'),
                 array(
                     'index'=>5,
                     'name'=>'thumb_small',
@@ -71,6 +53,19 @@ class Videos extends CActiveRecord{
                 ),
                 array(
                     'index'=>6,
+                    'name'=>'cover',
+                    'caption'=>'Cover',
+                    'formatter'=>function($thumbIndex, $data){
+                        $html=null;
+                        if(isset($data->imageCover->name)){
+                            $html=Html::cover(CVideos::createCoverUrl($data->imageCover->name));
+                        }
+
+                        return $html;
+                    }
+                ),
+                array(
+                    'index'=>7,
                     'name'=>'id',
                     'caption'=>'Delete',
                     'formatter'=>function($id){
@@ -109,7 +104,9 @@ class Videos extends CActiveRecord{
         return array(
             array('link', 'required', 'on'=>'input'),
             array('youtube_id, title, creation_date', 'required', 'on'=>'create'),
-            array('description', 'safe', 'on'=>'create')
+            array('description', 'safe', 'on'=>'create'),
+            array('cover', 'file', 'allowEmpty'=>true, 'types'=>'jpg, jpeg, gif, png', 'maxSize'=>1024*1024*100),
+            array('cover', 'safe')
         );
     }
 
@@ -122,6 +119,7 @@ class Videos extends CActiveRecord{
         return array(
             'thumbSmall'=>array(self::BELONGS_TO, 'Images', array('thumb_small'=>'id')),
             'thumbBig'=>array(self::BELONGS_TO, 'Images', array('thumb_big'=>'id')),
+            'imageCover'=>array(self::BELONGS_TO, 'Images', array('cover'=>'id'))
         );
     }
 
@@ -137,7 +135,7 @@ class Videos extends CActiveRecord{
         }
 
 		$criteria->order='t.id DESC';
-        $criteria->with=array('thumbSmall', 'thumbBig');
+        $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
 
 		return $this->findAll($criteria);
 	}

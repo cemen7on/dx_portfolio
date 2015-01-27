@@ -14,12 +14,13 @@
      * @var CActiveForm $form
      */
 
-    $form=$this->beginWidget('CActiveForm', array('htmlOptions'=>array(
-        'action'=>'/admin/videos',
-        'enctype'=>'multipart/form-data'
-    )));
-
-    echo $form->errorSummary($model); ?>
+    $form=$this->beginWidget('CActiveForm', array(
+        'action'=>'/admin/videos/upload',
+        'htmlOptions'=>array(
+            'enctype'=>'multipart/form-data',
+            'class'=>'upload-form'
+        )
+    )); ?>
 
     <div><?php echo $form->textField($model, 'link', array('placeholder'=>'Link to video on YouTube'));?></div>
     <div><?php echo CHtml::submitButton('Submit');?></div><?php

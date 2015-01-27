@@ -347,7 +347,7 @@ function Modal(data){
         var $container=$('#modal');
         Boolean($container.size())
             ? _setContainer($container)
-            : _setContainer($('<div id="modal" class="vertical-align absolute-size"><div class="center"></div></div>'));
+            : _setContainer($('<div id="modal" class="vertical-align absolute-size"><div class="center align-center"></div></div>'));
 
         // Define overlay
         var $overlay=_$container.children('.overlay');

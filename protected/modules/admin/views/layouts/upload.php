@@ -6,8 +6,13 @@
 
     $this->beginContent('/layouts/main');
 
-    $this->registerRootScriptFile('/js/components/Core.js');
+    Yii::app()->clientScript->registerCssFile('/css/font-awesome/css/font-awesome.min.css');
+
     $this->registerRootScriptFile('/js/components/define.js');
+    $this->registerRootScriptFile('/js/components/Core.js');
+
+    $this->registerRootScriptFile('/js/components/modal/Modal.js');
+    $this->registerRootCssFile('/css/modal/styles.css');
 
     $this->registerModuleScriptFile('/js/upload.js');
     $this->registerModuleCssFile('/css/upload.css');

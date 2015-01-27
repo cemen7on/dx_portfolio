@@ -1,5 +1,5 @@
 <?php
-class Pictures extends CActiveRecord{
+class Pictures extends ActiveRecord{
     /**
      * Columns description. Is used for building dataTables requests
      *
@@ -32,26 +32,8 @@ class Pictures extends CActiveRecord{
                         return CHtml::dropDownList('type_id', $typeId, PicturesType::model()->findAllIndexByPk(), array('class'=>'dropdown-type'));
                     }
                 ),
-                array(
-                    'index'=>3,
-                    'name'=>'title',
-                    'caption'=>'Title',
-                    /*
-                    'formatter'=>function($title){
-                        return CHtml::tag('div', array('class'=>'editable-title'), $title);
-                    }
-                    */
-                ),
-                array(
-                    'index'=>4,
-                    'name'=>'description',
-                    'caption'=>'Description',
-                    /*
-                    'formatter'=>function($description){
-                        return CHtml::tag('div', array('class'=>'editable-description'), $description);
-                    }
-                    */
-                ),
+                array('index'=>3, 'name'=>'title', 'caption'=>'Title'),
+                array('index'=>4, 'name'=>'description', 'caption'=>'Description'),
                 array(
                     'index'=>5,
                     'name'=>'thumb_small',
@@ -62,6 +44,19 @@ class Pictures extends CActiveRecord{
                 ),
                 array(
                     'index'=>6,
+                    'name'=>'cover',
+                    'caption'=>'Cover',
+                    'formatter'=>function($thumbIndex, $data){
+                        $html=null;
+                        if(isset($data->imageCover->name)){
+                            $html=Html::cover(CPictures::createCoverUrl($data->imageCover->name));
+                        }
+
+                        return $html;
+                    }
+                ),
+                array(
+                    'index'=>7,
                     'name'=>'id',
                     'caption'=>'Delete',
                     'formatter'=>function($id){
@@ -102,7 +97,9 @@ class Pictures extends CActiveRecord{
             array('description', 'safe', 'on'=>'input'),
             array('creation_date', 'required', 'on'=>'create'),
             array('description, thumb_big', 'safe', 'on'=>'create'),
-            array('src', 'file', 'types'=>'jpg, jpeg, gif, png', 'maxSize'=>1024*1024*100)
+            array('src', 'file', 'types'=>'jpg, jpeg, gif, png', 'maxSize'=>1024*1024*100),
+            array('cover', 'file', 'allowEmpty'=>true, 'types'=>'jpg, jpeg, gif, png', 'maxSize'=>1024*1024*100),
+            array('cover', 'safe')
         );
     }
 
@@ -113,9 +110,10 @@ class Pictures extends CActiveRecord{
      */
     public function relations(){
         return array(
-            'src'=>array(self::BELONGS_TO, 'Images', array('src'=>'id')),
+            'imageSrc'=>array(self::BELONGS_TO, 'Images', array('src'=>'id')),
             'thumbSmall'=>array(self::BELONGS_TO, 'Images', array('thumb_small'=>'id')),
             'thumbBig'=>array(self::BELONGS_TO, 'Images', array('thumb_big'=>'id')),
+            'imageCover'=>array(self::BELONGS_TO, 'Images', array('cover'=>'id')),
         );
     }
 
@@ -141,7 +139,7 @@ class Pictures extends CActiveRecord{
             $criteria=new CDbCriteria();
         }
 
-        $criteria->with=array('src', 'thumbSmall', 'thumbBig');
+        $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
         $criteria->condition='type_id=:type_id';
         $criteria->params=array('type_id'=>$typeId);
         $criteria->order='t.id DESC';
