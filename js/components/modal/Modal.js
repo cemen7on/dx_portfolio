@@ -501,8 +501,8 @@ function Modal(data){
      */
     _this.show=function(){
         // Show modal window
-        _this.container().show();
-        _this.window().show();
+        _this.container().css('display', 'table'); // Using show() method - IE setups "block" instead of table
+        _this.window().css('display', 'inline-block'); // Using show() method - IE setups "block" instead of inline
 
         for(var i=0; i<=events.length-1; i++){
             // enable event
