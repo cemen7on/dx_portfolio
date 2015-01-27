@@ -390,7 +390,7 @@ function Gallery(pagination){
             var params={
                 success:function(){
                     _this.goTo(item, null, function(){
-                        _this.toModal().window().show();
+                        _this.toModal().showWindow();
 
                         callback();
                     });
@@ -404,7 +404,7 @@ function Gallery(pagination){
             // just set new picture
             if(!_pagination.inCache(page)){
                 params.beforeSend=function(){
-                    _this.toModal().window().hide();
+                    _this.toModal().hideWindow();
                 };
             }
 

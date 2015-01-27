@@ -309,19 +309,26 @@ function Pagination(){
         currentPage=parsePageIndex(_this.$object.find('.page.active').children('a').attr('href'));
         lastPage=pageCount;
 
-        // Save current page data in cache
-        // P.S.: preview object actually contains clones of currentPage thumbs,
-        // because actual elements contains .animated class that triggers appear animation
-        // every time those elements are added on stage.
-        // So clone those elements and remove .animated class to avoid appear animation
-        var $thumbs=$preview.children().clone();
-        for(var i=0; i<=$thumbs.length-1; i++){
-            $($thumbs[i]).removeClass('animated');
+        /**
+         * Fetches from jQuery elements collection outerHTML
+         *
+         * @param {Array} $collection. jQuery elements collection
+         * @returns {string}
+         */
+        function outerHtml($collection){
+            var response='';
+
+            $collection.each(function(){
+                response+=this.outerHTML || '';
+            });
+
+            return response;
         }
 
+        // Cache init data
         addToCache(currentPage, {
-            aside:$aside.children(),
-            preview:$thumbs
+            aside:outerHtml($aside.children()),
+            preview:outerHtml($preview.children())
         });
     })();
 }

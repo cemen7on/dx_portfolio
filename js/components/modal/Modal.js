@@ -495,14 +495,57 @@ function Modal(data){
     };
 
     /**
+     * Displays modal window's object
+     *
+     * @returns {*}
+     */
+    _this.showWindow=function(){
+        _this.window().css('display', 'inline-block'); // Using show() method - IE setups "block" instead of inline
+
+        return _this;
+    };
+
+    /**
+     * Hides modal window's object
+     *
+     * @returns {*}
+     */
+    _this.hideWindow=function(){
+        _this.window().hide();
+
+        return _this;
+    };
+
+    /**
+     * Displays modal window's container object
+     *
+     * @returns {*}
+     */
+    _this.showContainer=function(){
+        _this.container().css('display', 'table'); // Using show() method - IE setups "block" instead of table
+
+        return _this;
+    };
+
+    /**
+     * Hides modal window's container object
+     *
+     * @returns {*}
+     */
+    _this.hideContainer=function(){
+        _this.container().hide();
+
+        return _this;
+    };
+
+    /**
      * Shows modal window
      *
      * @returns {*}
      */
     _this.show=function(){
-        // Show modal window
-        _this.container().css('display', 'table'); // Using show() method - IE setups "block" instead of table
-        _this.window().css('display', 'inline-block'); // Using show() method - IE setups "block" instead of inline
+        _this.showWindow();
+        _this.showContainer();
 
         for(var i=0; i<=events.length-1; i++){
             // enable event
@@ -518,11 +561,11 @@ function Modal(data){
      * @returns {*}
      */
     _this.hide=function(){
-        _this.container().hide();
-        _this.window().hide();
+        _this.hideContainer();
+        _this.hideWindow();
 
         for(var i=0; i<=events.length-1; i++){
-            // enable event
+            // disable event
             events[i].off();
         }
 
