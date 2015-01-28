@@ -163,3 +163,13 @@ Core.Object=new function(){
         return parent;
     };
 };
+
+/**
+ * Browser object
+ */
+Core.Browser=new function(){
+    Object.defineProperty(this, 'isMobile', {
+        writable:false,
+        value:/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    });
+};
