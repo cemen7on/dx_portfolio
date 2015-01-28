@@ -39,7 +39,10 @@ class Pictures extends ActiveRecord{
                     'name'=>'thumb_small',
                     'caption'=>'Preview',
                     'formatter'=>function($thumbIndex, $data){
-                        return CHtml::image(CPictures::createSmallThumbUrl($data->thumbSmall->name));
+                            $smallThumb=isset($data->thumbSmall->name)?$data->thumbSmall->name:'';
+                            $bigThumb=isset($data->thumbBig->name)?$data->thumbBig->name:'';
+
+                        return CHtml::image(CPictures::createSmallThumbUrl($smallThumb), '', array('data-big-thumb'=>$bigThumb));
                     }
                 ),
                 array(

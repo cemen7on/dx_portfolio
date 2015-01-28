@@ -51,8 +51,36 @@ class Images extends ActiveRecord{
      */
     public function rules(){
         return array(
-            array('name, width, height', 'required')
+            array('name, width, height', 'safe', 'on'=>'blank'),
+            array('name, width, height', 'required', 'on'=>'create')
         );
+    }
+
+    /**
+     * Creates blank instance
+     *
+     * @return CActiveRecord|Images
+     * @throws Exception
+     */
+    public static function blank(){
+        $instance=new self('blank');
+        // $instance->setAttribute('id', null);
+
+        if(!$instance->save()){
+            throw new Exception('Failed to create blank record');
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Creates image's file name depending on record's id and extension
+     *
+     * @param string $ext. Image extension
+     * @return string
+     */
+    public function getFileName($ext='jpg'){
+        return "{$this->id}.{$ext}";
     }
 
     /**
@@ -194,8 +222,9 @@ class Images extends ActiveRecord{
      * @throws Exception
      */
     public function create($name, $width, $height){
+        $this->setScenario('create');
+
         $this->setAttributes(array(
-            'id'=>null,
             'name'=>$name,
             'width'=>$width,
             'height'=>$height
@@ -205,8 +234,6 @@ class Images extends ActiveRecord{
         if(!$this->save()){
             throw new Exception('Failed to create record');
         }
-
-        $this->setIsNewRecord(true);
 
         return $this->id;
     }

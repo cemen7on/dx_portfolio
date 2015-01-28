@@ -48,7 +48,9 @@ class Videos extends ActiveRecord{
                     'name'=>'thumb_small',
                     'caption'=>'Preview',
                     'formatter'=>function($thumbIndex, $data){
-                        return CHtml::image(CVideos::createSmallThumbUrl($data->thumbSmall->name));
+                        $smallThumb=isset($data->thumbSmall->name)?$data->thumbSmall->name:'';
+
+                        return CHtml::image(CVideos::createSmallThumbUrl($smallThumb));
                     }
                 ),
                 array(
@@ -174,10 +176,6 @@ class Videos extends ActiveRecord{
             'creation_date'=>new CDbExpression('NOW()')
         ));
 
-        if(!$this->save()){
-            throw new Exception('Failed to create record');
-        }
-
-        return $this->id;
+        return $this->save();
     }
 }

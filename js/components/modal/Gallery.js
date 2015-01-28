@@ -379,6 +379,23 @@ function Gallery(pagination){
     };
 
     /**
+     * Replace small thumb url with given needle and value
+     *
+     * @param {String} haystack. Small thumb url
+     * @param {String} needle. Picture size to replace by
+     * @param {String} value. New picture name
+     * @returns {string}
+     */
+    var replaceUrl=function(haystack, needle, value){
+        var url;
+
+        url=haystack.substr(0, haystack.indexOf('thumb_small'));
+        url+=needle+'/'+value;
+
+        return url;
+    };
+
+    /**
      * Shows image at current index
      *
      * @param {int} item. Thumb's index to load
@@ -458,9 +475,9 @@ function Gallery(pagination){
             }
 
             _this.size($thumb.data('width'), $thumb.data('height'));
-            _this.picture(src.replace('thumb_small', 'thumb_big'));
 
-            _this.source(src.replace('thumb_small', 'src'));
+            _this.picture(replaceUrl(src, 'thumb_big', $thumb.data('big-thumb')));
+            _this.source(replaceUrl(src, 'src', $thumb.data('src')));
 
             callback();
 

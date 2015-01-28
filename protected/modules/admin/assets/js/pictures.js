@@ -76,9 +76,13 @@ $(document).ready(function(){
     $document.on('click', '.editable-cover', function(){
         var $this=$(this),
             id=$this.parent().data('id'),
-            bigThumb=$this.prev().children('img').attr('src').replace('thumb_small', 'thumb_big');
+            smallThumb=$this.prev().children('img')[0],
+            bigThumbUrl;
 
-        $('.upload-form').trigger('file.upload', {id:id, thumb_big:bigThumb});
+        bigThumbUrl=smallThumb.src.substr(0, smallThumb.src.indexOf('thumb_small'));
+        bigThumbUrl+='thumb_big/'+smallThumb.dataset.bigThumb;
+
+        $('.upload-form').trigger('file.upload', {id:id, thumb_big:bigThumbUrl});
     });
 
     // Change picture type.

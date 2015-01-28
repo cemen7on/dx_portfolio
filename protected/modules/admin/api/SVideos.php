@@ -85,30 +85,32 @@ class SVideos{
         $title=$video['snippet']['title'];
         $description=isset($video['snippet']['description'])?$video['snippet']['description']:null;
         $source=$video['snippet']['thumbnails']['maxres']['url'];
+        $extension=pathinfo($source, PATHINFO_EXTENSION);
 
         $vModel=new Videos('create');
-        $id=$vModel->create($videoId, $title, $description);
-
-        $fileName="{$id}.jpg";
-        $temp=CVideos::createTmpPath($fileName);
 
         // Copy source to temp directory.
         // It is needed, because Image extension only works with files on local machine
+        $temp=CVideos::createTmpPath(time().'.'.$extension);
         copy($source, $temp);
 
-        $iModel=new Images();
-        $vModel->thumb_small=$iModel->saveSmallThumb($temp, CVideos::createSmallThumbPath($fileName));
-        $vModel->thumb_big=$iModel->saveBigThumb($temp, CVideos::createBigThumbPath($fileName));
+        // Save small thumb image from src image
+        $image=Images::blank();
+        $vModel->thumb_small=$image->saveSmallThumb($temp, CVideos::createSmallThumbPath($image->getFileName($extension)));
+
+        // Save big thumb image from src image
+        $image=Images::blank();
+        $vModel->thumb_big=$image->saveBigThumb($temp, CVideos::createBigThumbPath($image->getFileName($extension)));
 
         // Remove temporary file
         @unlink($temp);
 
-        if(!$vModel->save()){
-            throw new Exception('Failed to update record with images');
+        if(!$vModel->create($videoId, $title, $description)){
+            throw new Exception('Failed to create record');
         }
 
         $dataTable=new DataTables(Videos::DT_COLUMNS());
-        $vModel->with(array('thumbSmall', 'thumbBig', 'imageCover'))->refresh();
+        $vModel->with(array('thumbSmall', 'thumbBig'))->refresh();
 
         return array(
             'row'=>$dataTable->formatData(array($vModel))[0],
@@ -123,7 +125,7 @@ class SVideos{
      */
     public function content(){
         $criteria=new CDbCriteria();
-        $criteria->with=array('thumbSmall', 'imageCover');
+        $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
 
         $dataTable=new DataTables(Videos::DT_COLUMNS(), new Videos(), $criteria);
 
@@ -164,17 +166,17 @@ class SVideos{
             $vModel->imageCover->remove(CVideos::createCoverPath($vModel->imageCover->name));
         }
 
+        $image=Images::blank();
         $upload=CUploadedFile::getInstance($vModel, 'cover');
-        $fileName="{$vModel->id}.{$upload->getExtensionName()}";
+        $extension=$upload->getExtensionName();
 
-        $images=new Images();
-        $vModel->cover=$images->cropCover($upload->getTempName(), CVideos::createCoverPath($fileName));
+        $vModel->cover=$image->cropCover($upload->getTempName(), CVideos::createCoverPath($image->getFileName($extension)));
 
         if(!$vModel->save(false)){
             throw new Exception('Failed to update record cover');
         }
 
-        return array('html'=>Html::cover(CVideos::createCoverUrl($fileName)));
+        return array('html'=>Html::cover(CVideos::createCoverUrl($image->name)));
     }
 
     /**
