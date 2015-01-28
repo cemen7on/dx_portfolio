@@ -489,9 +489,10 @@ function Gallery(pagination){
             // Load next or previous picture (depending on direction) in browser cache
             _siblingImage.isLoaded=false;
             if(_items[item+1*_direction]){
-                var nextSrc=$(_items[item+1*_direction]).find('img').attr('src') || '';
+                var $nextThumb=$(_items[item+1*_direction]),
+                    nextSrc=$nextThumb.find('img').attr('src') || '';
 
-                _siblingImage.src=nextSrc.replace('thumb_small', 'thumb_big');
+                _siblingImage.src=replaceUrl(nextSrc, 'thumb_big', $nextThumb.data('big-thumb'));
             }
         }
 
