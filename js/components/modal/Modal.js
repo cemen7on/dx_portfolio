@@ -575,25 +575,60 @@ function Modal(data){
     };
 
     (function construct(data){
-        // If selector or jQuery instance was passed
-        // parse existing object
-        if(Object.isString(data) || Object.isJquery(data)){
-            _parse(data);
-        }
-        else if(!Object.isset(data) || Object.isObject(data)){
-            // Object property contains either
-            // window jquery object or string selector
-            if(!Object.isUndefined(data) && data.object){
-                _parse(data.object);
+        /**
+         * Parses modal window object
+         *
+         * @param {String|jQuery} data. Modal window selector or jQuery object
+         * @private
+         */
+        function __parse(data){
+            if(Object.isJquery(data)){
+                _parse(data);
+            }
+            else if(Object.isString(data)){ // should be id of modal window
+                if($('#'+data).size()){
+                    _parse('#'+data);
+                }
+                else{
+                    __compile(data);
+                }
             }
             else{
-                // Compile and append new modal window object
-                _compile();
-                _append();
+                throw new Error('Invalid argument: data should be an jQuery instance os string. '+typeof(data)+' was given');
+            }
+        }
+
+        /**
+         * Compiles modal window object
+         *
+         * @param {String} id. Modal window's id sttribute
+         * @private
+         */
+        function __compile(id){
+            _compile();
+
+            if(id){
+                _this.window().attr('id', id);
             }
 
-            // Set data
+            _append();
+        }
+
+        if(Object.isString(data) || Object.isJquery(data)){
+            __parse(data);
+        }
+        else if(Object.isObject(data)){
+            if(data.object){
+                __parse(data.object);
+            }
+            else{
+                __compile();
+            }
+
             _setData(data);
+        }
+        else if(!Object.isset(data)){
+            __compile();
         }
 
         addDefaultEvents();

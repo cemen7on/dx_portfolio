@@ -138,6 +138,22 @@ function Gallery(pagination){
     };
 
     /**
+     * Parses modal window object
+     *
+     * @private
+     */
+    var _parse=function(){
+        _setModal(new Modal(OBJECT_ID));
+
+        _setControls(
+            _modal.window().children('.prev'),
+            _modal.window().children('.next')
+        );
+
+        _setSource(_modal.window().children('.external-link'));
+    };
+
+    /**
      * Compiles new modal window object.
      * Sets all necessary content
      *
@@ -157,12 +173,9 @@ function Gallery(pagination){
         );
 
         // Create new modal window
-        var modal=new Modal();
+        var modal=new Modal(OBJECT_ID);
 
-        // Specify created modal window
-        modal.window().attr('id', OBJECT_ID);
         modal.content().html(_$picture);
-
         modal.window().append(_$prev).append(_$next).append(_$source);
 
         _setModal(modal);
@@ -504,19 +517,10 @@ function Gallery(pagination){
     (function construct(pagination){
         // Init modal window object
         var $modal=$('#'+OBJECT_ID);
-        if($modal.size()){
-            _setModal(new Modal($modal));
-            _setControls(
-                _modal.window().children('.prev'),
-                _modal.window().children('.next')
-            );
-            _setSource(_modal.window().children('.external-link'));
-        }
-        else{
-            _compile();
-        }
+        $modal.size()
+            ? _parse()
+            : _compile();
 
-        // Add event listeners
         addDefaultsEvents();
 
         initSiblingImage();

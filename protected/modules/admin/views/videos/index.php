@@ -1,3 +1,13 @@
+<?php
+    /**
+     * @var VideosController $this
+     * @var Videos $model
+     * @var CActiveForm $form
+     */
+
+    $this->registerModuleScriptFile('/js/videos.js');
+?>
+
 <button>
     <a href="<?php echo Yii::app()->createAbsoluteUrl('/oauth/google/authorize')?>">Authorize in YouTube</a>
 </button>
@@ -7,12 +17,6 @@
     if(!empty($oauthToken)){ ?>
         <div style="color:green;">You are authorized in YouTube</div><?php
     }
-
-    /**
-     * @var VideosController $this
-     * @var Videos $model
-     * @var CActiveForm $form
-     */
 
     $form=$this->beginWidget('CActiveForm', array(
         'action'=>'/admin/videos/upload',

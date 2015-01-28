@@ -59,11 +59,19 @@ table.content td:nth-child(7) img{
     left:0 !important;
 }
 
-.cropper-form{
+.cropper-controls{
     padding:10px;
     text-align:right;
 
     background:rgba(0, 0, 0, 0.9);
+}
+
+.cropper-controls:after{
+    content:'.';
+    display:block;
+
+    clear:both;
+    height:0;
 }
 
 .cover{
@@ -83,4 +91,8 @@ table.content td:nth-child(7) img{
     background:rgba(0,0,0, 0.5);
 
     padding:2px 3px;
+}
+
+#coverForm{
+    display:none;
 }
