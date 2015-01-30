@@ -1,10 +1,18 @@
 $(document).ready(function(){
+    // Bind event listeners
+    var $document=$(document);
+
     (function createHiddenForm(){
         var $coverInput=$('<input id="coverInput" type="file" name="'+$('table.content').attr('id').firstToUpper()+'[cover]" />'),
             $coverForm=$('<form id="coverForm" enctype="multipart/form-data"></form>');
 
         $('body').append($coverForm.append($coverInput));
     }());
+
+    // Save previous value for select boxes
+    $document.on('focusin', 'select', function(){
+        this.previousValue=this.value; // Save current value as previous for future select
+    });
 
     // Submit upload form asynchronously
     $('.upload-form').submit(function(event){
@@ -63,7 +71,7 @@ $(document).ready(function(){
             serverSide:true,
             searching:false,
             columnDefs:[
-                {targets:[5, 6, 7], orderable:false}, // Disable order in "Preview", "Cover" and "Delete" columns
+                {targets:[5, 6, 8], orderable:false}, // Disable order in "Preview", "Cover" and "Delete" columns
                 {targets:[3], className:'editable-title'},
                 {targets:[4], className:'editable-description'},
                 {targets:[6], className:'editable-cover'}
@@ -86,8 +94,6 @@ $(document).ready(function(){
     configureDataTable($('#pictures'));
     configureDataTable($('#videos'));
 
-    // Bind event listeners
-    var $document=$(document);
     // Remove item
     $document.on('click', '.remove-link', function(event){
         event.preventDefault(); // Escape from following a link
@@ -138,11 +144,11 @@ $(document).ready(function(){
         $field.focus();
     }
 
-    $document.on('click', '.editable-title', function(){
+    $document.on('click', 'tbody .editable-title', function(){
         createField(this, $('<input type="text" />'));
     });
 
-    $document.on('click', '.editable-description', function(){
+    $document.on('click', 'tbody .editable-description', function(){
         createField(this, $('<textarea></textarea>'));
     });
 
@@ -192,10 +198,10 @@ $(document).ready(function(){
     }
 
     // Update value
-    $document.on('focusout', '.edit-field', function(){
+    $document.on('focusout', 'tbody .edit-field', function(){
             editField(this);
         })
-        .on('click', '.edit-field', function(event){
+        .on('click', 'tbody .edit-field', function(event){
             event.stopImmediatePropagation();
         });
 
@@ -226,6 +232,27 @@ $(document).ready(function(){
             cache:false,
             contentType:false,
             processData:false
+        });
+    });
+
+    // Changes cover order
+    $document.on('change', 'tbody .cover-order', function(){
+        var _this=this,
+            $this=$(_this),
+            coverOrder=$this.val(),
+            id=$this.parents('tr').data('id');
+
+        Core.Request.send({
+            url:location.pathname+'/'+id,
+            type:'PUT',
+            data:{cover_order:coverOrder},
+            success:function(){
+                // Update table content
+                $this.parents('table').data('dataTable').draw(false);
+            },
+            error:function(){
+                $this.val(_this.previousValue); // Go back to the previous state
+            }
         });
     });
 

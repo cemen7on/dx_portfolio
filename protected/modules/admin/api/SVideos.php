@@ -180,6 +180,31 @@ class SVideos{
     }
 
     /**
+     * Updates cover order of specific record
+     *
+     * @param int $videoId. Video's id to update cover order
+     * @param mixed $coverOrder. New value to update
+     * @return bool
+     */
+    public function updateCoverOrder($videoId, $coverOrder){
+        $this->findRecordById($videoId);
+
+        if(!empty($coverOrder)){
+            // Reset old cover's order value
+            $vModel=new Videos();
+            $vModel->updateAll(
+                array('cover_order'=>new CDbExpression('NULL')),
+                'cover_order=:cover_order',
+                array('cover_order'=>$coverOrder)
+            );
+        }
+
+        $value=!empty($coverOrder)?(int)$coverOrder:new CDbExpression('NULL');
+
+        return $this->update($videoId, array('cover_order'=>$value));
+    }
+
+    /**
      * Removes video
      *
      * @param int $videoId. Video's to delete id

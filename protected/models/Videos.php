@@ -68,6 +68,14 @@ class Videos extends ActiveRecord{
                 ),
                 array(
                     'index'=>7,
+                    'name'=>'cover_order',
+                    'caption'=>'Display on start',
+                    'formatter'=>function($order){
+                        return Html::coverOrder($order, Yii::app()->params['covers']['animation']['count']);
+                    }
+                ),
+                array(
+                    'index'=>8,
                     'name'=>'id',
                     'caption'=>'Delete',
                     'formatter'=>function($id){
@@ -136,7 +144,6 @@ class Videos extends ActiveRecord{
             $criteria=new CDbCriteria();
         }
 
-		$criteria->order='t.id DESC';
         $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
 
 		return $this->findAll($criteria);

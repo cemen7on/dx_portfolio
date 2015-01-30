@@ -7,7 +7,8 @@ class PicNavMenu extends CWidget{
 	 */
 	public function animation(){
         $criteria=new CDbCriteria();
-        $criteria->limit=2;
+        $criteria->limit=Yii::app()->params['covers']['animation']['count'];
+        $criteria->order='ISNULL(cover_order), cover_order ASC, t.id DESC';
 
 		return $this->render('animation', array('items'=>Videos::model()->findRecords($criteria)), true);
 	}
@@ -19,7 +20,8 @@ class PicNavMenu extends CWidget{
 	 */
 	public function pictures2d(){
         $criteria=new CDbCriteria();
-        $criteria->limit=2;
+        $criteria->limit=Yii::app()->params['covers']['pictures2d']['count'];
+        $criteria->order='ISNULL(cover_order), cover_order ASC, t.id DESC';
 
 		return $this->render('pictures', array('items'=>Pictures::model()->findAllByTypeId(PicturesType::PICTURES_2D, $criteria)), true);
 	}
@@ -31,7 +33,8 @@ class PicNavMenu extends CWidget{
 	 */
 	public function art3d(){
         $criteria=new CDbCriteria();
-        $criteria->limit=4;
+        $criteria->limit=Yii::app()->params['covers']['art3d']['count'];
+        $criteria->order='ISNULL(cover_order), cover_order ASC, t.id DESC';
 
 		return $this->render('art', array('items'=>Pictures::model()->findAllByTypeId(PicturesType::ART_3D, $criteria)), true);
 	}

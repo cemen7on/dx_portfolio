@@ -94,6 +94,7 @@ class ArtController extends CController{
         $this->pages->pageSize=self::RECORDS_LIMIT;
         $this->pages->applyLimit($criteria);
 
+        $criteria->order='t.id DESC';
         $works=$vModel->findRecords($criteria);
 
         if(Yii::app()->request->isAjaxRequest){
@@ -121,6 +122,7 @@ class ArtController extends CController{
         $this->pages->pageSize=self::RECORDS_LIMIT;
         $this->pages->applyLimit($criteria);
 
+        $criteria->order='t.id DESC';
 		$works=$pModel->findAllByTypeId(PicturesType::PICTURES_2D, $criteria);
 
         if(Yii::app()->request->isAjaxRequest){
@@ -148,6 +150,7 @@ class ArtController extends CController{
         $this->pages->pageSize=self::RECORDS_LIMIT;
         $this->pages->applyLimit($criteria);
 
+        $criteria->order='t.id DESC';
         $works=$pModel->findAllByTypeId(PicturesType::ART_3D, $criteria);
 
         if(Yii::app()->request->isAjaxRequest){

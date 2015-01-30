@@ -60,6 +60,18 @@ class Pictures extends ActiveRecord{
                 ),
                 array(
                     'index'=>7,
+                    'name'=>'cover_order',
+                    'caption'=>'Display on start',
+                    'formatter'=>function($order, $data){
+                        $key=$data->type_id==PicturesType::PICTURES_2D
+                            ? 'pictures2d'
+                            : 'art3d';
+
+                        return Html::coverOrder($order, Yii::app()->params['covers'][$key]['count']);
+                    }
+                ),
+                array(
+                    'index'=>8,
                     'name'=>'id',
                     'caption'=>'Delete',
                     'formatter'=>function($id){
@@ -145,7 +157,6 @@ class Pictures extends ActiveRecord{
         $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
         $criteria->condition='type_id=:type_id';
         $criteria->params=array('type_id'=>$typeId);
-        $criteria->order='t.id DESC';
 
         return $this->findAll($criteria);
     }

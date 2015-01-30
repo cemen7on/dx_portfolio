@@ -65,15 +65,19 @@ class PicturesController extends UploadController{
     public function actionUpdate(){
         $pictureId=Yii::app()->rest->requireQuery('id');
 
+        $coverOrder=Yii::app()->rest->getPut('cover_order');
+        if(isset($coverOrder)){
+            REST::execute($this->api, 'updateCoverOrder', array($pictureId, $coverOrder));
+        }
+
         $typeId=Yii::app()->rest->getPut('type_id');
-        $title=Yii::app()->rest->getPut('title');
-        $description=Yii::app()->rest->getPut('description');
+        if(isset($typeId)){
+            REST::execute($this->api, 'updateType', array($pictureId, $typeId));
+        }
 
         $attributes=array();
-
-        if(isset($typeId)){
-            $attributes['type_id']=$typeId;
-        }
+        $title=Yii::app()->rest->getPut('title');
+        $description=Yii::app()->rest->getPut('description');
 
         if(isset($title)){
             if(empty($title)){

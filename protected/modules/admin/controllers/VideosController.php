@@ -53,6 +53,11 @@ class VideosController extends UploadController{
     public function actionUpdate(){
         $videoId=Yii::app()->rest->requireQuery('id');
 
+        $coverOrder=Yii::app()->rest->getPut('cover_order');
+        if(isset($coverOrder)){
+            REST::execute($this->api, 'updateCoverOrder', array($videoId, $coverOrder));
+        }
+
         $title=Yii::app()->rest->getPut('title');
         $description=Yii::app()->rest->getPut('description');
 

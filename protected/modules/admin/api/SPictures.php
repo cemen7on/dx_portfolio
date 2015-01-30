@@ -144,19 +144,32 @@ class SPictures{
      * Updates picture's attributes
      *
      * @param int $pictureId. Picture's to update id
-     * @param int $attributes. Attributes to update
+     * @param array $attributes. Attributes to update
+     * @param bool $force. Force update
      * @return bool
      * @throws Exception
      */
-    public function update($pictureId, $attributes){
+    public function update($pictureId, $attributes, $force=true){
         $pModel=new Pictures();
 
         $result=$pModel->updateByPk($pictureId, $attributes);
-        if(!$result){
+        if($force && !$result){
             throw new Exception('Failed to update record');
         }
 
         return true;
+    }
+
+    /**
+     * Updates picture's type
+     *
+     * @param int $pictureId. Picture's id to update
+     * @param int $typeId. New type id
+     * @return bool
+     */
+    public function updateType($pictureId, $typeId){
+        $this->updateCoverOrder($pictureId, null, false);
+        return $this->update($pictureId, array('type_id'=>$typeId));
     }
 
     /**
@@ -185,6 +198,37 @@ class SPictures{
         }
 
         return array('html'=>Html::cover(CPictures::createCoverUrl($image->name)));
+    }
+
+    /**
+     * Updates cover order of specific record
+     *
+     * @param int $pictureId. Picture's id to update cover order
+     * @param mixed $coverOrder. New value to update
+     * @param bool $force. Force update or not
+     * @return bool
+     */
+    public function updateCoverOrder($pictureId, $coverOrder, $force=true){
+        $picture=$this->findRecordById($pictureId);
+
+        $value=!empty($coverOrder)?(int)$coverOrder:new CDbExpression('NULL');
+
+        // Value has not been changed
+        if($picture->cover_order==$value){
+            return false;
+        }
+
+        if(!empty($coverOrder)){
+            // Reset old cover's order value
+            $pModel=new Pictures();
+            $pModel->updateAll(
+                array('cover_order'=>new CDbExpression('NULL')),
+                'cover_order=:cover_order AND type_id=:type_id',
+                array('type_id'=>$picture->type_id, 'cover_order'=>$coverOrder)
+            );
+        }
+
+        return $this->update($pictureId, array('cover_order'=>$value), $force);
     }
 
     /**

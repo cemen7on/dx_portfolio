@@ -86,11 +86,6 @@ $(document).ready(function(){
     });
 
     // Change picture type.
-    // Save previous value
-    $document.on('focusin', '.dropdown-type', function(){
-        this.previousValue=this.value; // Save current value as previous for future select
-    });
-    // Change value
     $document.on('change', '.dropdown-type', function(){
         var _this=this,
             $this=$(_this),
@@ -101,6 +96,10 @@ $(document).ready(function(){
             type:'PUT',
             url:'/admin/pictures/'+id,
             data:{type_id:typeId},
+            success:function(){
+                // Update table content
+                $this.parents('table').data('dataTable').draw(false);
+            },
             error:function(){
                 $this.val(_this.previousValue); // Go back to the previous state
             }

@@ -42,7 +42,7 @@ table.content td:nth-child(7) img{
     max-height:200px;
 }
 
-.editable-title, .editable-description, .editable-cover{
+tbody .editable-title, tbody .editable-description, tbody .editable-cover{
     cursor:pointer;
 }
 
