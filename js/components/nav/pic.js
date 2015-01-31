@@ -179,14 +179,14 @@ var PicNavElement=function($object){
      *
      * @type {number}
      */
-    var MIN_CLIP_DURATION=200;
+    var MIN_CLIP_DURATION=1200;
 
     /**
      * Element clip animation duration max border
      *
      * @type {number}
      */
-    var MAX_CLIP_DURATION=200;
+    var MAX_CLIP_DURATION=1700;
 
     /**
      * Hidden element width in pixels
@@ -406,6 +406,9 @@ PicNavElement.clipToString=function(y1, x1, y2, x2){
 PicNavElement.animate=function(element, duration, y1, x1, y2, x2){
     $(element).animate(
         {clip:PicNavElement.clipToString(y1, x1, y2, x2)},
-        {duration:duration}
+        {
+            duration:duration,
+            easing:'linear'
+        }
     );
 };
