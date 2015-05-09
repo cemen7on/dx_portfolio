@@ -1,6 +1,6 @@
 <?php
 return array(
-	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
+	'basePath'=>__DIR__.DS.'..',
 	'name'=>'DiMaX Portfolio',
 
 	// autoloading model and component classes
@@ -42,10 +42,10 @@ return array(
             'loginUrl'=>array('/admin/auth'),
         ),
 		'db'=>array(
-			'connectionString'=>'mysql:host=localhost;dbname=dx_portfolio',
+			'connectionString'=>'mysql:host=localhost;dbname=DxPortfolio',
 			'emulatePrepare'=>true,
 			'username'=>'root',
-			'password'=>'',
+			'password'=>'123',
 			'charset'=>'utf8',
 		),
 		'errorHandler'=>array(
