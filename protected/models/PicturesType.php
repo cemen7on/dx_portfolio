@@ -1,4 +1,6 @@
 <?php
+namespace models;
+
 class PicturesType extends ActiveRecord{
     /**
      * Id of "2d Picture" type
@@ -14,7 +16,7 @@ class PicturesType extends ActiveRecord{
      * Returns model's instance
      *
      * @param string $className
-     * @return PicturesType|CActiveRecord
+     * @return PicturesType|\CActiveRecord
      */
     public static function model($className=__CLASS__){
         return parent::model($className);
@@ -26,7 +28,7 @@ class PicturesType extends ActiveRecord{
      * @return string
      */
     public function tableName(){
-        return 'pictures_type';
+        return 'PicturesType';
     }
 
     /**

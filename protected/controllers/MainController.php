@@ -1,23 +1,25 @@
 <?php
-class MainController extends CController{
-    /**
-     * Page's title
-     *
-     * @var string
-     */
-    public $pageTitle='DiMaX Portfolio';
+namespace controllers;
 
-	/**
-	 * Action for /main/index request. Default page.
+use models\Facade;
+
+class MainController extends BaseController{
+    /**
+	 * Start page
 	 */
 	public function actionIndex(){
-		$this->render('index');
-	}
+        $this->sendData(Facade::retrieve());
+    }
 
 	/**
 	 * Action is triggered when error occurred.
 	 */
 	public function actionError(){
+        $error=\Yii::app()->errorHandler->error;
+
+        echo '<pre>';
+        print_r($error);
+        /*
         $error=array();
         if(!empty(Yii::app()->errorHandler->error)){
             $error=Yii::app()->errorHandler->error;
@@ -32,5 +34,6 @@ class MainController extends CController{
         else{
             echo 'Oooops, Error :(. '.$message.'. That\'s all we know';
         }
+        */
 	}
 }

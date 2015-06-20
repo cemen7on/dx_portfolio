@@ -6,10 +6,6 @@ body{
     height:100%;
 
 	margin:0;
-
-	background:#3b3b3b;
-	font-family:Kalinga;
-    text-align:center;
 }
 
 #substrate{
@@ -28,8 +24,11 @@ body{
 	z-index:0;
 }
 
-#content{
+#body{
 	position:relative;
     height:100%;
 	z-index:1;
+
+    font-family:Kalinga;
+    text-align:center;
 }

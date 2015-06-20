@@ -1,5 +1,7 @@
 <?php
-class ActiveRecord extends CActiveRecord{
+namespace models;
+
+abstract class ActiveRecord extends \CActiveRecord{
 	/**
 	 * Returns attributes array for specific array of objects
 	 *

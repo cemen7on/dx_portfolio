@@ -1,0 +1,1 @@
+use('Models').Picture2d=Core.Model.extend();

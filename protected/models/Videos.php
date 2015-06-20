@@ -1,4 +1,6 @@
 <?php
+namespace models;
+
 class Videos extends ActiveRecord{
     /**
      * YouTube video link
@@ -102,7 +104,7 @@ class Videos extends ActiveRecord{
      * @return string
      */
     public function tableName(){
-		return 'videos';
+		return 'Videos';
 	}
 
     /**
@@ -113,7 +115,7 @@ class Videos extends ActiveRecord{
     public function rules(){
         return array(
             array('link', 'required', 'on'=>'input'),
-            array('youtube_id, title, creation_date', 'required', 'on'=>'create'),
+            array('ytId, title, created', 'required', 'on'=>'create'),
             array('description', 'safe', 'on'=>'create'),
             array('cover', 'file', 'allowEmpty'=>true, 'types'=>'jpg, jpeg, gif, png', 'maxSize'=>1024*1024*100),
             array('cover', 'safe')
@@ -127,24 +129,24 @@ class Videos extends ActiveRecord{
      */
     public function relations(){
         return array(
-            'thumbSmall'=>array(self::BELONGS_TO, 'Images', array('thumb_small'=>'id')),
-            'thumbBig'=>array(self::BELONGS_TO, 'Images', array('thumb_big'=>'id')),
-            'imageCover'=>array(self::BELONGS_TO, 'Images', array('cover'=>'id'))
+            'smallThumb'=>array(self::BELONGS_TO, 'models\Images', array('smallThumbId'=>'id')),
+            'bigThumb'=>array(self::BELONGS_TO, 'models\Images', array('bigThumbId'=>'id')),
+            'cover'=>array(self::BELONGS_TO, 'models\Images', array('coverId'=>'id'))
         );
     }
 
 	/**
 	 * Returns records
 	 *
-	 * @param null|CDbCriteria $criteria. Query criteria
+	 * @param null|\CDbCriteria $criteria. Query criteria
 	 * @return Videos[]
 	 */
-	public function findRecords(CDbCriteria $criteria=null){
+	public function findRecords(\CDbCriteria $criteria=null){
 		if(is_null($criteria)){
-            $criteria=new CDbCriteria();
+            $criteria=new \CDbCriteria();
         }
 
-        $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
+        $criteria->with=array('smallThumb', 'bigThumb', 'cover');
 
 		return $this->findAll($criteria);
 	}
@@ -169,18 +171,18 @@ class Videos extends ActiveRecord{
     /**
      * Creates video record
      *
-     * @param string $videoId. YouTube video id
+     * @param string $ytId. YouTube video id
      * @param string $title. YouTube video title
      * @param string|null $description. YouTube video description
      * @return bool
-     * @throws Exception
+     * @throws \CException
      */
-    public function create($videoId, $title, $description){
+    public function create($ytId, $title, $description){
         $this->setAttributes(array(
-            'youtube_id'=>$videoId,
+            'youtube_id'=>$ytId,
             'title'=>$title,
             'description'=>$description,
-            'creation_date'=>new CDbExpression('NOW()')
+            'created'=>new \CDbExpression('NOW()')
         ));
 
         return $this->save();

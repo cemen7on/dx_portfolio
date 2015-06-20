@@ -13,7 +13,7 @@ class SPictures{
             $with=array($with);
         }
 
-        $pModel=new Pictures();
+        $pModel=new models\Pictures();
         $record=$pModel->with($with)->findByPk($id);
 
         if(empty($record)){
@@ -31,15 +31,15 @@ class SPictures{
      */
     protected function format($model){
         if(isset($model->imageSrc->name)){
-            $model->src=CPictures::createSrcUrl($model->imageSrc->name);
+            $model->src=components\CPictures::createSrcUrl($model->imageSrc->name);
         }
 
         if(isset($model->thumbSmall->name)){
-            $model->thumb_small=CPictures::createSmallThumbUrl($model->thumbSmall->name);
+            $model->thumb_small=components\CPictures::createSmallThumbUrl($model->thumbSmall->name);
         }
 
         if(isset($model->thumbBig->name)){
-            $model->thumb_big=CPictures::createBigThumbUrl($model->thumbBig->name);
+            $model->thumb_big=components\CPictures::createBigThumbUrl($model->thumbBig->name);
         }
 
         return $model;
@@ -56,7 +56,7 @@ class SPictures{
             throw new Exception('Invalid $_POST request. $_POST[\'Pictures\'] is missing');
         }
 
-        $pModel=new Pictures('input');
+        $pModel=new models\Pictures('input');
         $pModel->attributes=$_POST['Pictures'];
 
         if(!$pModel->validate()){
@@ -67,25 +67,25 @@ class SPictures{
         $extension=$upload->getExtensionName();
 
         // Save src image
-        $image=Images::blank();
-        $src=CPictures::createSrcPath($image->getFileName($extension));
+        $image=models\Images::blank();
+        $src=components\CPictures::createSrcPath($image->getFileName($extension));
         $upload->saveAs($src);
         $pModel->src=$image->saveSrc($src);
 
         // Save small thumb image from src image
-        $image=Images::blank();
-        $pModel->thumb_small=$image->saveSmallThumb($src, CPictures::createSmallThumbPath($image->getFileName($extension)));
+        $image=models\Images::blank();
+        $pModel->thumb_small=$image->saveSmallThumb($src, components\CPictures::createSmallThumbPath($image->getFileName($extension)));
 
         // Save big thumb image from src image
-        $image=Images::blank();
-        $pModel->thumb_big=$image->saveBigThumb($src, CPictures::createBigThumbPath($image->getFileName($extension)));
+        $image=models\Images::blank();
+        $pModel->thumb_big=$image->saveBigThumb($src, components\CPictures::createBigThumbPath($image->getFileName($extension)));
 
         $pModel->setScenario('create');
         if(!$pModel->create()){
             throw new Exception('Failed to update record with images');
         }
 
-        $dataTable=new DataTables(Pictures::DT_COLUMNS());
+        $dataTable=new DataTables(models\Pictures::DT_COLUMNS());
         $pModel->with(array('imageSrc', 'thumbSmall', 'thumbBig', 'imageCover'))->refresh();
 
         return array(
@@ -106,16 +106,16 @@ class SPictures{
         $picture=$this->findRecordById($pictureId, array('thumbBig', 'imageCover'));
 
         if($picture->imageCover){
-            $picture->imageCover->remove(CPictures::createCoverPath($picture->imageCover->name));
+            $picture->imageCover->remove(components\CPictures::createCoverPath($picture->imageCover->name));
         }
 
-        $source=CPictures::createBigThumbPath($picture->thumbBig->name);
+        $source=components\CPictures::createBigThumbPath($picture->thumbBig->name);
         $extension=pathinfo($source, PATHINFO_EXTENSION);
 
-        $image=Images::blank();
+        $image=models\Images::blank();
         $picture->cover=$image->cropCover(
             $source,
-            CPictures::createCoverPath($image->getFileName($extension)),
+            components\CPictures::createCoverPath($image->getFileName($extension)),
             $left
         );
 
@@ -123,7 +123,7 @@ class SPictures{
             throw new Exception('Failed to update record with cover image');
         }
 
-        return array('html'=>Html::cover(CPictures::createCoverUrl($image->name)));
+        return array('html'=>Html::cover(components\CPictures::createCoverUrl($image->name)));
     }
 
     /**
@@ -135,7 +135,7 @@ class SPictures{
         $criteria=new CDbCriteria();
         $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
 
-        $dataTable=new DataTables(Pictures::DT_COLUMNS(), new Pictures(), $criteria);
+        $dataTable=new DataTables(models\Pictures::DT_COLUMNS(), new models\Pictures(), $criteria);
 
         return $dataTable->request()->format();
     }
@@ -150,7 +150,7 @@ class SPictures{
      * @throws Exception
      */
     public function update($pictureId, $attributes, $force=true){
-        $pModel=new Pictures();
+        $pModel=new models\Pictures();
 
         $result=$pModel->updateByPk($pictureId, $attributes);
         if($force && !$result){
@@ -184,20 +184,20 @@ class SPictures{
         $pModel=$this->findRecordById($pictureId, 'imageCover');
 
         if($pModel->imageCover){
-            $pModel->imageCover->remove(CPictures::createCoverPath($pModel->imageCover->name));
+            $pModel->imageCover->remove(components\CPictures::createCoverPath($pModel->imageCover->name));
         }
 
-        $image=Images::blank();
+        $image=models\Images::blank();
         $upload=CUploadedFile::getInstance($pModel, 'cover');
         $extension=$upload->getExtensionName();
 
-        $pModel->cover=$image->cropCover($upload->getTempName(), CPictures::createCoverPath($image->getFileName($extension)));
+        $pModel->cover=$image->cropCover($upload->getTempName(), components\CPictures::createCoverPath($image->getFileName($extension)));
 
         if(!$pModel->save(false)){
             throw new Exception('Failed to update record cover');
         }
 
-        return array('html'=>Html::cover(CPictures::createCoverUrl($image->name)));
+        return array('html'=>Html::cover(components\CPictures::createCoverUrl($image->name)));
     }
 
     /**
@@ -220,7 +220,7 @@ class SPictures{
 
         if(!empty($coverOrder)){
             // Reset old cover's order value
-            $pModel=new Pictures();
+            $pModel=new models\Pictures();
             $pModel->updateAll(
                 array('cover_order'=>new CDbExpression('NULL')),
                 'cover_order=:cover_order AND type_id=:type_id',
@@ -241,12 +241,12 @@ class SPictures{
     public function delete($pictureId){
         $picture=$this->findRecordById($pictureId, array('imageSrc', 'thumbSmall', 'thumbBig', 'imageCover'));
 
-        $picture->imageSrc->remove(CPictures::createSrcPath($picture->imageSrc->name));
-        $picture->thumbSmall->remove(CPictures::createSmallThumbPath($picture->thumbSmall->name));
-        $picture->thumbBig->remove(CPictures::createBigThumbPath($picture->thumbBig->name));
+        $picture->imageSrc->remove(components\CPictures::createSrcPath($picture->imageSrc->name));
+        $picture->thumbSmall->remove(components\CPictures::createSmallThumbPath($picture->thumbSmall->name));
+        $picture->thumbBig->remove(components\CPictures::createBigThumbPath($picture->thumbBig->name));
 
         isset($picture->imageCover)
-            ? $picture->imageCover->remove(CPictures::createCoverPath($picture->imageCover->name)):null;
+            ? $picture->imageCover->remove(components\CPictures::createCoverPath($picture->imageCover->name)):null;
 
         if(!$picture->delete()){
             throw new Exception('Failed to remove record');
@@ -266,7 +266,7 @@ class SPictures{
         $picture=$this->findRecordById($pictureId, 'imageCover');
         $picture->cover=new CDbExpression('NULL');
 
-        $picture->imageCover->remove(CPictures::createCoverPath($picture->imageCover->name));
+        $picture->imageCover->remove(components\CPictures::createCoverPath($picture->imageCover->name));
 
         if(!$picture->save(false)){
             throw new Exception('Failed to remove cover');

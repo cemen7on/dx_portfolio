@@ -1,4 +1,8 @@
 <?php
+namespace models;
+
+use components;
+
 class Pictures extends ActiveRecord{
     /**
      * Columns description. Is used for building dataTables requests
@@ -18,7 +22,7 @@ class Pictures extends ActiveRecord{
                 array('index'=>0, 'name'=>'id', 'alias'=>'t.id', 'caption'=>'Id'),
                 array(
                     'index'=>1,
-                    'name'=>'creation_date',
+                    'name'=>'created',
                     'caption'=>'Created',
                     'formatter'=>function($date){
                         return date('d F Y H:i', strtotime($date));
@@ -26,23 +30,23 @@ class Pictures extends ActiveRecord{
                 ),
                 array(
                     'index'=>2,
-                    'name'=>'type_id',
+                    'name'=>'typeId',
                     'caption'=>'Type',
                     'formatter'=>function($typeId){
-                        return CHtml::dropDownList('type_id', $typeId, PicturesType::model()->findAllIndexByPk(), array('class'=>'dropdown-type'));
+                        return \CHtml::dropDownList('typeId', $typeId, PicturesType::model()->findAllIndexByPk(), array('class'=>'dropdown-type'));
                     }
                 ),
                 array('index'=>3, 'name'=>'title', 'caption'=>'Title'),
                 array('index'=>4, 'name'=>'description', 'caption'=>'Description'),
                 array(
                     'index'=>5,
-                    'name'=>'thumb_small',
+                    'name'=>'smallThumb',
                     'caption'=>'Preview',
                     'formatter'=>function($thumbIndex, $data){
-                            $smallThumb=isset($data->thumbSmall->name)?$data->thumbSmall->name:'';
-                            $bigThumb=isset($data->thumbBig->name)?$data->thumbBig->name:'';
+                        $smallThumb=isset($data->smallThumb->name)?$data->smallThumb->name:'';
+                        $bigThumb=isset($data->bigThumb->name)?$data->bigThumb->name:'';
 
-                        return CHtml::image(CPictures::createSmallThumbUrl($smallThumb), '', array('data-big-thumb'=>$bigThumb));
+                        return \CHtml::image(components\CPictures::createSmallThumbUrl($smallThumb), '', array('data-big-thumb'=>$bigThumb));
                     }
                 ),
                 array(
@@ -51,8 +55,8 @@ class Pictures extends ActiveRecord{
                     'caption'=>'Cover',
                     'formatter'=>function($thumbIndex, $data){
                         $html=null;
-                        if(isset($data->imageCover->name)){
-                            $html=Html::cover(CPictures::createCoverUrl($data->imageCover->name));
+                        if(isset($data->cover->name)){
+                            $html=\Html::cover(components\CPictures::createCoverUrl($data->cover->name));
                         }
 
                         return $html;
@@ -63,11 +67,11 @@ class Pictures extends ActiveRecord{
                     'name'=>'cover_order',
                     'caption'=>'Display on start',
                     'formatter'=>function($order, $data){
-                        $key=$data->type_id==PicturesType::PICTURES_2D
+                        $key=$data->typeId==PicturesType::PICTURES_2D
                             ? 'pictures2d'
                             : 'art3d';
 
-                        return Html::coverOrder($order, Yii::app()->params['covers'][$key]['count']);
+                        return \Html::coverOrder($order, \Yii::app()->params['covers'][$key]['count']);
                     }
                 ),
                 array(
@@ -75,7 +79,7 @@ class Pictures extends ActiveRecord{
                     'name'=>'id',
                     'caption'=>'Delete',
                     'formatter'=>function($id){
-                        return CHtml::link('Remove', Yii::app()->createAbsoluteUrl('/admin/pictures/'.$id), array('class'=>'remove-link'));
+                        return \CHtml::link('Remove', \Yii::app()->createAbsoluteUrl('/admin/pictures/'.$id), array('class'=>'remove-link'));
                     }
                 )
             );
@@ -98,7 +102,7 @@ class Pictures extends ActiveRecord{
      * @return string
      */
     public function tableName(){
-		return 'pictures';
+		return 'Pictures';
 	}
 
     /**
@@ -108,10 +112,10 @@ class Pictures extends ActiveRecord{
      */
     public function rules(){
         return array(
-            array('type_id, title', 'required', 'on'=>'input'),
+            array('typeId, title', 'required', 'on'=>'input'),
             array('description', 'safe', 'on'=>'input'),
-            array('creation_date', 'required', 'on'=>'create'),
-            array('description, thumb_big', 'safe', 'on'=>'create'),
+            array('created', 'required', 'on'=>'create'),
+            array('description, bigThumb', 'safe', 'on'=>'create'),
             array('src', 'file', 'types'=>'jpg, jpeg, gif, png', 'maxSize'=>1024*1024*100),
             array('cover', 'file', 'allowEmpty'=>true, 'types'=>'jpg, jpeg, gif, png', 'maxSize'=>1024*1024*100),
             array('cover', 'safe')
@@ -125,10 +129,12 @@ class Pictures extends ActiveRecord{
      */
     public function relations(){
         return array(
-            'imageSrc'=>array(self::BELONGS_TO, 'Images', array('src'=>'id')),
-            'thumbSmall'=>array(self::BELONGS_TO, 'Images', array('thumb_small'=>'id')),
-            'thumbBig'=>array(self::BELONGS_TO, 'Images', array('thumb_big'=>'id')),
-            'imageCover'=>array(self::BELONGS_TO, 'Images', array('cover'=>'id')),
+            'data'=>array(
+                self::BELONGS_TO,
+                'models\Media',
+                array('mediaId'=>'id'),
+                'with'=>array('src', 'smallThumb', 'bigThumb', 'cover')
+            )
         );
     }
 
@@ -139,24 +145,26 @@ class Pictures extends ActiveRecord{
 	 * @return int
 	 */
 	public function countAllByTypeId($typeId){
-		return $this->count('type_id=:type_id', array('type_id'=>$typeId));
+		return $this->count('typeId=:typeId', array('typeId'=>$typeId));
 	}
 
     /**
      * Returns records with specific type_id by specific criteria
      *
      * @param int $typeId. Picture type id
-     * @param CDbCriteria $criteria. Query criteria
+     * @param \CDbCriteria $criteria. Query criteria
      * @return Pictures[]
      */
-    public function findAllByTypeId($typeId, CDbCriteria $criteria=null){
+    public function findAllByTypeId($typeId, \CDbCriteria $criteria=null){
         if(is_null($criteria)){
-            $criteria=new CDbCriteria();
+            $criteria=new \CDbCriteria();
         }
 
-        $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
-        $criteria->condition='type_id=:type_id';
-        $criteria->params=array('type_id'=>$typeId);
+        $relations=array('data');
+
+        $criteria->with=$relations;
+        $criteria->condition='typeId=:typeId';
+        $criteria->params=array('typeId'=>$typeId);
 
         return $this->findAll($criteria);
     }
@@ -167,7 +175,7 @@ class Pictures extends ActiveRecord{
      * @return bool
      */
     public function create(){
-        $this->setAttribute('creation_date', new CDbExpression('NOW()'));
+        $this->setAttribute('created', new \CDbExpression('NOW()'));
 
         return $this->save();
     }

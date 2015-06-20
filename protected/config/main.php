@@ -1,25 +1,61 @@
 <?php
+Yii::setPathOfAlias('components', realpath(__DIR__.'/../components/'));
+Yii::setPathOfAlias('controllers', realpath(__DIR__.'/../controllers/'));
+Yii::setPathOfAlias('models', realpath(__DIR__.'/../models/'));
+
 return array(
-	'basePath'=>__DIR__.DS.'..',
+	'basePath'=>realpath(__DIR__.'/../'),
 	'name'=>'DiMaX Portfolio',
 
-	// autoloading model and component classes
 	'import'=>array(
-        'application.components.*',
-        'application.models.*',
+        'components.*',
+        'models.*',
         'application.helpers.*',
         'application.widgets.*'
 	),
 
 	'defaultController'=>'main',
+    'controllerNamespace'=>'\controllers',
 
     'modules'=>array(
         'admin',
         'oauth'
     ),
 
-	// application components
 	'components'=>array(
+        'db'=>array(
+            'connectionString'=>'mysql:host=localhost;dbname=DxPortfolio',
+            'emulatePrepare'=>true,
+            'username'=>'root',
+            'password'=>'123',
+            'charset'=>'utf8',
+        ),
+
+        'ScriptRegister'=>array(
+            'class'=>'\components\ScriptRegister',
+            'rootPath'=>'webroot.js',
+            'position'=>CClientScript::POS_HEAD
+        ),
+        'CssRegister'=>array(
+            'class'=>'\components\CssRegister',
+            'rootPath'=>'webroot.css'
+        ),
+
+        /*
+        'request'=>array(
+            'class'=>'\components\HttpRequest'
+        ),
+        */
+        /*
+        'rest'=>array(
+            'class'=>'\components\RestRequest'
+        ),
+        */
+
+        'image'=>array(
+            'class'=>'ext.image.CImageComponent',
+            'driver'=>'GD'
+        ),
         'google'=>array(
             'class'=>'ext.google.sdk.Client',
             'clientId'=>'164940990608-oiigtb4idpcvcdaf9q757a76b36c33lh.apps.googleusercontent.com',
@@ -29,10 +65,7 @@ return array(
         'youtube'=>array(
             'class'=>'ext.google.sdk.Youtube'
         ),
-        'image'=>array(
-            'class'=>'ext.image.CImageComponent',
-            'driver'=>'GD'
-        ),
+
 		'user'=>array(
 			'allowAutoLogin'=>true,
             'loginUrl'=>array('/admin/auth')
@@ -41,26 +74,17 @@ return array(
             'class'=>'CWebUser',
             'loginUrl'=>array('/admin/auth'),
         ),
-		'db'=>array(
-			'connectionString'=>'mysql:host=localhost;dbname=DxPortfolio',
-			'emulatePrepare'=>true,
-			'username'=>'root',
-			'password'=>'123',
-			'charset'=>'utf8',
-		),
+
 		'errorHandler'=>array(
 			'errorAction'=>'main/error',
 		),
-        'request'=>array(
-            'class'=>'HttpRequest'
-        ),
-        'rest'=>array(
-            'class'=>'RestRequest'
-        ),
+
 		'urlManager'=>array(
 			'urlFormat'=>'path',
             'showScriptName'=>false,
 			'rules'=>array(
+                'media/<mediaId:\d+>/<action:\w+>'=>'media/<action>',
+
                 array(
                     'admin/<controller>/delete',
                     'pattern'=>'admin/<controller:(pictures|videos)>/<id:\d+>',

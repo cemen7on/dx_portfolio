@@ -1,4 +1,6 @@
 <?php
+namespace models;
+
 class Images extends ActiveRecord{
     /**
      * Small thumb's width
@@ -29,7 +31,7 @@ class Images extends ActiveRecord{
      * Returns model's instance
      *
      * @param string $className. Model's class name
-     * @return Images|CActiveRecord
+     * @return Images|\CActiveRecord
      */
     public static function model($className=__CLASS__){
         return parent::model($className);
@@ -41,7 +43,7 @@ class Images extends ActiveRecord{
      * @return string
      */
     public function tableName(){
-        return 'images';
+        return 'Images';
     }
 
     /**
@@ -59,15 +61,15 @@ class Images extends ActiveRecord{
     /**
      * Creates blank instance
      *
-     * @return CActiveRecord|Images
-     * @throws Exception
+     * @return \CActiveRecord|Images
+     * @throws \CException
      */
     public static function blank(){
         $instance=new self('blank');
         // $instance->setAttribute('id', null);
 
         if(!$instance->save()){
-            throw new Exception('Failed to create blank record');
+            throw new \CException('Failed to create blank record');
         }
 
         return $instance;
@@ -88,12 +90,12 @@ class Images extends ActiveRecord{
      *
      * @param string $destination. Picture destination path
      * @return int
-     * @throws Exception
+     * @throws \CException
      */
     public function saveSrc($destination){
         $fileName=basename($destination);
         if(empty($fileName)){
-            throw new Exception('Failed to fetch file name from destination path');
+            throw new \CException('Failed to fetch file name from destination path');
         }
 
         $size=getimagesize($destination);
@@ -106,7 +108,7 @@ class Images extends ActiveRecord{
      * @param string $source. Picture source path
      * @param string $destination. Picture destination path
      * @return mixed
-     * @throws Exception
+     * @throws \CException
      */
     public function saveSmallThumb($source, $destination){
         $size=getimagesize($source);
@@ -124,7 +126,7 @@ class Images extends ActiveRecord{
             $height=self::SMALL_THUMB_HEIGHT;
         }
 
-        $image=Yii::app()->image->load($source);
+        $image=\Yii::app()->image->load($source);
 
         if($width!=$size[0] || $height!=$size[1]){
             $image->resize($width, $height);
@@ -135,7 +137,7 @@ class Images extends ActiveRecord{
 
         $fileName=basename($destination);
         if(empty($fileName)){
-            throw new Exception('Failed to fetch file name from destination path');
+            throw new \CException('Failed to fetch file name from destination path');
         }
 
         return $this->create($fileName, self::SMALL_THUMB_WIDTH, self::SMALL_THUMB_HEIGHT);
@@ -147,7 +149,7 @@ class Images extends ActiveRecord{
      * @param string $source. Picture source path
      * @param string $destination. Picture destination path
      * @return mixed
-     * @throws Exception
+     * @throws \CException
      */
     public function saveBigThumb($source, $destination){
         $size=getimagesize($source);
@@ -166,7 +168,7 @@ class Images extends ActiveRecord{
             $height=$height*$ratio;
         }
 
-        $image=Yii::app()->image->load($source);
+        $image=\Yii::app()->image->load($source);
 
         if($width!=$size[0] || $height!=$size[1]){
             $image->resize($width, $height);
@@ -174,7 +176,7 @@ class Images extends ActiveRecord{
 
         $fileName=basename($destination);
         if(empty($fileName)){
-            throw new Exception('Failed to fetch file name from destination path');
+            throw new \CException('Failed to fetch file name from destination path');
         }
 
         $image->save($destination);
@@ -189,7 +191,7 @@ class Images extends ActiveRecord{
      * @param string $destination. Picture destination path
      * @param int|string $left. Left start crop coordinate in px
      * @return mixed
-     * @throws Exception
+     * @throws \CException
      */
     public function cropCover($source, $destination, $left='center'){
         $size=getimagesize($source);
@@ -199,12 +201,12 @@ class Images extends ActiveRecord{
             $left=floor($left);
         }
 
-        $image=Yii::app()->image->load($source);
+        $image=\Yii::app()->image->load($source);
         $image->crop(self::COVER_WIDTH, $height, 0, $left);
 
         $fileName=basename($destination);
         if(empty($fileName)){
-            throw new Exception('Failed to fetch file name from destination path');
+            throw new \CException('Failed to fetch file name from destination path');
         }
 
         $image->save($destination);
@@ -219,7 +221,7 @@ class Images extends ActiveRecord{
      * @param int $width. Image's width
      * @param int $height. Image's height
      * @return mixed
-     * @throws Exception
+     * @throws \CException
      */
     public function create($name, $width, $height){
         $this->setScenario('create');
@@ -232,7 +234,7 @@ class Images extends ActiveRecord{
 
 
         if(!$this->save()){
-            throw new Exception('Failed to create record');
+            throw new \CException('Failed to create record');
         }
 
         return $this->id;
@@ -244,7 +246,7 @@ class Images extends ActiveRecord{
      *
      * @param string $imagePath. Image path
      * @return bool
-     * @throws Exception
+     * @throws \CException
      */
     public function remove($imagePath){
         $this->delete();

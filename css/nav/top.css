@@ -17,7 +17,7 @@
 
     width:170px;
 }
-#topNavMenu li a{
+#topNavMenu li .caption{
     margin:10px 0;
     text-decoration:none;
     padding:12px 42px;
@@ -27,15 +27,15 @@
     color:white;
     display:block;
 }
-#topNavMenu li:not(:last-child) a{
+#topNavMenu li:not(:last-child) .caption{
     border-right:1px solid white;
 }
 
-#topNavMenu a:hover, #topNavMenu a.smooth{
+#topNavMenu .caption:hover, #topNavMenu .caption.smooth{
     transition:all 0.3s ease 0s;
     -webkit-transition:all 0.3s ease 0s; /* Chrome, Safari, Opera */
 }
 
-#topNavMenu a:hover, #topNavMenu a.active{
+#topNavMenu .caption:hover, #topNavMenu .caption.active{
     background:rgba(0, 0, 0, 0.5);
 }

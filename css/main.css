@@ -79,3 +79,11 @@
 .align-right{
     text-align:right;
 }
+
+.clearfix::after{
+    content:".";
+    clear:both;
+    display:block;
+    height:0;
+    visibility:hidden;
+}

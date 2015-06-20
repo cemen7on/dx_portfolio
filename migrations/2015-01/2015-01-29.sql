@@ -1,5 +1,0 @@
-ALTER TABLE Pictures ADD coverOrder SMALLINT(2) UNSIGNED NULL DEFAULT NULL;
-ALTER TABLE Videos ADD coverOrder SMALLINT(2) UNSIGNED NULL DEFAULT NULL;
-
-ALTER TABLE Pictures ADD INDEX ixPicturesCoverOrder(coverOrder);
-ALTER TABLE Videos ADD INDEX ixPicturesCoverOrder(coverOrder);

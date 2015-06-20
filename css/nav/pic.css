@@ -1,5 +1,7 @@
 .nav-menu-item-pic-container {
     position:relative;
+
+    display:block;
 }
 
 .nav-menu-item-pic {

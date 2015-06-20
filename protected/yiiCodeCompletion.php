@@ -18,6 +18,8 @@
  * Add below the properties extensions for automatic code completion in the IDE
  *
  * @property CImageComponent $image
+ * @property \components\ScriptRegister $ScriptRegister
+ * @property \components\CssRegister $CssRegister
  */
 class CApplication
 {

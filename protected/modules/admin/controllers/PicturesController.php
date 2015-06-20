@@ -24,7 +24,7 @@ class PicturesController extends UploadController{
      * @throws Exception
      */
     public function actionIndex(){
-        $this->render('index', array('model'=>new Pictures()));
+        $this->render('index', array('model'=>new models\Pictures()));
     }
 
     /**
@@ -32,7 +32,7 @@ class PicturesController extends UploadController{
      * Uploads picture
      */
     public function actionUpload(){
-        REST::execute($this->api, 'upload');
+        components\REST::execute($this->api, 'upload');
     }
 
     /**
@@ -40,7 +40,7 @@ class PicturesController extends UploadController{
      * Crops big thumb for front preview
      */
     public function actionCrop(){
-        REST::execute($this->api, 'crop', array(
+        components\REST::execute($this->api, 'crop', array(
             Yii::app()->rest->requireQuery('id'),
             Yii::app()->rest->requirePost('left')
         ));
@@ -51,7 +51,7 @@ class PicturesController extends UploadController{
      * Returns json encoded content for pictures table
      */
     public function actionContent(){
-        REST::execute($this->api, 'content');
+        components\REST::execute($this->api, 'content');
     }
 
     /**
@@ -67,12 +67,12 @@ class PicturesController extends UploadController{
 
         $coverOrder=Yii::app()->rest->getPut('cover_order');
         if(isset($coverOrder)){
-            REST::execute($this->api, 'updateCoverOrder', array($pictureId, $coverOrder));
+            components\REST::execute($this->api, 'updateCoverOrder', array($pictureId, $coverOrder));
         }
 
         $typeId=Yii::app()->rest->getPut('type_id');
         if(isset($typeId)){
-            REST::execute($this->api, 'updateType', array($pictureId, $typeId));
+            components\REST::execute($this->api, 'updateType', array($pictureId, $typeId));
         }
 
         $attributes=array();
@@ -91,7 +91,7 @@ class PicturesController extends UploadController{
             $attributes['description']=$description;
         }
 
-        REST::execute($this->api, 'update', array($pictureId, $attributes));
+        components\REST::execute($this->api, 'update', array($pictureId, $attributes));
     }
 
     /**
@@ -101,7 +101,7 @@ class PicturesController extends UploadController{
      * @files cover. Uploaded cover
      */
     public function actionCover(){
-        REST::execute($this->api, 'updateCover', array(
+        components\REST::execute($this->api, 'updateCover', array(
             Yii::app()->rest->requireQuery('id')
         ));
     }
@@ -112,7 +112,7 @@ class PicturesController extends UploadController{
      * @get int id. Picture id
      */
     public function actionDelete(){
-        REST::execute($this->api, 'delete', array(
+        components\REST::execute($this->api, 'delete', array(
             Yii::app()->rest->requireQuery('id'))
         );
     }
@@ -123,7 +123,7 @@ class PicturesController extends UploadController{
      * @get int id. Picture id
      */
     public function actionDeleteCover(){
-        REST::execute($this->api, 'deleteCover', array(
+        components\REST::execute($this->api, 'deleteCover', array(
             Yii::app()->rest->requireQuery('id')
         ));
     }
