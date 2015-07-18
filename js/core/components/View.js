@@ -111,30 +111,7 @@ Core.ViewCollection=Core.View.extend(function(){
  *
  * @type {constructor}
  */
-Core.ViewLayout=Backbone.View.extend(function(){
-    /**
-     * Layout rendered property. Shows whether layout has been rendered
-     *
-     * @type {boolean}
-     */
-    Object.defineProperty(this, 'rendered', {
-        configurable:true,
-        get:function(){ return false; },
-        set:function(value){
-            if(value!==true){
-                throw new Error('Invalid argument type: value must be a boolean true value');
-            }
-
-            // After property value has been set up - close writable
-            Object.defineProperty(this, 'rendered', {
-                writable:false,
-                value:true
-            });
-        }
-    });
-});
-
-// console.log();
+Core.ViewLayout=Backbone.View.extend();
 
 /**
  * Extends passed object from basic layout

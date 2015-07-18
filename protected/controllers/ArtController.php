@@ -7,7 +7,7 @@ class ArtController extends BaseController{
     /**
      * Records per page limit
      */
-    const RECORDS_LIMIT=9;
+    const RECORDS_LIMIT=1;
 
     /**
      * Returns records for pictures section specified by type id.
@@ -15,28 +15,30 @@ class ArtController extends BaseController{
      * @param {int} $typeId. Pictures type id
      */
     protected function fetchPictures($typeId){
+        $page=\Yii::app()->request->getQuery('id', 1);
+
         $picturesModel=new models\Pictures();
         $criteria=new \CDbCriteria();
-
-        // TODO: pagination
-        /*
-        $this->pages=new CPagination($pModel->countAllByTypeId(PicturesType::PICTURES_2D));
-        $this->pages->pageSize=self::RECORDS_LIMIT;
-        $this->pages->applyLimit($criteria);
-        */
-
+        $criteria->offset=($page-1)*self::RECORDS_LIMIT;
         $criteria->limit=self::RECORDS_LIMIT;
         $criteria->order='mediaId DESC';
 
-        $records=$picturesModel->findAllByTypeId($typeId, $criteria);
+        $totalRecordsNumber=$picturesModel->countAllByTypeId($typeId);
+        $recordsObject=$picturesModel->findAllByTypeId($typeId, $criteria);
+        $recordsArray=models\ActiveRecord::toArrayAll($recordsObject);
 
-        $this->sendData(models\ActiveRecord::toArrayAll($records));
+        $response=array(
+            'data'=>models\Pictures::format($recordsArray),
+            'total'=>$totalRecordsNumber
+        );
+
+        $this->sendData($response);
     }
 
     /**
      * Returns records for Pictures 2d section.
      *
-     * @get int offset. DB request offset
+     * @get int page. Page number to show
      */
     public function action2d(){
         $this->fetchPictures(models\PicturesType::PICTURES_2D);

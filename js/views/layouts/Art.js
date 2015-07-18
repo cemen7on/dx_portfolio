@@ -15,10 +15,10 @@ use('Views.Layouts').Art=Core.ViewLayout.extend(function(){
      */
     var _createThumbsStructure=function(){
         var previewEl=document.createElement('div');
-        previewEl.className='art-medium-preview';
+        previewEl.className='art-medium-preview clearfix';
 
         var mediumEl=document.createElement('div');
-        mediumEl.className='art-medium clearfix';
+        mediumEl.className='art-medium';
         mediumEl.appendChild(previewEl);
 
         var inlineEl=document.createElement('div');
@@ -37,6 +37,7 @@ use('Views.Layouts').Art=Core.ViewLayout.extend(function(){
 
         return {
             structureEl:structureEl,
+            mediumEl:mediumEl,
             previewEl:previewEl
         };
     };
@@ -71,6 +72,19 @@ use('Views.Layouts').Art=Core.ViewLayout.extend(function(){
         };
     };
 
+    /**
+     * Creates pagination element
+     *
+     * @returns {HTMLElement}
+     * @private
+     */
+    var _createPaginationEl=function(){
+        var el=document.createElement('div');
+        el.className='pagination';
+
+        return el;
+    };
+
     this.render=function(){
         if(this.rendered){
             return this;
@@ -83,9 +97,13 @@ use('Views.Layouts').Art=Core.ViewLayout.extend(function(){
         Views.Layouts.Main.el.appendChild(asideStructure.structureEl);
         _asideCaptionEl=asideStructure.captionEl;
 
+        var paginationEl=_createPaginationEl();
+        thumbsStructureEl.mediumEl.appendChild(paginationEl);
+
         // Create regions
         this.ThumbsRegion=new Core.Region(thumbsStructureEl.previewEl);
         this.AsideRegion=new Core.Region(asideStructure.listEl);
+        this.PaginationRegion=new Core.Region(paginationEl);
 
         this.rendered=true;
 

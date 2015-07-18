@@ -15,6 +15,10 @@
     margin-right:8px;
 }
 
+.pagination .loader.hidden{
+    display:none;
+}
+
 .pagination ul{
     list-style:none;
 
@@ -30,16 +34,12 @@
     display:none;
 }
 
-.pagination ul li{
+.pagination ul li > a{
     border-right:1px solid white;
 }
 
-.pagination ul li:nth-last-child(3){
+.pagination ul li:last-child > a{
     border-right:none;
-}
-
-.pagination ul li{
-    border-right:1px solid white;
 }
 
 .pagination ul li a{
@@ -48,7 +48,7 @@
     font-size:12px;
     font-weight:bold;
 
-    padding:5px 10px;
+    padding:5px 10px 3px;
 
     text-decoration:none;
 }

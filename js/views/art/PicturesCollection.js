@@ -41,16 +41,12 @@ use('Views.Art').PicturesCollection=Core.ViewCollection.extend(function(){
 
             region.append(view);
 
-            /*
             if(_rollDown){
                 view.rollDown();
             }
             else{
                 view.show();
             }
-            */
-
-            view.rollDown();
         }
 
         return this;

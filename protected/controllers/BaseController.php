@@ -23,12 +23,18 @@ class BaseController extends \CController{
             'Core.js'
         ),
         'extensions',
+        'components/Container.js',
         'components/Modal.js',
+        'components/Gallery.js',
         'models',
-        'collections',
+        'collections'=>array(
+            'ArtCollection.js'
+        ),
         'controllers',
         'views',
         'index.js'
+        // 'test.js'
+
     );
 
     /**
@@ -39,6 +45,7 @@ class BaseController extends \CController{
     protected $cssMap=array(
         'nav',
         'modal',
+        'pagination',
         'common.css',
         'main.css',
         'art.css'

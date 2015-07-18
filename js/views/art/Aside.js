@@ -22,6 +22,10 @@ use('Views.Art').Aside=Core.View.extend(function(){
         var linkEl=document.createElement('a'),
             data=this.model.get('data');
 
+        if(!data || (Array.isArray(data) && !data.length)){
+            return this;
+        }
+
         linkEl.href='javascript:void(0)';
         linkEl.title=data.title;
         linkEl.textContent=data.title;

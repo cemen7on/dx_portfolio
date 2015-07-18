@@ -107,14 +107,24 @@ var App=new function(){
                     }
 
                     (function(){
-                        var environment=_retrieveHandlerExecutionEnvironment(routes[path]);
+                        var environment=_retrieveHandlerExecutionEnvironment(routes[path]),
+                            beforeMethodName='beforeAction',
+                            afterMethodName='afterAction';
 
                         this.route(path, function(){
                             if(data){
                                 Array.prototype.push.call(arguments, data);
                             }
 
+                            if(environment.behalf[beforeMethodName]){
+                                environment.behalf[beforeMethodName]();
+                            }
+
                             environment.method.apply(environment.behalf, arguments);
+
+                            if(environment.behalf[afterMethodName]){
+                                environment.behalf[afterMethodName]();
+                            }
 
                             data=null;
                         });

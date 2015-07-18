@@ -17,8 +17,8 @@ $(document).ready(function main(){
     var routes={
         ''              :'Controllers.Main.index',
         'art/animations':'Controllers.Art.animations',
-        'art/2d'        :'Controllers.Art.pictures2d',
-        'art/3d'        :'Controllers.Art.art3d'
+        'art/2d(/:page)':'Controllers.Art.pictures2d',
+        'art/3d(/:page)':'Controllers.Art.art3d'
     };
 
     App.run(routes, dataJson);

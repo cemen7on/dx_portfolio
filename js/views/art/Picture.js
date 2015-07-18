@@ -98,7 +98,12 @@ use('Views.Art').Picture=Core.View.extend(function(){
             return this;
         }
 
-        var mediaId=this.model.get('mediaId');
+        var mediaId=this.model.get('mediaId'),
+            data=this.model.get('data');
+
+        if(!mediaId || !data || (Array.isArray(data) && !data.length)){
+            return this;
+        }
 
         this.el.id='art'+mediaId;
         this.adjustSize();
@@ -107,7 +112,7 @@ use('Views.Art').Picture=Core.View.extend(function(){
         this.imageEl=document.createElement('div');
         this.imageEl.classList.add('image');
         // this.imageEl.classList.add('animated');
-        this.imageEl.innerHTML='<img src="'+Core.createAbsoluteUrl('/media/'+mediaId+'/picture?type=small')+'" />';
+        this.imageEl.innerHTML='<img src="'+data.smallThumb.url+'" />';
         this.$imageEl=$(this.imageEl);
 
         this.el.appendChild(this.imageEl);
@@ -142,6 +147,10 @@ use('Views.Art').Picture=Core.View.extend(function(){
      * @return {*}
      */
     this.rollDown=function(){
+        if(!this.$imageEl){
+            return this;
+        }
+
         this.$imageEl.animate(
             {height:'100%'},
             {
@@ -161,6 +170,10 @@ use('Views.Art').Picture=Core.View.extend(function(){
      * @returns {*}
      */
     this.show=function(){
+        if(!this.imageEl){
+            return ;
+        }
+
         this.imageEl.classList.add('animated');
 
         return this;

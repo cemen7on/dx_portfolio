@@ -1,4 +1,1 @@
-use('Collections').Animations=Core.Collection.extend({
-    model:Models.Animation,
-    url:Core.createAbsoluteUrl('/art/animations')
-});
+use('Collections').Animations=Collections.ArtCollection.extend();

@@ -36,9 +36,19 @@
     transition:all 0.2s ease 0s;
     -webkit-transition:all 0.2s ease 0s; /* Chrome, Safari, Opera */
 
+    background:transparent;
+    border:none;
+    outline:none;
+
+    cursor:pointer;
+
     opacity:0.15;
 
     z-index:1003;
+}
+
+#modal .window > .controls[disabled]{
+    opacity:0.15 !important;
 }
 
 #modal .window > .controls .fa{

@@ -6,6 +6,22 @@
  */
 use('Core').Promise=function Promise(callback){
     /**
+     * Whether resolve method has been executed already
+     *
+     * @type {boolean}
+     * @private
+     */
+    var _isResolveExecuted=false;
+
+    /**
+     * Whether reject method has been executed already
+     *
+     * @type {boolean}
+     * @private
+     */
+    var _isRejectExecuted=false;
+
+    /**
      * On resolve callbacks list.
      * Defines by user, using "then" method.
      * Are called when resolve function was called.
@@ -19,11 +35,10 @@ use('Core').Promise=function Promise(callback){
      * @type {Function}
      */
     var resolve=function(){
+        _isResolveExecuted=true;
+
         for(var i=0, max=onResolve.length; i<max; i++){
-            try{
-                onResolve[i].apply(null, arguments);
-            }
-            catch(e){}
+            onResolve[i].apply(null, arguments);
         }
     };
 
@@ -41,11 +56,10 @@ use('Core').Promise=function Promise(callback){
      * @type {Function}
      */
     var reject=function(){
+        _isRejectExecuted=true;
+
         for(var i=0, max=onReject.length; i<max; i++){
-            try{
-                onReject[i].apply(null, arguments);
-            }
-            catch(e){}
+            onReject[i].apply(null, arguments);
         }
     };
 
@@ -67,15 +81,25 @@ use('Core').Promise=function Promise(callback){
      */
     this.then=function(_onResolve, _onReject){
         if(isFunction(_onResolve)){
-            onResolve.push(_onResolve);
+            if(_isResolveExecuted){
+                _onResolve();
+            }
+            else{
+                onResolve.push(_onResolve);
+            }
         }
 
         if(isFunction(_onReject)){
-            onReject.push(_onReject);
+            if(_isRejectExecuted){
+                _onReject();
+            }
+            else{
+                onReject.push(_onReject);
+            }
         }
     };
 
     setTimeout(function(){
-        callback(resolve, reject)
+        callback(resolve, reject);
     }, 0);
 };

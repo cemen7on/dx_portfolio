@@ -7,6 +7,57 @@ use('Controllers').Art=Core.Controller.extend(new function(){
     var _displayed=false;
 
     /**
+     * Pagination view instance.
+     * Is singleton throw one section
+     *
+     * @type {null|Views.Art.Pagination}
+     * @private
+     */
+    var _PaginationView=null;
+
+    /**
+     * Current action's name
+     *
+     * @type {string}
+     * @private
+     */
+    var _currentAction='';
+
+    /**
+     * Gallery instance
+     *
+     * @type {null|Components.Gallery}
+     * @private
+     */
+    var _Gallery=null;
+
+    /**
+     * If passed action is not current action  - clear objects state
+     *
+     * @param {string} actionName. Action's name that was triggered
+     * @private
+     */
+    var _transitAction=function(actionName){
+        if(actionName==_currentAction){
+            return ;
+        }
+
+        _currentAction=actionName;
+        _clearState();
+    };
+
+    /**
+     * Removes currently saved objects
+     *
+     * @private
+     */
+    var _clearState=function(){
+        _PaginationView=null;
+        _Gallery=null;
+        _displayed=false;
+    };
+
+    /**
      * Displays pictures section
      *
      * @param {object} collection. Collection to display
@@ -20,7 +71,7 @@ use('Controllers').Art=Core.Controller.extend(new function(){
             asideView;
 
         if(data){
-            collection.set(data);
+            collection.init(data);
         }
 
         collection.fetch().then(function(){
@@ -50,6 +101,14 @@ use('Controllers').Art=Core.Controller.extend(new function(){
             artLayout.setAsideCaption(asideCaption);
             artLayout.AsideRegion.display(asideView);
 
+            if(!_PaginationView){
+                _PaginationView=new Views.Art.Pagination({
+                    total:collection.total
+                });
+
+                artLayout.PaginationRegion.display(_PaginationView);
+            }
+
             _displayed=true;
         });
     }.bind(this);
@@ -61,70 +120,45 @@ use('Controllers').Art=Core.Controller.extend(new function(){
      * @param {null|object} data. Action data. Could be passed as object if
      *  action is called by sync browser page load (not ajax load)
      */
-    this.animations=function(match, data){
-        // TODO:..
-        // _displayPicturesSection(new Collections.Animations(), data, 'highlightAnimationsCaption', 'Animations');
-    };
+    // this.animations=function(match, data){};
 
     /**
      * Displays "Pictures 2d" section
      *
-     * @param {*} match. Query string match
+     * @param {*} pageId. Current page's id
+     * @param {null|string} queryString. Request query string
      * @param {null|object} data. Action data. Could be passed as object if
      *  action is called by sync browser page load (not ajax load)
      */
-    this.pictures2d=function(match, data){
+    this.pictures2d=function(pageId, queryString, data){
+        _transitAction('pictures2d');
         _displayPicturesSection(new Collections.Pictures2d(), data, 'highlightPictures2dCaption', 'Pictures 2d');
     };
 
     /**
      * Displays "Art 3d" section
      *
-     * @param {*} match. Query string match
+     * @param {*} pageId. Current page's id
+     * @param {null|string} queryString. Request query string
      * @param {null|object} data. Action data. Could be passed as object if
      *  action is called by sync browser page load (not ajax load)
      */
-    this.art3d=function(match, data){
+    this.art3d=function(pageId, queryString, data){
+        _transitAction('art3d');
         _displayPicturesSection(new Collections.Art3d(), data, 'highlightArt3dCaption', 'Art 3d');
     };
 
+    /**
+     * Opens thumb in gallery modal window
+     *
+     * @param {Event} event. HTML Event object
+     * @param {Core.View} view. View's object, event triggered from
+     */
     this.modal=function(event, view){
-        // TODO: добавить object Gallery
-
-        var ratio,
-            width=view.model.get('data').bigThumb.width,
-            height=view.model.get('data').bigThumb.height;
-
-        var defaults={
-            minWidth:550,
-            minHeight:550,
-
-            maxWidth:$(window).width()-100,
-            maxHeight:$(window).height()-100
-        };
-
-        if(width>defaults.maxWidth){
-            ratio=defaults.maxWidth/width;
-
-            width=defaults.maxWidth;
-            height=height*ratio;
+        if(!_Gallery){
+            _Gallery=new Components.Gallery();
         }
 
-        if(height>defaults.maxHeight){
-            ratio=defaults.maxHeight/height;
-
-            height=defaults.maxHeight;
-            width=width*ratio;
-        }
-
-        var modal=new Components.Modal();
-
-        modal.width=width;
-        modal.height=height;
-        modal.contentEl.style.lineHeight=height+'px';
-
-        modal.content='<img src="'+Core.createAbsoluteUrl('/media/'+view.model.get('mediaId')+'/picture?type=big')+'" />';
-
-        modal.show();
+        _Gallery.show(new Models.Media(view.model.get('data')));
     };
 });

@@ -79,6 +79,7 @@ class MediaController extends \CController{
      *
      * @get int mediaId. Media's id to find image of
      * @get string type. Picture's type. Describes image size: small, big, source or cover
+     * @get bool redirect. Whether to redirect to picture or return JSON
      *
      * @throws \CHttpException
      */
@@ -93,6 +94,8 @@ class MediaController extends \CController{
             throw new \CHttpException(400, "Invalid request: Invalid GET['type'] parameter value");
         }
 
+        $redirect=filter_var(\Yii::app()->request->getQuery('redirect', true), FILTER_VALIDATE_BOOLEAN);
+
         $mediaModel=new models\Media;
         $imageRelation=$this->typeToRelation($pictureType);
         $mediaRecord=$mediaModel->with($imageRelation)->findByPk($mediaId);
@@ -103,15 +106,74 @@ class MediaController extends \CController{
         $imageRecord=$mediaRecord->{$imageRelation};
 
         if(empty($imageRecord) || empty($imageRecord->name)){
-            // TODO: Return default image (byte code)
             throw new \CHttpException(400, 'Invalid request: Requested media was not found');
         }
 
-        //TODO: Create normal path component
-        $imagePath=\Yii::getPathOfAlias("webroot.upload.media.{$this->typeToFolderName($pictureType)}").DS.$imageRecord->name;
+        $imageUrl=\Yii::app()->createAbsoluteUrl("/upload/media/{$this->typeToFolderName($pictureType)}/{$imageRecord->name}");
 
-        if(!$this->toByteCode($imagePath)){
-            throw new \CHttpException(400, 'Invalid request: Requested media was not found');
+        if($redirect===true){
+            $this->redirect($imageUrl);
+
+            return ;
         }
+
+        // add media info
+        echo \CJSON::encode(array(
+            'src'=>$imageUrl
+        ));
+    }
+
+    public function actionPrev(){
+        $mediaId=\Yii::app()->request->getQuery('mediaId');
+        if(empty($mediaId)){
+            throw new \CHttpException(400, "Invalid request: Parameter GET['mediaId'] was not found");
+        }
+
+        $mediaModel=new models\Media;
+        $criteria=new \CDbCriteria();
+        $criteria->order='t.id ASC';
+        $criteria->limit=1;
+        $criteria->condition='t.id>:id';
+        $criteria->params=array('id'=>$mediaId);
+
+        $record=$mediaModel->with(array('src', 'bigThumb'))->find($criteria);
+        if(empty($record)){
+            $success=array();
+        }
+        else{
+            $success=$record->toArray();
+            models\Media::format($success);
+        }
+
+        echo json_encode(array(
+            'success'=>$success
+        ));
+    }
+
+    public function actionNext(){
+        $mediaId=\Yii::app()->request->getQuery('mediaId');
+        if(empty($mediaId)){
+            throw new \CHttpException(400, "Invalid request: Parameter GET['mediaId'] was not found");
+        }
+
+        $mediaModel=new models\Media;
+        $criteria=new \CDbCriteria();
+        $criteria->order='t.id DESC';
+        $criteria->limit=1;
+        $criteria->condition='t.id<:id';
+        $criteria->params=array('id'=>$mediaId);
+
+        $record=$mediaModel->with(array('src', 'bigThumb'))->find($criteria);
+        if(empty($record)){
+            $success=array();
+        }
+        else{
+            $success=$record->toArray();
+            models\Media::format($success);
+        }
+
+        echo json_encode(array(
+            'success'=>$success
+        ));
     }
 } 

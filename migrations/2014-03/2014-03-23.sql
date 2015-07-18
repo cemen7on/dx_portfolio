@@ -65,11 +65,17 @@ INSERT INTO Images(id, name, width, height) VALUES
 
 INSERT INTO Media(id, title, srcId, smallThumbId, bigThumbId, coverId, created) VALUES
   (1, 'Ninja', 1, 3, 5, 8, CURRENT_TIMESTAMP),
-  (2, 'Knight', 2, 4, 7, 7, CURRENT_TIMESTAMP);
+  (2, 'Knight', 2, 4, 7, 7, CURRENT_TIMESTAMP),
+  (3, 'Knight1', 2, 4, 7, 7, CURRENT_TIMESTAMP),
+  (4, 'Knight2', 2, 4, 7, 7, CURRENT_TIMESTAMP),
+  (5, 'Knight3', 2, 4, 7, 7, CURRENT_TIMESTAMP);
 
 INSERT INTO Pictures(mediaId, typeId) VALUES
   (1, 1),
-  (2, 1);
+  (2, 1),
+  (3, 1),
+  (4, 1),
+  (5, 1);
 
 /*
 echo json_encode(array(
@@ -83,4 +89,4 @@ echo json_encode(array(
 */
 
 INSERT INTO Facade(data) VALUES
-  ('{"animations":[],"pictures2d":[{"mediaId":1,"typeId":1,"data":{"id":1,"title":"Ninja","created":1431855332}},{"mediaId":2,"typeId":1,"data":{"id":2,"title":"Knight","created":1431855332}}],"art3d":[]}');
+  ('{"animations":[],"pictures2d":[{"mediaId":"2","typeId":"1","data":{"id":"2","title":"Knight","smallThumbId":"4","bigThumbId":"7","srcId":"2","coverId":"7","created":"2015-05-17 10:42:21","src":{"id":"2","name":"2.jpg","width":"1200","height":"702","url":"http:\/\/local.dddimaxxx.com\/upload\/media\/sources\/2.jpg"},"smallThumb":{"id":"4","name":"4.jpg","width":"300","height":"210","url":"http:\/\/local.dddimaxxx.com\/upload\/media\/smallThumbs\/4.jpg"},"bigThumb":{"id":"7","name":"7.jpg","width":"170","height":"702","url":"http:\/\/local.dddimaxxx.com\/upload\/media\/bigThumbs\/7.jpg"},"cover":{"id":"7","name":"7.jpg","width":"170","height":"702","url":"http:\/\/local.dddimaxxx.com\/upload\/media\/covers\/7.jpg"}}},{"mediaId":"1","typeId":"1","data":{"id":"1","title":"Ninja","smallThumbId":"3","bigThumbId":"5","srcId":"1","coverId":"8","created":"2015-05-17 10:42:21","src":{"id":"1","name":"1.jpg","width":"709","height":"1024","url":"http:\/\/local.dddimaxxx.com\/upload\/media\/sources\/1.jpg"},"smallThumb":{"id":"3","name":"3.jpg","width":"300","height":"210","url":"http:\/\/local.dddimaxxx.com\/upload\/media\/smallThumbs\/3.jpg"},"bigThumb":{"id":"5","name":"5.jpg","width":"709","height":"1024","url":"http:\/\/local.dddimaxxx.com\/upload\/media\/bigThumbs\/5.jpg"},"cover":{"id":"8","name":"8.jpg","width":"170","height":"1024","url":"http:\/\/local.dddimaxxx.com\/upload\/media\/covers\/8.jpg"}}}],"art3d":[]}');

@@ -130,7 +130,7 @@ use('Views.Main').Index=Core.View.extend(function(){
         for(var i=0, end=images.length; i<end; i++){
             image=document.createElement('div');
             image.classList.add('nav-menu-item-pic');
-            image.style.backgroundImage='url('+Core.createAbsoluteUrl('/media/'+images[i].mediaId)+'/picture?type=cover)';
+            image.style.backgroundImage='url('+images[i].data.cover.url+')';
 
             section.appendChild(image);
         }
@@ -158,7 +158,9 @@ use('Views.Main').Index=Core.View.extend(function(){
      */
     var _displayFoldingElements=function(){
         for(var i=0, end=_foldingElements.length; i<end; i++){
-            _foldingElements[i].toFullHeight();
+            _foldingElements[i].toFullHeight().then(function(){
+
+            });
         }
     };
 
@@ -235,6 +237,14 @@ use('Views.Main').Index=Core.View.extend(function(){
         var _position={};
 
         /**
+         * Whether event listeners were bound to element
+         *
+         * @type {boolean}
+         * @private
+         */
+        var _areEventsBound=false;
+
+        /**
          * CSS position property
          *
          * @type {object}
@@ -266,7 +276,6 @@ use('Views.Main').Index=Core.View.extend(function(){
             _$el=$(_el);
 
             _calculatePosition();
-            _addEventListeners();
 
             return _this;
         };
@@ -330,8 +339,14 @@ use('Views.Main').Index=Core.View.extend(function(){
          * @private
          */
         var _addEventListeners=function(){
+            if(_areEventsBound){
+                return ;
+            }
+
             _el.addEventListener('mouseenter', _this.toFullWidth);
             _el.addEventListener('mouseleave', _this.toDefaultWidth);
+
+            _areEventsBound=true;
         };
 
         /**
@@ -340,12 +355,16 @@ use('Views.Main').Index=Core.View.extend(function(){
          * @returns {Core.Promise}
          */
         _this.toFullHeight=function(){
-            return new Core.Promise(function(resolve, reject){
+            return new Core.Promise(function(resolve){
                 _$el.animate(
                     {height:_this.position.end.height},
                     {
                         duration:_this.position.dropDuration,
-                        complete:resolve
+                        complete:function(){
+                            _addEventListeners();
+
+                            resolve();
+                        }
                     }
                 );
             });

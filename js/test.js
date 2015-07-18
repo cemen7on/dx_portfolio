@@ -1,12 +1,4 @@
 /**
- * Contains all commons function
- * Contains all common variables
- * Extends classes
- */
-
-/** Extend Object class **/
-
-/**
  * Checks is object is jQuery instance
  *
  * @param object
@@ -97,17 +89,6 @@ Object.isFunction=function(value){
 };
 
 /**
- * Converts first char of to string to upper case
- *
- * @returns {string}
- */
-String.prototype.firstToUpper=function(){
-    var f=this.charAt(0).toUpperCase();
-
-    return f+this.substr(1, this.length-1);
-};
-
-/**
  * Flag, shows that object has to be called without initialization method
  *
  * @type {number}
@@ -160,7 +141,6 @@ var NO_INITIALIZE=1;
                 Object.defineProperty(this, '__super__', {
                     configurable:false,
                     enumerable:false,
-                    writable:false,
                     value:Object.getPrototypeOf(this)
                 });
 
@@ -240,28 +220,179 @@ var NO_INITIALIZE=1;
     Backbone.Model.extend=Backbone.Collection.extend=Backbone.Router.extend=Backbone.View.extend=Backbone.History.extend=extend;
 }());
 
-/**
- * Parses query string and returns object
- *
- * @param {string} queryStr. Query string to parse
- * @returns {{}}
- */
-function parseQueryString(queryStr){
-    if(queryStr[0]=='?'){
-        queryStr=queryStr.substr(1);
+var View1=Backbone.View.extend(function(){
+    this.hello=function(){
+        console.log('hello');
+    };
+
+    this.initialize=function(){
+        console.log('View1');
+    };
+});
+
+var View2=View1.extend(function(){
+    this.method=function(){
+        console.log('method');
+    };
+
+    this.initialize=function(){
+        console.log('View2');
+
+        console.log(this.__super__);
+    };
+});
+
+new View2;
+/*
+
+var View3=View2.extend({
+    a:'hello',
+
+    initialize:function(){
+        console.log('View3');
     }
+});
+*/
 
-    var queryPairs=queryStr.split(','),
-        queryPair,
-        queryObj={};
+// Helper function to correctly set up the prototype chain, for subclasses.
+// Similar to `goog.inherits`, but uses a hash of prototype properties and
+// class properties to be extended.
+/*
+var extend = function(protoProps, staticProps) {
+    var parent = this;
+    var child,
+        need=false;
 
-    for(var i=0, end=queryPairs.length; i<end; i++){
-        queryPair=queryPairs[i].split('=');
-
-        if(queryPair[0] && queryPair[1]){
-            queryObj[queryPair[0]]=queryPair[1];
+    // The constructor function for the new subclass is either defined by you
+    // (the "constructor" property in your `extend` definition), or defaulted
+    // by us to simply call the parent's constructor.
+    if(!need){
+        if (protoProps && _.has(protoProps, 'constructor')) {
+            child = protoProps.constructor;
+        } else {
+            child = function(){ return parent.apply(this, arguments); };
         }
     }
+    else{
+        child=function(){};
+        need=false;
+    }
 
-    return queryObj;
-}
+    // Add static properties to the constructor function, if supplied.
+    _.extend(child, parent, staticProps);
+
+    // Set the prototype chain to inherit from `parent`, without calling
+    // `parent`'s constructor function.
+    var Surrogate = function(){ this.constructor = child; };
+    //Surrogate.prototype = parent.prototype;
+    Surrogate.prototype = new parent;
+    child.prototype = new Surrogate;
+
+    // Add prototype properties (instance properties) to the subclass,
+    // if supplied.
+    if (protoProps) _.extend(child.prototype, protoProps);
+
+    // Set a convenience property in case the parent's prototype is needed
+    // later.
+    child.__super__ = parent.prototype;
+
+    child.extend=function(){
+        need=true;
+        mix.apply(this, arguments);
+    };
+
+    return child;
+};
+*/
+
+/*
+Backbone.View.extend=function(child){
+    child=child || function(){};
+    var parent=this,
+        isPrototypeObject=false;
+
+    // TODO: replace by original Backbone.View.apply ....
+    var __initialize=function(){
+        this.cid = _.uniqueId('view');
+        // options || (options = {});
+        //_.extend(this, _.pick(options, viewOptions));
+        this._ensureElement();
+        this.initialize.apply(this, arguments);
+    };
+
+    var extendable=function(flag){
+        child.call(this);
+
+        if(!isPrototypeObject){
+            __initialize.apply(this, arguments);
+        }
+        else{
+            isPrototypeObject=false;
+        }
+    };
+
+    // "new parent" here is the same "extendable" function from previous call
+    extendable.prototype=new parent;
+    extendable.extend=function(child){
+        isPrototypeObject=true;
+        return Backbone.View.extend.call(this, child);
+    };
+
+    return extendable;
+};
+
+CoreView=Backbone.View.extend(function(){
+    this.delegate=function(eventName, selector, listener){
+        var view=this;
+
+        this.$el.on(eventName + '.delegateEvents' + this.cid, selector, function(event){
+            listener(event, view);
+        });
+    };
+
+    this.initialize=function(){
+        console.log('CoreView');
+    };
+});
+
+View1=CoreView.extend(function(){
+    this.method=function(d,a){
+        console.log('method');
+    };
+
+    this.initialize=function(){
+        console.log('View1');
+    };
+});
+
+View2=View1.extend(function(){
+    this.property='a';
+
+    this.initialize=function(){
+        console.log('View2');
+    };
+});
+
+new View2();
+
+*/
+
+/*
+var View1=Backbone.View.extend({
+    hello:function(){
+        console.log('hello');
+    }
+});
+
+var View2=View1.extend({
+    method:function(){
+        console.log('method');
+    }
+});
+
+var View3=View2.extend({
+    a:'hello'
+});
+
+console.log(new View3());
+*/

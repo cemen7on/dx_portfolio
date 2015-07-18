@@ -34,4 +34,31 @@ class Media extends ActiveRecord{
             'cover'=>array(self::BELONGS_TO, 'models\Images', array('coverId'=>'id'))
         );
     }
+
+    /**
+     * Formats media record
+     *
+     * @param array $record. Record to format
+     * @return mixed
+     */
+    public static function format(&$record){
+        $relations=array('src', 'smallThumb', 'bigThumb', 'cover');
+        $directories=array(
+            'src'=>'sources',
+            'smallThumb'=>'smallThumbs',
+            'bigThumb'=>'bigThumbs',
+            'cover'=>'covers'
+        );
+
+        foreach($relations as $relation){
+            if(!isset($record[$relation])){
+                continue;
+            }
+
+            // TODO: create normal path builder component
+            $record[$relation]['url']=\Yii::app()->createAbsoluteUrl("/upload/media/{$directories[$relation]}/{$record[$relation]['name']}");
+        }
+
+        return $record;
+    }
 } 

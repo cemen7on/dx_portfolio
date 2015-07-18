@@ -179,4 +179,22 @@ class Pictures extends ActiveRecord{
 
         return $this->save();
     }
+
+    /**
+     * Formats array records
+     *
+     * @param {array} $records. Records to format
+     * @return mixed
+     */
+    public static function format(&$records){
+        foreach($records as &$record){
+            if(!isset($record['data'])){
+                continue;
+            }
+
+            Media::format($record['data']);
+        }
+
+        return $records;
+    }
 }
