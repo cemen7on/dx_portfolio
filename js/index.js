@@ -15,10 +15,10 @@ $(document).ready(function main(){
     //  key is a path
     //  value is a controller's method to handle
     var routes={
-        ''              :'Controllers.Main.index',
-        'art/animations':'Controllers.Art.animations',
-        'art/2d(/:page)':'Controllers.Art.pictures2d',
-        'art/3d(/:page)':'Controllers.Art.art3d'
+        ''                      :'Controllers.Main.index',
+        'art/animations(/:page)':'Controllers.Art.animations',
+        'art/2d(/:page)'        :'Controllers.Art.pictures2d',
+        'art/3d(/:page)'        :'Controllers.Art.art3d'
     };
 
     App.run(routes, dataJson);

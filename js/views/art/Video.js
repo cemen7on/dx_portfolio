@@ -1,11 +1,11 @@
-use('Views.Art').Picture=Views.Art.Thumb.extend(function(){
+use('Views.Art').Video=Views.Art.Thumb.extend(function(){
     /**
      * Current element's attribute list
      *
      * @type {{class: string}}
      */
     this.attributes={
-        class:'button thumb picture'
+        class:'button thumb video'
     };
 
     /**
@@ -14,6 +14,6 @@ use('Views.Art').Picture=Views.Art.Thumb.extend(function(){
      * @type {object}
      */
     this.events={
-        'click':Controllers.Art.modal
+        'click':Controllers.Art.play
     };
 });

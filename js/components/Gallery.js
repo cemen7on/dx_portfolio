@@ -516,4 +516,23 @@ use('Components').Gallery=Backbone.View.extend(function(){
 
         return this;
     };
+
+    /**
+     * Sets data to default value in current object
+     *
+     * @returns {*}
+     */
+    this.clearState=function(){
+        this.model=null;
+
+        _siblingModel=null;
+        _siblingLoadedPromise=null;
+
+        _SiblingCache.clear();
+
+        _moveDirection=1;
+        _offKeyboard=false;
+
+        return this;
+    };
 });

@@ -22,19 +22,23 @@ class BaseController extends \CController{
             'define.js',
             'Core.js'
         ),
-        'extensions',
-        'components/Container.js',
-        'components/Modal.js',
-        'components/Gallery.js',
+        'extensions'=>array(
+            'youtube/youtube.js'
+        ),
+        'components'=>array(
+            'Container.js',
+            'Modal.js',
+        ),
         'models',
         'collections'=>array(
             'ArtCollection.js'
         ),
         'controllers',
-        'views',
+        'views'=>array(
+            'art/Thumb.js',
+            'art/ThumbsCollection.js'
+        ),
         'index.js'
-        // 'test.js'
-
     );
 
     /**

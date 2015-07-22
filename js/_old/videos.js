@@ -48,7 +48,7 @@ $(document).bind('animated', function(){
     $(window).resize(adjustSize);
 
     // Load youtube components in async way
-    // So this would not interrupt thu,b animation
+    // So this would not interrupt thumb animation
     var tag=document.createElement('script');
     tag.src=location.origin+'/js/components/youtube.js';
     var firstScriptTag=document.getElementsByTagName('script')[0];

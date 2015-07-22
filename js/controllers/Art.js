@@ -32,6 +32,14 @@ use('Controllers').Art=Core.Controller.extend(new function(){
     var _Gallery=null;
 
     /**
+     * YouTube API player instance
+     *
+     * @type {null|Components.Player}
+     * @private
+     */
+    var _Player=null;
+
+    /**
      * If passed action is not current action  - clear objects state
      *
      * @param {string} actionName. Action's name that was triggered
@@ -53,39 +61,44 @@ use('Controllers').Art=Core.Controller.extend(new function(){
      */
     var _clearState=function(){
         _PaginationView=null;
-        _Gallery=null;
         _displayed=false;
+
+        if(_Gallery){
+            _Gallery.clearState();
+        }
     };
 
     /**
      * Displays pictures section
      *
-     * @param {object} collection. Collection to display
+     * @param {function} ModelCollectionConstructor. Models collection constructor
+     * @param {function} ThumbCollectionConstructor. View Thumbs collection constructor
      * @param {null|object} data. Collection initialization data
      * @param {string} topNavCaptionMethod. Name of method to use in order to highlight top nav section
      * @param {string} asideCaption. Caption of aside menu
      * @private
      */
-    var _displayPicturesSection=function(collection, data, topNavCaptionMethodName, asideCaption){
-        var thumbsView,
+    var _displayPicturesSection=function(ModelCollectionConstructor, ThumbCollectionConstructor, data, topNavCaptionMethodName, asideCaption){
+        var modelCollection=new ModelCollectionConstructor(),
+            thumbsView,
             asideView;
 
         if(data){
-            collection.init(data);
+            modelCollection.init(data);
         }
 
-        collection.fetch().then(function(){
-            var picturesCollectionParams={
-                collection:collection
+        modelCollection.fetch().then(function(){
+            var thumbsCollectionParams={
+                collection:modelCollection
             };
 
             if(_displayed){
-                picturesCollectionParams.rollDown=false;
+                thumbsCollectionParams.rollDown=false;
             }
 
-            thumbsView=new Views.Art.PicturesCollection(picturesCollectionParams);
+            thumbsView=new ThumbCollectionConstructor(thumbsCollectionParams);
             asideView=new Views.Art.AsideCollection({
-                collection:collection
+                collection:modelCollection
             });
 
             Views.Layouts.TopNav.render()
@@ -103,7 +116,7 @@ use('Controllers').Art=Core.Controller.extend(new function(){
 
             if(!_PaginationView){
                 _PaginationView=new Views.Art.Pagination({
-                    total:collection.total
+                    total:modelCollection.total
                 });
 
                 artLayout.PaginationRegion.display(_PaginationView);
@@ -116,11 +129,15 @@ use('Controllers').Art=Core.Controller.extend(new function(){
     /**
      * Displays "Animations" section
      *
-     * @param {*} match. Query string match
+     * @param {*} pageId. Current page's id
+     * @param {null|string} queryString. Request query string
      * @param {null|object} data. Action data. Could be passed as object if
      *  action is called by sync browser page load (not ajax load)
      */
-    // this.animations=function(match, data){};
+    this.animations=function(pageId, queryString, data){
+        _transitAction('animations');
+        _displayPicturesSection(Collections.Videos, Views.Art.VideosCollection, data, 'highlightAnimationsCaption', 'Animations');
+    };
 
     /**
      * Displays "Pictures 2d" section
@@ -132,7 +149,7 @@ use('Controllers').Art=Core.Controller.extend(new function(){
      */
     this.pictures2d=function(pageId, queryString, data){
         _transitAction('pictures2d');
-        _displayPicturesSection(new Collections.Pictures2d(), data, 'highlightPictures2dCaption', 'Pictures 2d');
+        _displayPicturesSection(Collections.Pictures2d, Views.Art.PicturesCollection, data, 'highlightPictures2dCaption', 'Pictures 2d');
     };
 
     /**
@@ -145,7 +162,7 @@ use('Controllers').Art=Core.Controller.extend(new function(){
      */
     this.art3d=function(pageId, queryString, data){
         _transitAction('art3d');
-        _displayPicturesSection(new Collections.Art3d(), data, 'highlightArt3dCaption', 'Art 3d');
+        _displayPicturesSection(Collections.Art3d, Views.Art.PicturesCollection, data, 'highlightArt3dCaption', 'Art 3d');
     };
 
     /**
@@ -160,5 +177,19 @@ use('Controllers').Art=Core.Controller.extend(new function(){
         }
 
         _Gallery.show(new Models.Media(view.model.get('data')));
+    };
+
+    /**
+     * Plays video
+     *
+     * @param {Event} event. HTML Event object
+     * @param {Core.View} view. View's object, event triggered from
+     */
+    this.play=function(event, view){
+        if(!_Player){
+            _Player=new Components.Player();
+        }
+
+        _Player.play(view.model.get('ytId'));
     };
 });

@@ -8,6 +8,14 @@ use('Components').Modal=Backbone.View.extend(function(){
     var _Events=[];
 
     /**
+     * Whether modal window is hidden
+     *
+     * @type {boolean}
+     * @private
+     */
+    var _isHidden=true;
+
+    /**
      * Modal windows' container HTML element
      *
      * @type {null|HTMLElement}
@@ -92,6 +100,20 @@ use('Components').Modal=Backbone.View.extend(function(){
     });
 
     /**
+     * On modal window show callback function
+     *
+     * @type {function}
+     */
+    this.onshow=function(){};
+
+    /**
+     * On modal window hide callback function
+     *
+     * @type {function}
+     */
+    this.onhide=function(){};
+
+    /**
      * On instance creation.
      * Creates HTML structure
      */
@@ -147,7 +169,7 @@ use('Components').Modal=Backbone.View.extend(function(){
      */
     var _createWindowEl=function(){
         var el=document.createElement('div');
-        el.id='preview'; // FIXME: сейчас ограничение размеров происходит стилями при id=preview. Сделать на постоянной основе
+
         el.className='window inline hidden';
 
         return el;
@@ -252,12 +274,20 @@ use('Components').Modal=Backbone.View.extend(function(){
      * @returns {*}
      */
     this.show=function(){
+        if(!_isHidden){
+            return this;
+        }
+
         this.containerEl.classList.remove('hidden');
         this.windowEl.classList.remove('hidden');
 
         for(var i=0, end=_Events.length; i<end; i++){
             _Events[i].on();
         }
+
+        this.onshow();
+
+        _isHidden=false;
 
         return this;
     };
@@ -268,12 +298,20 @@ use('Components').Modal=Backbone.View.extend(function(){
      * @returns {*}
      */
     this.hide=function(){
+        if(_isHidden){
+            return this;
+        }
+
         this.containerEl.classList.add('hidden');
         this.windowEl.classList.add('hidden');
 
         for(var i=0, end=_Events.length; i<end; i++){
             _Events[i].off();
         }
+
+        this.onhide();
+
+        _isHidden=true;
 
         return this;
     };

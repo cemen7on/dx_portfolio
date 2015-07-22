@@ -20,12 +20,14 @@ use('Views.Layouts').Main=Core.ViewLayout.extend(function(){
             return this;
         }
 
-        var documentBody=document.body,
-            allBodyNodes=documentBody.childNodes;
+        var documentBody=document.body;
+            // allBodyNodes=documentBody.childNodes;
 
+        /*
         for(var i=0, end=allBodyNodes.length; i<end; i++){
             allBodyNodes[i].parentNode.removeChild(allBodyNodes[i]);
         }
+        */
 
         var substrate=document.createElement('div');
         substrate.id='substrate';

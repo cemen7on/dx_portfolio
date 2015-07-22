@@ -10,6 +10,30 @@ class ArtController extends BaseController{
     const RECORDS_LIMIT=1;
 
     /**
+     * Returns records for animations section
+     */
+    protected function fetchVideos(){
+        $page=\Yii::app()->request->getQuery('id', 1);
+
+        $videosModel=new models\Videos();
+        $criteria=new \CDbCriteria();
+        $criteria->offset=($page-1)*self::RECORDS_LIMIT;
+        $criteria->limit=self::RECORDS_LIMIT;
+        $criteria->order='mediaId DESC';
+
+        $totalRecordsNumber=$videosModel->count();
+        $recordsObject=$videosModel->findRecords($criteria);
+        $recordsArray=models\ActiveRecord::toArrayAll($recordsObject);
+
+        $response=array(
+            'data'=>models\Videos::format($recordsArray),
+            'total'=>$totalRecordsNumber
+        );
+
+        $this->sendData($response);
+    }
+
+    /**
      * Returns records for pictures section specified by type id.
      *
      * @param {int} $typeId. Pictures type id
@@ -33,6 +57,15 @@ class ArtController extends BaseController{
         );
 
         $this->sendData($response);
+    }
+
+    /**
+     * Returns records for Animations section.
+     *
+     * @get int page. Page number to show
+     */
+    public function actionAnimations(){
+        $this->fetchVideos();
     }
 
     /**

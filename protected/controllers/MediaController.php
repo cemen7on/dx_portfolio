@@ -129,19 +129,19 @@ class MediaController extends \CController{
             throw new \CHttpException(400, "Invalid request: Parameter GET['mediaId'] was not found");
         }
 
-        $mediaModel=new models\Media;
+        $mediaModel=new models\Pictures();
         $criteria=new \CDbCriteria();
-        $criteria->order='t.id ASC';
+        $criteria->order='mediaId ASC';
         $criteria->limit=1;
-        $criteria->condition='t.id>:id';
-        $criteria->params=array('id'=>$mediaId);
+        $criteria->condition='mediaId>:mediaId AND typeId=typeId';
+        $criteria->params=array('mediaId'=>$mediaId);
 
-        $record=$mediaModel->with(array('src', 'bigThumb'))->find($criteria);
+        $record=$mediaModel->with('data')->find($criteria);
         if(empty($record)){
             $success=array();
         }
         else{
-            $success=$record->toArray();
+            $success=$record->data->toArray();
             models\Media::format($success);
         }
 
@@ -156,19 +156,19 @@ class MediaController extends \CController{
             throw new \CHttpException(400, "Invalid request: Parameter GET['mediaId'] was not found");
         }
 
-        $mediaModel=new models\Media;
+        $mediaModel=new models\Pictures();
         $criteria=new \CDbCriteria();
-        $criteria->order='t.id DESC';
+        $criteria->order='mediaId DESC';
         $criteria->limit=1;
-        $criteria->condition='t.id<:id';
-        $criteria->params=array('id'=>$mediaId);
+        $criteria->condition='mediaId<:mediaId AND typeId=typeId';
+        $criteria->params=array('mediaId'=>$mediaId);
 
-        $record=$mediaModel->with(array('src', 'bigThumb'))->find($criteria);
+        $record=$mediaModel->with('data')->find($criteria);
         if(empty($record)){
             $success=array();
         }
         else{
-            $success=$record->toArray();
+            $success=$record->data->toArray();
             models\Media::format($success);
         }
 

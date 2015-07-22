@@ -61,21 +61,23 @@ INSERT INTO Images(id, name, width, height) VALUES
  (5, '5.jpg', 709, 1024),
  (6, '6.jpg', 1200, 702),
  (7, '7.jpg', 170, 702),
- (8, '8.jpg', 170, 1024);
+ (8, '8.jpg', 170, 1024),
+
+ (9, '158.jpg', 300, 210),
+ (10, '159.jpg', 1096, 796),
+ (11, '160.jpg', 170, 796);
+
 
 INSERT INTO Media(id, title, srcId, smallThumbId, bigThumbId, coverId, created) VALUES
   (1, 'Ninja', 1, 3, 5, 8, CURRENT_TIMESTAMP),
   (2, 'Knight', 2, 4, 7, 7, CURRENT_TIMESTAMP),
-  (3, 'Knight1', 2, 4, 7, 7, CURRENT_TIMESTAMP),
-  (4, 'Knight2', 2, 4, 7, 7, CURRENT_TIMESTAMP),
-  (5, 'Knight3', 2, 4, 7, 7, CURRENT_TIMESTAMP);
+  (3, 'Woodcutter', null, 9, 10, 11, CURRENT_TIMESTAMP);
 
 INSERT INTO Pictures(mediaId, typeId) VALUES
   (1, 1),
-  (2, 1),
-  (3, 1),
-  (4, 1),
-  (5, 1);
+  (2, 1);
+
+INSERT INTO Videos(mediaId, ytId) VALUES (3, 'CG5LiQv9Lkc');
 
 /*
 echo json_encode(array(

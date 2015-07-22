@@ -42,4 +42,15 @@ use('Components').Container=function(){
 
         return _container[key] || defaultValue;
     };
+
+    /**
+     * Removes data from current container
+     *
+     * @returns {*}
+     */
+    this.clear=function(){
+        _container={};
+
+        return this;
+    };
 };

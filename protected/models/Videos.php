@@ -129,9 +129,12 @@ class Videos extends ActiveRecord{
      */
     public function relations(){
         return array(
-            'smallThumb'=>array(self::BELONGS_TO, 'models\Images', array('smallThumbId'=>'id')),
-            'bigThumb'=>array(self::BELONGS_TO, 'models\Images', array('bigThumbId'=>'id')),
-            'cover'=>array(self::BELONGS_TO, 'models\Images', array('coverId'=>'id'))
+            'data'=>array(
+                self::BELONGS_TO,
+                'models\Media',
+                array('mediaId'=>'id'),
+                'with'=>array('src', 'smallThumb', 'bigThumb', 'cover')
+            )
         );
     }
 
@@ -146,7 +149,7 @@ class Videos extends ActiveRecord{
             $criteria=new \CDbCriteria();
         }
 
-        $criteria->with=array('smallThumb', 'bigThumb', 'cover');
+        $criteria->with='data';
 
 		return $this->findAll($criteria);
 	}
@@ -186,5 +189,23 @@ class Videos extends ActiveRecord{
         ));
 
         return $this->save();
+    }
+
+    /**
+     * Formats array records
+     *
+     * @param {array} $records. Records to format
+     * @return mixed
+     */
+    public static function format(&$records){
+        foreach($records as &$record){
+            if(!isset($record['data'])){
+                continue;
+            }
+
+            Media::format($record['data']);
+        }
+
+        return $records;
     }
 }

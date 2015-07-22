@@ -51,7 +51,7 @@ class Media extends ActiveRecord{
         );
 
         foreach($relations as $relation){
-            if(!isset($record[$relation])){
+            if(empty($record[$relation])){
                 continue;
             }
 
