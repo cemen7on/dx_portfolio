@@ -23,14 +23,7 @@ return array(
     ),
 
 	'components'=>array(
-        'db'=>array(
-            'connectionString'=>'mysql:host=localhost;dbname=DxPortfolio',
-            'emulatePrepare'=>true,
-            'username'=>'root',
-            'password'=>'123',
-            'charset'=>'utf8',
-        ),
-
+        'db'=>$db,
         'ScriptRegister'=>array(
             'class'=>'\components\ScriptRegister',
             'rootPath'=>'webroot.js',
