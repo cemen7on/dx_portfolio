@@ -62,10 +62,18 @@ class BaseController extends \CController{
     public function init(){
         \Yii::app()->clientScript->registerCoreScript('jquery');
 
-        \Yii::app()->ScriptRegister->publish($this->scriptMap);
-        \Yii::app()->CssRegister->publish($this->cssMap);
+        if(YII_DEBUG){
+            \Yii::app()->clientScript->registerScriptFile(\Yii::app()->assetManager->publish(\Yii::getPathOfAlias('webroot').'/js/application.js'), \CClientScript::POS_HEAD);
+            \Yii::app()->clientScript->registerCssFile(\Yii::app()->assetManager->publish(\Yii::getPathOfAlias('webroot').'/css/styles.css'));
 
-        \Yii::app()->clientScript->registerCssFile('/css/font-awesome/css/font-awesome.min.css');
+            \Yii::app()->clientScript->registerCssFile('/css/font-awesome/css/font-awesome.min.css');
+        }
+        else{
+            \Yii::app()->ScriptRegister->publish($this->scriptMap);
+            \Yii::app()->CssRegister->publish($this->cssMap);
+
+            \Yii::app()->clientScript->registerCssFile('/css-origin/font-awesome/css/font-awesome.min.css');
+        }
     }
 
     /**

@@ -32,12 +32,12 @@ return array(
         ),
         'ScriptRegister'=>array(
             'class'=>'\components\ScriptRegister',
-            'rootPath'=>'webroot.js',
+            'rootPath'=>'webroot.js-origin',
             'position'=>CClientScript::POS_HEAD
         ),
         'CssRegister'=>array(
             'class'=>'\components\CssRegister',
-            'rootPath'=>'webroot.css'
+            'rootPath'=>'webroot.css-origin'
         ),
 
         /*

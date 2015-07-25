@@ -24,20 +24,25 @@ abstract class AssetsRegister extends \CApplicationComponent{
     /**
      * Registers assets, specified in map
      *
-     * @param array $assetsMap. Array of assets to import
+     * @param array $assets. Asset to import
      */
-    public function publish($assetsMap){
-        foreach($assetsMap as $index=>$value){
-            if(is_array($value)){
-                $this->importArray($index, $value);
+    public function publish($assets){
+        if(is_array($assets)){
+            foreach($assets as $index=>$value){
+                if(is_array($value)){
+                    $this->importArray($index, $value);
 
-                $importPath=$index;
-            }
-            else{
-                $importPath=$value;
-            }
+                    $importPath=$index;
+                }
+                else{
+                    $importPath=$value;
+                }
 
-            $this->importPath($importPath);
+                $this->importPath($importPath);
+            }
+        }
+        else{
+            $this->importPath($assets);
         }
     }
 
