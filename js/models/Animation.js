@@ -1,1 +1,0 @@
-use('Models').Animation=Core.Model.extend();

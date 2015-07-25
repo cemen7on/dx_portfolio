@@ -23,6 +23,16 @@ use('Views.Art').Thumb=Core.View.extend(function(){
     };
 
     /**
+     * Events list
+     *
+     * @type {object}
+     */
+    this.events={
+        mouseenter:'triggerEnterState',
+        mouseleave:'triggerLeaveState'
+    };
+
+    /**
      * Thumb's image HTML element instance property
      *
      * @type {null|HTMLElement}
@@ -36,13 +46,29 @@ use('Views.Art').Thumb=Core.View.extend(function(){
      */
     this.$imageEl=null;
 
-
     /**
      * View's initialization.
      * Render current collection
      */
     this.initialize=function(){
         this.render();
+
+        // Add on click event
+        if(this.onclick){
+            this.events.click=this.onclick;
+
+            // Call delegateEvents, so click event will be bound
+            this.delegateEvents();
+        }
+
+        // Register events for linking between views
+        this.listenTo(this.model, 'aside.enter', this.toggleHighlight);
+        this.listenTo(this.model, 'aside.leave', this.toggleHighlight);
+
+        // Trigger click of thumb preview
+        this.listenTo(this.model, 'aside.click', function(){
+            this.$el.click();
+        });
     };
 
     /**
@@ -160,5 +186,35 @@ use('Views.Art').Thumb=Core.View.extend(function(){
         this.imageEl.classList.add('animated');
 
         return this;
+    };
+
+    /**
+     * Toggles highlight state
+     */
+    this.toggleHighlight=function(){
+        if(!this.el){
+            return ;
+        }
+
+        var methodName=this.el.classList.contains('hover')?'remove':'add';
+        this.el.classList[methodName]('hover');
+    };
+
+    /**
+     * Triggers select state event in model.
+     * It is used for linking events between different views objects.
+     * Currently this event is used for highlighting current thumb's title in aside menu
+     */
+    this.triggerEnterState=function(){
+        this.model.trigger('preview.enter');
+    };
+
+    /**
+     * Triggers unselect state event in model.
+     * It is used for linking events between different views objects.
+     * Currently this event is used for removing highlight from current thumb title in aside menu
+     */
+    this.triggerLeaveState=function(){
+        this.model.trigger('preview.leave');
     };
 });

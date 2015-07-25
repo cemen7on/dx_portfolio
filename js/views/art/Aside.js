@@ -7,9 +7,31 @@ use('Views.Art').Aside=Core.View.extend(function(){
     this.tagName='li';
 
     /**
+     * Events list
+     *
+     * @type {object}
+     */
+    this.events={
+        click:'triggerClickState',
+        mouseenter:'triggerEnterState',
+        mouseleave:'triggerLeaveState'
+    };
+
+    /**
+     * Link HTML element
+     *
+     * @type {null|HTMLElement}
+     */
+    this.linkEl=null;
+
+    /**
      * View's initialization
      */
     this.initialize=function(){
+        // Register events for linking between views
+        this.listenTo(this.model, 'preview.enter', this.toggleHighlight);
+        this.listenTo(this.model, 'preview.leave', this.toggleHighlight);
+
         this.render();
     };
 
@@ -19,19 +41,59 @@ use('Views.Art').Aside=Core.View.extend(function(){
      * @returns {*}
      */
     this.render=function(){
-        var linkEl=document.createElement('a'),
-            data=this.model.get('data');
+        var data=this.model.get('data');
 
         if(!data || (Array.isArray(data) && !data.length)){
             return this;
         }
 
-        linkEl.href='javascript:void(0)';
-        linkEl.title=data.title;
-        linkEl.textContent=data.title;
+        this.linkEl=document.createElement('a');
 
-        this.el.appendChild(linkEl);
+        this.linkEl.href='javascript:void(0)';
+        this.linkEl.title=data.title;
+        this.linkEl.textContent=data.title;
+
+        this.el.appendChild(this.linkEl);
 
         return this;
+    };
+
+    /**
+     * Triggers click state event in model.
+     * It is used for linking events between different views objects.
+     * Currently this event is used for opening current thumb in modal window
+     */
+    this.triggerClickState=function(){
+        this.model.trigger('aside.click');
+    };
+
+    /**
+     * Toggles highlight state
+     */
+    this.toggleHighlight=function(){
+        if(!this.linkEl){
+            return ;
+        }
+
+        var methodName=this.linkEl.classList.contains('hover')?'remove':'add';
+        this.linkEl.classList[methodName]('hover');
+    };
+
+    /**
+     * Triggers select state event in model.
+     * It is used for linking events between different views objects.
+     * Currently this event is used for highlighting current thumb's in art-preview box
+     */
+    this.triggerEnterState=function(){
+        this.model.trigger('aside.enter');
+    };
+
+    /**
+     * Triggers unselect state event in model.
+     * It is used for linking events between different views objects.
+     * Currently this event is used for removing highlight from current thumb in art-preview box
+     */
+    this.triggerLeaveState=function(){
+        this.model.trigger('aside.leave');
     };
 });

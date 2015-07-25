@@ -1,19 +1,8 @@
 use('Views.Art').Video=Views.Art.Thumb.extend(function(){
     /**
-     * Current element's attribute list
+     * Click event handler
      *
-     * @type {{class: string}}
+     * @type {modal}
      */
-    this.attributes={
-        class:'button thumb video'
-    };
-
-    /**
-     * Events list
-     *
-     * @type {object}
-     */
-    this.events={
-        'click':Controllers.Art.play
-    };
+    this.onclick=Controllers.Art.play;
 });
