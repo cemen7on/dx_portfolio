@@ -4,17 +4,17 @@ Yii::setPathOfAlias('controllers', realpath(__DIR__.'/../controllers/'));
 Yii::setPathOfAlias('models', realpath(__DIR__.'/../models/'));
 
 return array(
-	'basePath'=>realpath(__DIR__.'/../'),
-	'name'=>'DiMaX Portfolio',
+    'basePath'=>realpath(__DIR__.'/../'),
+    'name'=>'DiMaX Portfolio',
 
-	'import'=>array(
+    'import'=>array(
         'components.*',
         'models.*',
         'application.helpers.*',
         'application.widgets.*'
-	),
+    ),
 
-	'defaultController'=>'main',
+    'defaultController'=>'main',
     'controllerNamespace'=>'\controllers',
 
     'modules'=>array(
@@ -22,8 +22,14 @@ return array(
         'oauth'
     ),
 
-	'components'=>array(
-        'db'=>$db,
+    'components'=>array(
+        'db'=>array(
+            'connectionString'=>'mysql:host=localhost;dbname=DxPortfolio',
+            'emulatePrepare'=>true,
+            'username'=>'root',
+            'password'=>'123',
+            'charset'=>'utf8',
+        ),
         'ScriptRegister'=>array(
             'class'=>'\components\ScriptRegister',
             'rootPath'=>'webroot.js',
@@ -59,23 +65,23 @@ return array(
             'class'=>'ext.google.sdk.Youtube'
         ),
 
-		'user'=>array(
-			'allowAutoLogin'=>true,
+        'user'=>array(
+            'allowAutoLogin'=>true,
             'loginUrl'=>array('/admin/auth')
-		),
+        ),
         'admin'=>array(
             'class'=>'CWebUser',
             'loginUrl'=>array('/admin/auth'),
         ),
 
-		'errorHandler'=>array(
-			'errorAction'=>'main/error',
-		),
+        'errorHandler'=>array(
+            'errorAction'=>'main/error',
+        ),
 
-		'urlManager'=>array(
-			'urlFormat'=>'path',
+        'urlManager'=>array(
+            'urlFormat'=>'path',
             'showScriptName'=>false,
-			'rules'=>array(
+            'rules'=>array(
                 'media/<mediaId:\d+>/<action:\w+>'=>'media/<action>',
 
                 array(
@@ -95,16 +101,16 @@ return array(
                 ),
                 'admin/<controller:(pictures|videos)>/<id:\d+>/<action:\w+>'=>'admin/<controller>/<action>',
 
-				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+                '<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+                '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
 
                 '<module:\w+>/<controller:\w+>'=>'<module>/<controller>',
                 '<module:\w+>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
-			),
-		),
-	),
+            ),
+        ),
+    ),
 
-	'params'=>array(
+    'params'=>array(
         'admin'=>array(
             'login'=>'root',
             'password'=>sha1('root')

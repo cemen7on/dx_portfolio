@@ -13,16 +13,10 @@ defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 defined('US') or define('US', URL_SEPARATOR);
 
 $DBConfigName=IS_PRODUCTION?'production':'local';
-$db=__DIR__.'/protected/config/db/'.$DBConfigName.'.php';
-
-$config=__DIR__.'/protected/config/main.php';
-if(IS_PRODUCTION){
-    $yii=__DIR__.'/yii/yii.php';
-}
-else{
-    $yii=__DIR__.'/../yii/1.1.16/framework/yii.php';
-}
-
+$config=__DIR__.'/protected/config/'.$DBConfigName.'.php';
+$yii=IS_PRODUCTION
+     ? __DIR__.'/yii/yii.php'
+     : __DIR__.'/../yii/1.1.16/framework/yii.php';
 
 require_once $yii;
 Yii::createWebApplication($config)->run();
