@@ -1,5 +1,5 @@
 <?php
-$config=require __DIR__.'main.php';
+$config=require __DIR__.'/main.php';
 
 $config['components']['db']=array(
     'connectionString'=>'mysql:host=localhost;dbname=host1405428',
