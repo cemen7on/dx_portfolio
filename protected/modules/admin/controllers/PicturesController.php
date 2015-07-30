@@ -1,4 +1,6 @@
 <?php
+namespace admin\controllers;
+
 class PicturesController extends UploadController{
     /**
      * Picture api component instance
@@ -14,17 +16,17 @@ class PicturesController extends UploadController{
     public function init(){
         parent::init();
 
-        $this->api=new SPictures();
+        // $this->api=new SPictures();
     }
 
     /**
      * Handles usual request for pictures.
-     * Renders and processes form
-     *
-     * @throws Exception
      */
     public function actionIndex(){
-        $this->render('index', array('model'=>new models\Pictures()));
+        $this->render('index', array(
+            'picturesModel'=>new \models\Pictures(),
+            'mediaModel'=>new \models\Media()
+        ));
     }
 
     /**

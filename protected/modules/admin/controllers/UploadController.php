@@ -1,5 +1,7 @@
 <?php
-class UploadController extends ModuleController{
+namespace admin\controllers;
+
+class UploadController extends WebController{
     /**
      * Controller view's layout name
      *

@@ -1,6 +1,6 @@
 <?php
 $serverAddress=$_SERVER['SERVER_ADDR'];
-define('PRODUCTION_IP', '185.28.20.70');
+define('PRODUCTION_IP', '185.26.122.164');
 define('IS_PRODUCTION', $serverAddress==PRODUCTION_IP);
 
 ini_set('display_errors', IS_PRODUCTION);
@@ -15,7 +15,7 @@ defined('US') or define('US', URL_SEPARATOR);
 $DBConfigName=IS_PRODUCTION?'production':'local';
 $config=__DIR__.'/protected/config/'.$DBConfigName.'.php';
 $yii=IS_PRODUCTION
-     ? __DIR__.'/yii/yii.php'
+     ? __DIR__.'/../../../yii/1.1.16/framework/yii.php'
      : __DIR__.'/../yii/1.1.16/framework/yii.php';
 
 require_once $yii;

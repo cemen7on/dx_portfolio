@@ -1,4 +1,6 @@
 <?php
+namespace admin\controllers;
+
 class VideosController extends UploadController{
     /**
      * Video api component instance

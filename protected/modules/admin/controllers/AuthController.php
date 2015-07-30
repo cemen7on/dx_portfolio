@@ -1,5 +1,10 @@
 <?php
-class AuthController extends ModuleController{
+namespace admin\controllers;
+
+use admin\components\AdminIdentity;
+use admin\models\Admins;
+
+class AuthController extends \CController{
     /**
      * Default action name
      *
@@ -19,20 +24,20 @@ class AuthController extends ModuleController{
      * Shows and process authorization form
      */
     public function actionLogin(){
-        if(!Yii::app()->admin->isGuest){
+        if(!\Yii::app()->admin->isGuest){
             $this->redirect('/admin/pictures');
         }
 
         $aModel=new Admins();
 
-        if(!empty($_POST['Admins'])){
-            $aModel->attributes=$_POST['Admins'];
+        if(!empty($_POST['admin_models_Admins'])){
+            $aModel->attributes=$_POST['admin_models_Admins'];
 
             if($aModel->validate()){
                 $identity=new AdminIdentity($aModel->login, $aModel->password);
 
                 if($identity->authenticate()){
-                    Yii::app()->admin->login($identity);
+                    \Yii::app()->admin->login($identity);
 
                     // Authorization succeeded. Quit point
                     $this->redirect('/admin/pictures');
@@ -61,7 +66,7 @@ class AuthController extends ModuleController{
      * Destroys admin authorization
      */
     public function actionLogout(){
-        Yii::app()->admin->logout();
+        \Yii::app()->admin->logout();
 
         $this->redirect('/admin/auth');
     }

@@ -1,8 +1,6 @@
 <?php
     /** * @var ModuleController $this */
 
-    $this->registerRootCssFile('/css/main.css');
-
     Yii::app()->clientScript->registerCoreScript('jquery'); ?>
 
 <!DOCTYPE html>

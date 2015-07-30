@@ -1,5 +1,7 @@
 <?php
-class AdminModule extends CWebModule{
+namespace admin;
+
+class AdminModule extends \CWebModule{
     /**
      * Module's default controller name
      *
@@ -8,18 +10,26 @@ class AdminModule extends CWebModule{
     public $defaultController='auth';
 
     /**
+     * Module's controllers namespace.
+     * Is used for autoload.
+     *
+     * @var string
+     */
+    public $controllerNamespace='admin\controllers';
+
+    /**
      * Initialization method.
      * Sets import routes for module
      */
     protected function init(){
-        // import the module-level models and components
+        parent::init();
+
+        // Import the module-level models and components
         $this->setImport(array(
             'admin.api.*',
             'admin.components.*',
             'admin.controllers.*',
             'admin.models.*',
         ));
-
-        parent::init();
     }
 } 

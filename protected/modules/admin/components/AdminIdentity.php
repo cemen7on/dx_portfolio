@@ -1,12 +1,14 @@
 <?php
-class AdminIdentity extends CUserIdentity{
+namespace admin\components;
+
+class AdminIdentity extends \CUserIdentity{
     /**
      * Authenticates a user.
      *
      * @return boolean
      */
     public function authenticate(){
-        $admin=Yii::app()->params['admin'];
+        $admin=\Yii::app()->params['admin'];
 
         if($admin['login']!=$this->username){
             $this->errorCode=self::ERROR_USERNAME_INVALID;

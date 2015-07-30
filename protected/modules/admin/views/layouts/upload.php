@@ -1,24 +1,10 @@
 <?php
     /**
-     * @var UploadController $this
+     * @var \admin\controllers\UploadController $this
      * @var string $content
      */
 
-    $this->beginContent('/layouts/main');
-
-    Yii::app()->clientScript->registerCssFile('/css/font-awesome/css/font-awesome.min.css');
-
-    $this->registerRootScriptFile('/js/components/define.js');
-    $this->registerRootScriptFile('/js/components/Core.js');
-
-    $this->registerRootScriptFile('/js/components/modal/Modal.js');
-    $this->registerRootCssFile('/css/modal/styles.css');
-
-    $this->registerModuleScriptFile('/js/upload.js');
-    $this->registerModuleCssFile('/css/upload.css');
-
-    $this->registerModuleScriptFile('/js/extensions/jquery.dataTables.min.js');
-    $this->registerModuleCssFile('/css/extensions/jquery.dataTables.min.css'); ?>
+    $this->beginContent('/layouts/main'); ?>
 
     <ul class="breadcrumbs">
         <li><?php

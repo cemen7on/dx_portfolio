@@ -1,5 +1,7 @@
 <?php
-class Admins extends CFormModel{
+namespace admin\models;
+
+class Admins extends \CFormModel{
     /**
      * Account's login
      *
