@@ -1,9 +1,9 @@
 <?php
 $serverAddress=$_SERVER['SERVER_ADDR'];
-define('PRODUCTION_IP', '185.26.122.164');
+define('PRODUCTION_IP', '127.5.5.1');
 define('IS_PRODUCTION', $serverAddress==PRODUCTION_IP);
 
-ini_set('display_errors', IS_PRODUCTION);
+ini_set('display_errors', !IS_PRODUCTION);
 ini_set('error_reporting', E_ALL);
 
 defined('YII_DEBUG') or define('YII_DEBUG', IS_PRODUCTION);
