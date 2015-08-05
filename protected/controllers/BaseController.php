@@ -1,6 +1,9 @@
 <?php
 namespace controllers;
 
+use Yii;
+use components\REST;
+
 class BaseController extends \CController{
     /**
      * Page's title
@@ -15,30 +18,30 @@ class BaseController extends \CController{
      * @var array
      */
     protected $scriptMap=array(
-        'backbone'=>array(
+        '/js-origin/backbone'=>array(
             'underscore.js',
         ),
-        'core'=>array(
+        '/js-origin/core'=>array(
             'define.js',
             'Core.js'
         ),
-        'extensions'=>array(
+        '/js-origin/extensions'=>array(
             'youtube/youtube.js'
         ),
-        'components'=>array(
+        '/js-origin/components'=>array(
             'Container.js',
             'Modal.js',
         ),
-        'models',
-        'collections'=>array(
+        '/js-origin/models',
+        '/js-origin/collections'=>array(
             'ArtCollection.js'
         ),
-        'controllers',
-        'views'=>array(
+        '/js-origin/controllers',
+        '/js-origin/views'=>array(
             'art/Thumb.js',
             'art/ThumbsCollection.js'
         ),
-        'index.js'
+        '/js-origin/index.js'
     );
 
     /**
@@ -47,12 +50,12 @@ class BaseController extends \CController{
      * @var array
      */
     protected $cssMap=array(
-        'nav',
-        'modal',
-        'pagination',
-        'common.css',
-        'main.css',
-        'art.css'
+        '/css-origin/nav',
+        '/css-origin/modal',
+        '/css-origin/pagination',
+        '/css-origin/common.css',
+        '/css-origin/main.css',
+        '/css-origin/art.css'
     );
 
     /**
@@ -60,19 +63,19 @@ class BaseController extends \CController{
      * Registers script files.
      */
     public function init(){
-        \Yii::app()->clientScript->registerCoreScript('jquery');
+        Yii::app()->clientScript->registerCoreScript('jquery');
 
         if(YII_DEBUG){
-            \Yii::app()->clientScript->registerScriptFile(\Yii::app()->assetManager->publish(\Yii::getPathOfAlias('webroot').'/js/application.js'), \CClientScript::POS_HEAD);
-            \Yii::app()->clientScript->registerCssFile(\Yii::app()->assetManager->publish(\Yii::getPathOfAlias('webroot').'/css/styles.css'));
+            Yii::app()->ScriptRegister->publish($this->scriptMap);
+            Yii::app()->CssRegister->publish($this->cssMap);
 
-            \Yii::app()->clientScript->registerCssFile('/css/font-awesome/css/font-awesome.min.css');
+            Yii::app()->clientScript->registerCssFile('/css-origin/font-awesome/css/font-awesome.min.css');
         }
         else{
-            \Yii::app()->ScriptRegister->publish($this->scriptMap);
-            \Yii::app()->CssRegister->publish($this->cssMap);
+            Yii::app()->ScriptRegister->publish('/js/application.js');
+            Yii::app()->CssRegister->publish('/css/styles.css');
 
-            \Yii::app()->clientScript->registerCssFile('/css-origin/font-awesome/css/font-awesome.min.css');
+            Yii::app()->clientScript->registerCssFile('/css/font-awesome/css/font-awesome.min.css');
         }
     }
 
@@ -82,8 +85,8 @@ class BaseController extends \CController{
      * @param array $data. Data to send
      */
     protected function sendData(array $data){
-        if(\Yii::app()->request->isAjaxRequest){
-            echo \CJSON::encode($data);
+        if(Yii::app()->request->isAjaxRequest){
+            REST::success($data);
         }
         else{
             $this->render('/base/data', array('data'=>$data));

@@ -1,85 +1,73 @@
 <?php
-class SVideos{
+namespace admin\api;
+
+class VideosException extends \Exception{}
+
+use admin\components;
+use models;
+
+class Videos{
     /**
      * Finds record by pk.
      *
      * @param int $id. PK of record
      * @param string|array $with. Relations for record
-     * @return CActiveRecord|CVideos
-     * @throws Exception
+     * @return models\ActiveRecord|models\Videos
+     * @throws VideosException
      */
     protected function findRecordById($id, $with=array()){
         if(is_string($with)){
             $with=array($with);
         }
 
-        $pModel=new Videos();
+        $pModel=new models\Videos();
         $record=$pModel->with($with)->findByPk($id);
 
         if(empty($record)){
-            throw new Exception("Record #{$id} was not found");
+            throw new VideosException("Record #{$id} was not found");
         }
 
         return $record;
     }
 
     /**
-     * Formats data in model
-     *
-     * @param CPictures $model. Model containing data to format
-     * @return ActiveRecord|CVideos
-     */
-    protected function format($model){
-        if(isset($model->thumbSmall->name)){
-            $model->thumb_small=CVideos::createSmallThumbUrl($model->thumbSmall->name);
-        }
-
-        if(isset($model->thumbBig->name)){
-            $model->thumb_big=CVideos::createBigThumbUrl($model->thumbBig->name);
-        }
-
-        return $model;
-    }
-
-    /**
      * Uploads video to server from $_POST
      *
      * @return array. Saved pictures paths array
-     * @throws Exception
+     * @throws VideosException
      */
     public function upload(){
-        if(empty($_POST['Videos'])){
-            throw new Exception('Invalid $_POST request. $_POST[\'Videos\'] is missing');
+        if(empty($_POST['models_Videos'])){
+            throw new VideosException('Invalid $_POST request. $_POST[\'models_Videos\'] is missing');
         }
 
-        $vModel=new Videos('input');
-        $vModel->attributes=$_POST['Videos'];
+        $videoModel=new models\Videos('input');
+        $videoModel->attributes=$_POST['models_Videos'];
 
-        if(!$vModel->validate()){
-            throw new ApiException('Form validation failed. Check all fields', $vModel->getErrors());
+        if(!$videoModel->validate()){
+            throw new VideosException('Form validation failed. Check all fields');
         }
 
-        $videoId=$vModel->getIdFromLink();
-
+        $videoId=$videoModel->getIdFromLink();
         if(empty($videoId)){
-            throw new Exception('Invalid link format. Failed to fetch video id');
+            throw new VideosException('Invalid link format. Failed to fetch video id');
         }
 
-        Yii::app()->google->client->setAccessToken(Yii::app()->session->get('oauthToken'));
+        \Yii::app()->google->client->setAccessToken(\Yii::app()->session->get('oauthToken'));
 
-        $videos=Yii::app()->youtube->sdk->videos->listVideos('snippet', array('id'=>$videoId));
+        $videos=\Yii::app()->youtube->sdk->videos->listVideos('snippet', array('id'=>$videoId));
 
         if(!isset($videos['items'][0])){
-            throw new Exception('Video was not found!');
+            throw new VideosException('Video was not found!');
         }
 
         $video=$videos['items'][0];
         if(!isset($video['snippet']['thumbnails']['maxres'])){
-            throw new Exception('Videos quality is too low for fetching big thumb!');
+            throw new VideosException('Videos quality is too low for fetching big thumb!');
         }
 
         if(!isset($video['snippet']['title'])){
-            throw new Exception('Video must have a title');
+            throw new VideosException('Video must have a title');
         }
 
         $title=$video['snippet']['title'];
@@ -87,34 +75,39 @@ class SVideos{
         $source=$video['snippet']['thumbnails']['maxres']['url'];
         $extension=pathinfo($source, PATHINFO_EXTENSION);
 
-        $vModel=new Videos('create');
+        $videoModel=new models\Videos('create');
 
         // Copy source to temp directory.
         // It is needed, because Image extension only works with files on local machine
-        $temp=CVideos::createTmpPath(time().'.'.$extension);
+        $temp=models\Videos::createTmpPath(time().'.'.$extension);
         copy($source, $temp);
 
         // Save small thumb image from src image
-        $image=Images::blank();
-        $vModel->thumb_small=$image->saveSmallThumb($temp, CVideos::createSmallThumbPath($image->getFileName($extension)));
+        $image=models\Images::blank();
+        $videoModel->smallThumbId=$image->saveSmallThumb($temp, models\Videos::createSmallThumbPath($image->getFileName($extension)));
 
         // Save big thumb image from src image
-        $image=Images::blank();
-        $vModel->thumb_big=$image->saveBigThumb($temp, CVideos::createBigThumbPath($image->getFileName($extension)));
+        $image=models\Images::blank();
+        $videoModel->bigThumbId=$image->saveBigThumb($temp, models\Videos::createBigThumbPath($image->getFileName($extension)));
+
+        // Save cover
+        $image=models\Images::blank();
+        $videoModel->coverId=$image->cropCover($temp, models\Videos::createCoverPath($image->getFileName($extension)));
 
         // Remove temporary file
         @unlink($temp);
 
-        if(!$vModel->create($videoId, $title, $description)){
-            throw new Exception('Failed to create record');
+        if(!$videoModel->create($videoId, $title, $description)){
+            throw new VideosException('Failed to create record');
         }
 
-        $dataTable=new DataTables(Videos::DT_COLUMNS());
-        $vModel->with(array('thumbSmall', 'thumbBig'))->refresh();
+        $dataTable=new components\DataTables(models\Videos::DT_COLUMNS());
+        $videoModel->with(array('smallThumb', 'bigThumb', 'cover'))->refresh();
+        $videoModelArray=$videoModel->toArray();
 
         return array(
-            'row'=>$dataTable->formatData(array($vModel))[0],
-            'data'=>$this->format($vModel)->toArray()
+            'row'=>$dataTable->formatData(array($videoModel))[0],
+            'data'=>models\Pictures::format($videoModelArray)
         );
     }
 
@@ -124,11 +117,10 @@ class SVideos{
      * @return array
      */
     public function content(){
-        $criteria=new CDbCriteria();
-        $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
+        $criteria=new \CDbCriteria();
+        $criteria->with=array('smallThumb', 'bigThumb', 'cover');
 
-        $dataTable=new DataTables(Videos::DT_COLUMNS(), new Videos(), $criteria);
-
+        $dataTable=new components\DataTables(models\Videos::DT_COLUMNS(), new models\Videos(), $criteria);
         return $dataTable->request()->format();
     }
 
@@ -223,26 +215,6 @@ class SVideos{
 
         if(!$video->delete()){
             throw new Exception('Failed to remove record');
-        }
-
-        return true;
-    }
-
-    /**
-     * Removes cover of specific record
-     *
-     * @param int $videoId. Video id to remove cover of
-     * @return bool
-     * @throws Exception
-     */
-    public function deleteCover($videoId){
-        $video=$this->findRecordById($videoId, 'imageCover');
-        $video->cover=new CDbExpression('NULL');
-
-        $video->imageCover->remove(CVideos::createCoverPath($video->imageCover->name));
-
-        if(!$video->save()){
-            throw new Exception('Failed to remove cover');
         }
 
         return true;

@@ -1,11 +1,15 @@
 <?php
 namespace admin\controllers;
 
+use admin\api\Pictures;
+use models;
+use components\REST;
+
 class PicturesController extends UploadController{
     /**
      * Picture api component instance
      *
-     * @var null|SPictures
+     * @var null|Pictures
      */
     protected $api=null;
 
@@ -16,7 +20,7 @@ class PicturesController extends UploadController{
     public function init(){
         parent::init();
 
-        // $this->api=new SPictures();
+        $this->api=new Pictures();
     }
 
     /**
@@ -24,8 +28,7 @@ class PicturesController extends UploadController{
      */
     public function actionIndex(){
         $this->render('index', array(
-            'picturesModel'=>new \models\Pictures(),
-            'mediaModel'=>new \models\Media()
+            'picturesModel'=>new models\Pictures()
         ));
     }
 
@@ -34,7 +37,7 @@ class PicturesController extends UploadController{
      * Uploads picture
      */
     public function actionUpload(){
-        components\REST::execute($this->api, 'upload');
+        REST::execute($this->api, 'upload');
     }
 
     /**
@@ -42,9 +45,9 @@ class PicturesController extends UploadController{
      * Crops big thumb for front preview
      */
     public function actionCrop(){
-        components\REST::execute($this->api, 'crop', array(
-            Yii::app()->rest->requireQuery('id'),
-            Yii::app()->rest->requirePost('left')
+        REST::execute($this->api, 'crop', array(
+            \Yii::app()->RestRequest->requireQuery('id'),
+            \Yii::app()->RestRequest->requirePost('left')
         ));
     }
 
@@ -53,7 +56,7 @@ class PicturesController extends UploadController{
      * Returns json encoded content for pictures table
      */
     public function actionContent(){
-        components\REST::execute($this->api, 'content');
+        REST::execute($this->api, 'content');
     }
 
     /**
@@ -64,6 +67,7 @@ class PicturesController extends UploadController{
      * @put string title. New picture's title
      * @put string description. New picture's description
      */
+    /*
     public function actionUpdate(){
         $pictureId=Yii::app()->rest->requireQuery('id');
 
@@ -95,6 +99,7 @@ class PicturesController extends UploadController{
 
         components\REST::execute($this->api, 'update', array($pictureId, $attributes));
     }
+    */
 
     /**
      * Updates cover of specified record
@@ -103,8 +108,8 @@ class PicturesController extends UploadController{
      * @files cover. Uploaded cover
      */
     public function actionCover(){
-        components\REST::execute($this->api, 'updateCover', array(
-            Yii::app()->rest->requireQuery('id')
+        REST::execute($this->api, 'updateCover', array(
+            \Yii::app()->RestRequest->requireQuery('id')
         ));
     }
 
@@ -113,20 +118,11 @@ class PicturesController extends UploadController{
      *
      * @get int id. Picture id
      */
+    /*
     public function actionDelete(){
         components\REST::execute($this->api, 'delete', array(
             Yii::app()->rest->requireQuery('id'))
         );
     }
-
-    /**
-     * Removes picture's cover
-     *
-     * @get int id. Picture id
-     */
-    public function actionDeleteCover(){
-        components\REST::execute($this->api, 'deleteCover', array(
-            Yii::app()->rest->requireQuery('id')
-        ));
-    }
-} 
+    */
+}

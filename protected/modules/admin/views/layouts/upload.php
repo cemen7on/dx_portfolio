@@ -1,4 +1,14 @@
 <?php
+    Yii::app()->clientScript->registerCssFile('/css/font-awesome/css/font-awesome.min.css');
+
+    Yii::app()->CssRegister->publish('/css-origin/main.css');
+    Yii::app()->CssRegister->publish('/protected/modules/admin/assets/css');
+
+    Yii::app()->ScriptRegister->publish('/protected/modules/admin/assets/js/extensions');
+    Yii::app()->ScriptRegister->publish('/protected/modules/admin/assets/js/components');
+
+    Yii::app()->ScriptRegister->publish('/protected/modules/admin/assets/js/upload.js');
+
     /**
      * @var \admin\controllers\UploadController $this
      * @var string $content

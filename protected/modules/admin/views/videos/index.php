@@ -1,11 +1,9 @@
 <?php
     /**
-     * @var VideosController $this
-     * @var Videos $model
+     * @var \admin\controllers\VideosController $this
+     * @var models\Videos $videoModel
      * @var CActiveForm $form
      */
-
-    $this->registerModuleScriptFile('/js/videos.js');
 ?>
 
 <button>
@@ -26,7 +24,7 @@
         )
     )); ?>
 
-    <div><?php echo $form->textField($model, 'link', array('placeholder'=>'Link to video on YouTube'));?></div>
+    <div><?php echo $form->textField($videoModel, 'link', array('placeholder'=>'Link to video on YouTube'));?></div>
     <div><?php echo CHtml::submitButton('Submit');?></div><?php
 
     $this->endWidget(); ?>
@@ -34,7 +32,7 @@
     <table id="videos" class="content">
         <thead>
             <tr><?php
-                foreach(Videos::DT_COLUMNS() as $column){ ?>
+                foreach(\models\Videos::DT_COLUMNS() as $column){ ?>
                     <th><?php echo $column['caption'];?></th><?php
                 } ?>
             </tr>

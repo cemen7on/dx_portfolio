@@ -31,8 +31,8 @@ use('Collections').ArtCollection=Core.Collection.extend(function(){
      * @override
      */
     this.parse=function(response){
-        this.total=response.total;
+        this.total=response.success.total;
 
-        return response.data;
+        return response.success.data;
     };
 });

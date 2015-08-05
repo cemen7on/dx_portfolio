@@ -2,7 +2,7 @@
 namespace components;
 
 /**
- * Class for sending REST response.
+ * Class for REST functionality.
  *
  * Class REST
  */
@@ -17,115 +17,94 @@ class REST{
     public static function execute($object, $method, $args=array()){
         try{
             if(!method_exists($object, $method)){
-                throw new \CException("Method {$method} was not found in passed object");
+                throw new \Exception("Method {$method} was not found in passed object");
             }
 
             $response=call_user_func_array(array($object, $method), $args);
 
-            self::successResponse(
-                $response,
-                is_array($response)
-                    ? HTTPContentType::JSON
-                    : HTTPContentType::HTML
-            );
+            self::response($response);
         }
         catch(\Exception $e){
-            self::errorResponse($e);
+            self::error($e);
         }
     }
 
     /**
      * Sends response
      *
-     * @param $data
-     * @param string $type
-     * @param int $status
+     * @param {*} $data. Response data
+     * @param int $status. HTTP status code
      */
-    public static function sendResponse($data, $type=HTTPContentType::JSON, $status=200){
-        $response=new Response($status, array(), $data, $type);
+    public static function response($data, $status=200){
+        $response=new Response($status, array(), $data);
 
         $response->send();
     }
 
     /**
-     * Sends success response
+     * Success response formatted method
      *
-     * @param $data
-     * @param $type
+     * @param {*} $data. Data to send
      */
-    public static function successResponse($data, $type=HTTPContentType::JSON){
-        self::sendResponse($data, $type);
+    public static function success($data){
+        self::response(array('success'=>$data));
     }
 
     /**
-     * Converts passed data to error formatted data
-     *
-     * @param string $message
-     * @param int $code
-     * @param null|array $data
-     * @return array
+     * Error response formatted method
      */
-    private static function _toErrorFormat($message, $code=0, $data=null){
+    public static function error(){
+        $first=func_get_arg(0);
+        if($first instanceof \Exception){
+            self::errorException($first);
+
+            return ;
+        }
+
+        $arguments=func_get_args();
+        $message=$arguments[0];
+        $code=isset($arguments[1])?$arguments[1]:0;
+        $type=isset($arguments[2])?$arguments[2]:null;
+
+        self::errorArgumentsList($message, $code, $type);
+    }
+
+    /**
+     * Error response formatted method which takes exception as argument
+     *
+     * @param \Exception $exception. Exception to parse
+     */
+    protected static function errorException($exception){
+        $message=$exception->getMessage();
+        $code=$exception->getCode();
+        $type=get_class($exception);
+
+        self::errorArgumentsList($message, $code, $type);
+    }
+
+    /**
+     * Error response formatted method which takes arguments list
+     *
+     * @param string $message. Error message
+     * @param int $code. Error code
+     * @param null $type. Error type
+     */
+    protected static function errorArgumentsList($message, $code=0, $type=null){
         $response=array(
             'error'=>array(
-                'message'=>$message,
-                'code'=>$code
+                'message'=>$message
             )
         );
 
-        if(!empty($data)){
-            $response['error']['data']=$data;
+        if(!empty($code)){
+            $response['error']['code']=$code;
         }
 
-        return $response;
-    }
-
-    /**
-     * Parsed passed Exception and return error formatted data
-     *
-     * @param \Exception $e
-     * @return array
-     */
-    private static function _parseException(\Exception $e){
-        $data=null;
-        if($e instanceof \ApiException){
-            $data=$e->getData();
+        if(!empty($type)){
+            $response['error']['type']=$type;
         }
 
-        return self::_toErrorFormat(
-            $e->getMessage(),
-            $e->getCode(),
-            $data
-        );
-    }
-
-    /**
-     * Sends error response
-     *
-     * @throws \Exception
-     */
-    public static function errorResponse(){
-        $first=func_get_arg(0);
-        if($first instanceof \Exception){
-            $error=self::_parseException($first);
-        }
-        else{
-            $argsNumber=func_num_args();
-
-            $code=0;
-            if($argsNumber>1){
-                $code=func_get_arg(1);
-            }
-
-            $data=null;
-            if($argsNumber>2){
-                $data=func_get_arg(2);
-            }
-
-            $error=self::_toErrorFormat($first, $code, $data);
-        }
-
-        self::sendResponse($error);
+        self::response($response);
     }
 }
 

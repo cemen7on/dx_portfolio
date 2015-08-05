@@ -1,11 +1,15 @@
 <?php
 namespace admin\controllers;
 
+use admin\api\Videos;
+use models;
+use components\REST;
+
 class VideosController extends UploadController{
     /**
      * Video api component instance
      *
-     * @var null|SVideos
+     * @var null|Videos
      */
     protected $api=null;
 
@@ -16,17 +20,15 @@ class VideosController extends UploadController{
     public function init(){
         parent::init();
 
-        $this->api=new SVideos();
+        $this->api=new Videos();
     }
 
     /**
      * Handles usual request for videos.
      * Renders and processes form
-     *
-     * @throws Exception
      */
     public function actionIndex(){
-        $this->render('index', array('model'=>new Videos()));
+        $this->render('index', array('videoModel'=>new models\Videos()));
     }
 
     /**
@@ -103,14 +105,4 @@ class VideosController extends UploadController{
         );
     }
 
-    /**
-     * Removes videos's cover
-     *
-     * @get int id. Video id
-     */
-    public function actionDeleteCover(){
-        REST::execute($this->api, 'deleteCover', array(
-            Yii::app()->rest->requireQuery('id')
-        ));
-    }
 } 

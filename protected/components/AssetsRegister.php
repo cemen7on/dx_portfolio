@@ -3,25 +3,6 @@ namespace components;
 
 abstract class AssetsRegister extends \CApplicationComponent{
     /**
-     * Assets' root path
-     *
-     * @var string
-     */
-    public $rootPath='';
-
-    /**
-     * Sets assets' root path
-     *
-     * @param string $rootPath. Assets' root path
-     * @return $this
-     */
-    public function setRootPath($rootPath){
-        $this->rootPath=$rootPath;
-
-        return $this;
-    }
-
-    /**
      * Registers assets, specified in map
      *
      * @param array $assets. Asset to import
@@ -134,6 +115,6 @@ abstract class AssetsRegister extends \CApplicationComponent{
      * @return bool|mixed|string
      */
     protected function createAbsolutePath($entity){
-        return \Yii::getPathOfAlias($this->rootPath).DS.$entity;
+        return realpath(\Yii::getPathOfAlias('webroot').DS.$entity);
     }
 } 

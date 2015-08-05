@@ -2,7 +2,6 @@
     /**
      * @var \admin\controllers\PicturesController $this
      * @var \models\Pictures $picturesModel
-     * @var \models\Media $mediaModel
      * @var CActiveForm $form
      */
     $form=$this->beginWidget('CActiveForm', array(
@@ -13,10 +12,10 @@
         )
     )); ?>
 
-    <div><?php echo $form->fileField($mediaModel, 'src');?></div>
+    <div><?php echo $form->fileField($picturesModel, 'src');?></div>
     <div><?php echo $form->dropDownList($picturesModel, 'typeId', models\PicturesType::model()->findAllIndexByPk());?></div>
-    <div><?php echo $form->textField($mediaModel, 'title', array('placeholder'=>'File name'));?></div>
-    <!--div><?php // echo $form->textArea($mediaModel, 'description', array('placeholder'=>'File description'));?></div-->
+    <div><?php echo $form->textField($picturesModel, 'title', array('placeholder'=>'File name'));?></div>
+    <div><?php echo $form->textArea($picturesModel, 'description', array('placeholder'=>'File description'));?></div>
     <div><?php echo CHtml::submitButton('Submit');?></div><?php
 
     $this->endWidget(); ?>

@@ -1,7 +1,12 @@
 <?php
 namespace models;
 
-class Videos extends ActiveRecord{
+class Videos extends Media{
+    /**
+     * Tmp upload directory
+     */
+    const TMP_DIRECTORY='tmp';
+
     /**
      * YouTube video link
      *
@@ -17,6 +22,23 @@ class Videos extends ActiveRecord{
     private static $_DT_COLUMNS=array();
 
     /**
+     * @param string $className
+     * @return Videos
+     */
+    public static function model($className=__CLASS__){
+        return parent::model($className);
+    }
+
+    /**
+     * Returns model's table name
+     *
+     * @return string
+     */
+    public function tableName(){
+        return 'Videos';
+    }
+
+    /**
      * Returns dataTables columns configuration
      *
      * @return array
@@ -27,7 +49,7 @@ class Videos extends ActiveRecord{
                 array('index'=>0, 'name'=>'id', 'alias'=>'t.id', 'caption'=>'Id'),
                 array(
                     'index'=>1,
-                    'name'=>'creation_date',
+                    'name'=>'created',
                     'caption'=>'Created',
                     'formatter'=>function($date){
                         return date('d F Y H:i', strtotime($date));
@@ -35,45 +57,47 @@ class Videos extends ActiveRecord{
                 ),
                 array(
                     'index'=>2,
-                    'name'=>'youtube_id',
+                    'name'=>'ytId',
                     'caption'=>'Link',
                     'formatter'=>function($youtubeId){
                         $link='https://youtube.com/watch?v='.$youtubeId;
 
-                        return CHtml::link($link, $link, array('target'=>'_blank'));
+                        return \CHtml::link($link, $link, array('target'=>'_blank'));
                     }
                 ),
                 array('index'=>3, 'name'=>'title', 'caption'=>'Title'),
                 array('index'=>4, 'name'=>'description', 'caption'=>'Description'),
                 array(
                     'index'=>5,
-                    'name'=>'thumb_small',
+                    'name'=>'smallThumbId',
                     'caption'=>'Preview',
-                    'formatter'=>function($thumbIndex, $data){
-                        $smallThumb=isset($data->thumbSmall->name)?$data->thumbSmall->name:'';
-
-                        return CHtml::image(CVideos::createSmallThumbUrl($smallThumb));
+                    'formatter'=>function($smallThumbId, $data){
+                        return \CHtml::image(
+                            self::createSmallThumbUrl($data['smallThumb']['name']),
+                            '',
+                            array('data-big-thumb'=>self::createBigThumbUrl($data['bigThumb']['name']))
+                        );
                     }
                 ),
                 array(
                     'index'=>6,
-                    'name'=>'cover',
+                    'name'=>'coverId',
                     'caption'=>'Cover',
-                    'formatter'=>function($thumbIndex, $data){
-                        $html=null;
-                        if(isset($data->imageCover->name)){
-                            $html=Html::cover(CVideos::createCoverUrl($data->imageCover->name));
-                        }
-
-                        return $html;
+                    'formatter'=>function($coverId, $data){
+                        return \CHtml::image(
+                            self::createCoverUrl($data['cover']['name']),
+                            '',
+                            array('data-big-thumb'=>self::createBigThumbUrl($data['bigThumb']['name']))
+                        );
                     }
                 ),
                 array(
                     'index'=>7,
-                    'name'=>'cover_order',
+                    'name'=>'coverId',
                     'caption'=>'Display on start',
                     'formatter'=>function($order){
-                        return Html::coverOrder($order, Yii::app()->params['covers']['animation']['count']);
+                        // return Html::coverOrder($order, Yii::app()->params['covers']['animation']['count']);
+                        return 'Hello';
                     }
                 ),
                 array(
@@ -81,7 +105,7 @@ class Videos extends ActiveRecord{
                     'name'=>'id',
                     'caption'=>'Delete',
                     'formatter'=>function($id){
-                        return CHtml::link('Remove', Yii::app()->createAbsoluteUrl('/admin/videos/'.$id), array('class'=>'remove-link'));
+                        return \CHtml::link('Remove', \Yii::app()->createAbsoluteUrl('/admin/videos/'.$id), array('class'=>'remove-link'));
                     }
                 )
             );
@@ -89,23 +113,6 @@ class Videos extends ActiveRecord{
 
         return self::$_DT_COLUMNS;
     }
-
-	/**
-	 * @param string $className
-	 * @return Videos
-	 */
-	public static function model($className=__CLASS__){
-		return parent::model($className);
-	}
-
-    /**
-     * Returns model's table name
-     *
-     * @return string
-     */
-    public function tableName(){
-		return 'Videos';
-	}
 
     /**
      * Validation rules
@@ -122,22 +129,6 @@ class Videos extends ActiveRecord{
         );
     }
 
-    /**
-     * Model's relations list
-     *
-     * @return array
-     */
-    public function relations(){
-        return array(
-            'data'=>array(
-                self::BELONGS_TO,
-                'models\Media',
-                array('mediaId'=>'id'),
-                'with'=>array('src', 'smallThumb', 'bigThumb', 'cover')
-            )
-        );
-    }
-
 	/**
 	 * Returns records
 	 *
@@ -149,7 +140,7 @@ class Videos extends ActiveRecord{
             $criteria=new \CDbCriteria();
         }
 
-        $criteria->with='data';
+        $criteria->with=array('smallThumb', 'bigThumb', 'cover');
 
 		return $this->findAll($criteria);
 	}
@@ -182,7 +173,7 @@ class Videos extends ActiveRecord{
      */
     public function create($ytId, $title, $description){
         $this->setAttributes(array(
-            'youtube_id'=>$ytId,
+            'ytId'=>$ytId,
             'title'=>$title,
             'description'=>$description,
             'created'=>new \CDbExpression('NOW()')
@@ -192,20 +183,12 @@ class Videos extends ActiveRecord{
     }
 
     /**
-     * Formats array records
+     * Returns upload tmp path
      *
-     * @param {array} $records. Records to format
-     * @return mixed
+     * @param string $filename. File name
+     * @return string
      */
-    public static function format(&$records){
-        foreach($records as &$record){
-            if(!isset($record['data'])){
-                continue;
-            }
-
-            Media::format($record['data']);
-        }
-
-        return $records;
+    public static function createTmpPath($filename){
+        return self::createPath(self::TMP_DIRECTORY, $filename);
     }
 }

@@ -72,19 +72,6 @@ $(document).ready(function(){
         });
     });
 
-    // Click on cover column
-    $document.on('click', '.editable-cover', function(){
-        var $this=$(this),
-            id=$this.parent().data('id'),
-            smallThumb=$this.prev().children('img')[0],
-            bigThumbUrl;
-
-        bigThumbUrl=smallThumb.src.substr(0, smallThumb.src.indexOf('thumb_small'));
-        bigThumbUrl+='thumb_big/'+smallThumb.dataset.bigThumb;
-
-        $('.upload-form').trigger('file.upload', {id:id, thumb_big:bigThumbUrl});
-    });
-
     // Change picture type.
     $document.on('change', '.dropdown-type', function(){
         var _this=this,

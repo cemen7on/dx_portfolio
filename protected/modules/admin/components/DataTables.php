@@ -1,4 +1,8 @@
 <?php
+namespace admin\components;
+
+use models;
+
 class DataTables{
     /**
      * Table columns info array
@@ -10,21 +14,21 @@ class DataTables{
     /**
      * Model instance to fetch records from
      *
-     * @var CActiveRecord|null
+     * @var \CActiveRecord|null
      */
     protected $model=null;
 
     /**
      * Query criteria object
      *
-     * @var CDbCriteria|null
+     * @var \CDbCriteria|null
      */
     protected $criteria=null;
 
     /**
      * HTTP Request object alias
      *
-     * @var CHttpRequest
+     * @var \CHttpRequest
      */
     protected $request=null;
 
@@ -39,17 +43,17 @@ class DataTables{
      * Class constructor
      *
      * @param array $columns. Data table columns info array
-     * @param CActiveRecord $model. Model instance to fetch records from
-     * @param CDbCriteria $criteria. Query criteria
+     * @param \CActiveRecord $model. Model instance to fetch records from
+     * @param \CDbCriteria $criteria. Query criteria
      */
-    public function __construct($columns, CActiveRecord $model=null, CDbCriteria $criteria=null){
-        $this->request=Yii::app()->request;
+    public function __construct($columns, \CActiveRecord $model=null, \CDbCriteria $criteria=null){
+        $this->request=\Yii::app()->request;
 
         $this->columns=$columns;
         $this->model=$model;
 
         $this->criteria=is_null($criteria)
-                        ? new CDbCriteria()
+                        ? new \CDbCriteria()
                         : $criteria;
     }
 
@@ -63,7 +67,7 @@ class DataTables{
              ->applyLimit()
              ->applyOrder();
 
-        $this->data=$this->model->findAll($this->criteria);
+        $this->data=models\ActiveRecord::toArrayAll($this->model->findAll($this->criteria));
 
         return $this;
     }

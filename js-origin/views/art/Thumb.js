@@ -107,21 +107,13 @@ use('Views.Art').Thumb=Core.View.extend(function(){
             return this;
         }
 
-        var mediaId=this.model.get('mediaId'),
-            data=this.model.get('data');
-
-        if(!mediaId || !data || (Array.isArray(data) && !data.length)){
-            return this;
-        }
-
-        // this.el.id='art'+mediaId;
         this.adjustSize();
 
         // Create thumb's image
         this.imageEl=document.createElement('div');
         this.imageEl.classList.add('image');
         // this.imageEl.classList.add('animated');
-        this.imageEl.innerHTML='<img src="'+data.smallThumb.url+'" />';
+        this.imageEl.innerHTML='<img src="'+this.model.get('smallThumb').url+'" />';
         this.$imageEl=$(this.imageEl);
 
         this.el.appendChild(this.imageEl);

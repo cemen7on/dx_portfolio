@@ -7,10 +7,10 @@ class HttpRequest extends \CHttpRequest{
      *
      * @param string $message. Exception message
      * @param int $code. Exception code
-     * @return \RestException
+     * @return \Exception
      */
     protected function getException($message, $code=0){
-        return new \Exception($message, $code);
+        return new \CException($message, $code);
     }
 
     /**

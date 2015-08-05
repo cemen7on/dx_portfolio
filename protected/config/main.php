@@ -1,5 +1,6 @@
 <?php
 Yii::setPathOfAlias('components', realpath(__DIR__.'/../components/'));
+Yii::setPathOfAlias('exceptions', realpath(__DIR__.'/../exceptions/'));
 Yii::setPathOfAlias('controllers', realpath(__DIR__.'/../controllers/'));
 Yii::setPathOfAlias('models', realpath(__DIR__.'/../models/'));
 
@@ -12,8 +13,8 @@ return array(
     'import'=>array(
         'components.*',
         'models.*',
+        'exceptions.*',
         'application.helpers.*',
-        'application.widgets.*'
     ),
 
     'defaultController'=>'main',
@@ -29,24 +30,19 @@ return array(
     'components'=>array(
         'ScriptRegister'=>array(
             'class'=>'\components\ScriptRegister',
-            'rootPath'=>'webroot.js-origin',
             'position'=>CClientScript::POS_HEAD
         ),
         'CssRegister'=>array(
-            'class'=>'\components\CssRegister',
-            'rootPath'=>'webroot.css-origin'
+            'class'=>'\components\CssRegister'
         ),
 
-        /*
-        'request'=>array(
+        'Request'=>array(
             'class'=>'\components\HttpRequest'
         ),
-        */
-        /*
-        'rest'=>array(
+
+        'RestRequest'=>array(
             'class'=>'\components\RestRequest'
         ),
-        */
 
         'image'=>array(
             'class'=>'ext.image.CImageComponent',

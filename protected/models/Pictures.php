@@ -3,13 +3,56 @@ namespace models;
 
 use components;
 
-class Pictures extends ActiveRecord{
+class Pictures extends Media{
+    /**
+     * Sources directory name
+     */
+    const SOURCES_DIRECTORY='sources';
+
+    /**
+     * Source picture path
+     *
+     * @var null|string
+     */
+    public $src=null;
+
     /**
      * Columns description. Is used for building dataTables requests
      *
      * @var array
      */
     private static $_DT_COLUMNS=array();
+
+    /**
+     * Returns model's instance
+     *
+     * @param string $className. Model's class name
+     * @return Pictures|ActiveRecord
+     */
+    public static function model($className=__CLASS__){
+        return parent::model($className);
+    }
+
+    /**
+     * Returns model's table name
+     *
+     * @return string
+     */
+    public function tableName(){
+        return 'Pictures';
+    }
+
+    /**
+     * Returns models' relations list
+     *
+     * @return array
+     */
+    public function relations(){
+        $relations=parent::relations();
+        $relations['src']=array(self::BELONGS_TO, 'models\Images', array('srcId'=>'id'));
+
+        return $relations;
+    }
 
     /**
      * Returns dataTables columns configuration
@@ -23,6 +66,7 @@ class Pictures extends ActiveRecord{
                 array(
                     'index'=>1,
                     'name'=>'created',
+                    'alias'=>'created',
                     'caption'=>'Created',
                     'formatter'=>function($date){
                         return date('d F Y H:i', strtotime($date));
@@ -40,38 +84,42 @@ class Pictures extends ActiveRecord{
                 array('index'=>4, 'name'=>'description', 'caption'=>'Description'),
                 array(
                     'index'=>5,
-                    'name'=>'smallThumb',
+                    'name'=>'smallThumbId',
                     'caption'=>'Preview',
-                    'formatter'=>function($thumbIndex, $data){
-                        $smallThumb=isset($data->smallThumb->name)?$data->smallThumb->name:'';
-                        $bigThumb=isset($data->bigThumb->name)?$data->bigThumb->name:'';
-
-                        return \CHtml::image(components\CPictures::createSmallThumbUrl($smallThumb), '', array('data-big-thumb'=>$bigThumb));
+                    'formatter'=>function($smallThumbId, $data){
+                        return \CHtml::image(
+                            self::createSmallThumbUrl($data['smallThumb']['name']),
+                            '',
+                            array('data-big-thumb'=>self::createBigThumbUrl($data['bigThumb']['name']))
+                        );
                     }
                 ),
                 array(
                     'index'=>6,
-                    'name'=>'cover',
+                    'name'=>'coverId',
                     'caption'=>'Cover',
-                    'formatter'=>function($thumbIndex, $data){
-                        $html=null;
-                        if(isset($data->cover->name)){
-                            $html=\Html::cover(components\CPictures::createCoverUrl($data->cover->name));
-                        }
-
-                        return $html;
+                    'formatter'=>function($coverId, $data){
+                        return \CHtml::image(
+                            self::createCoverUrl($data['cover']['name']),
+                            '',
+                            array('data-big-thumb'=>self::createBigThumbUrl($data['bigThumb']['name']))
+                        );
                     }
                 ),
                 array(
                     'index'=>7,
-                    'name'=>'cover_order',
+                    'name'=>'coverId',
                     'caption'=>'Display on start',
                     'formatter'=>function($order, $data){
-                        $key=$data->typeId==PicturesType::PICTURES_2D
+                        /*
+                            $key=$data->typeId==PicturesType::PICTURES_2D
                             ? 'pictures2d'
                             : 'art3d';
 
-                        return \Html::coverOrder($order, \Yii::app()->params['covers'][$key]['count']);
+                            return \Html::coverOrder($order, \Yii::app()->params['covers'][$key]['count']);
+                        */
+
+                        return 'Hello';
                     }
                 ),
                 array(
@@ -88,23 +136,6 @@ class Pictures extends ActiveRecord{
         return self::$_DT_COLUMNS;
     }
 
-	/**
-	 * @param string $className
-	 * @return Pictures
-	 */
-	public static function model($className=__CLASS__){
-		return parent::model($className);
-	}
-
-    /**
-     * Returns model's table name
-     *
-     * @return string
-     */
-    public function tableName(){
-		return 'Pictures';
-	}
-
     /**
      * Validation rules list
      *
@@ -115,26 +146,10 @@ class Pictures extends ActiveRecord{
             array('typeId, title', 'required', 'on'=>'input'),
             array('description', 'safe', 'on'=>'input'),
             array('created', 'required', 'on'=>'create'),
-            array('description, bigThumb', 'safe', 'on'=>'create'),
+            array('description, bigThumbId', 'safe', 'on'=>'create'),
             array('src', 'file', 'types'=>'jpg, jpeg, gif, png', 'maxSize'=>1024*1024*100),
             array('cover', 'file', 'allowEmpty'=>true, 'types'=>'jpg, jpeg, gif, png', 'maxSize'=>1024*1024*100),
             array('cover', 'safe')
-        );
-    }
-
-    /**
-     * Model's relations list
-     *
-     * @return array
-     */
-    public function relations(){
-        return array(
-            'data'=>array(
-                self::BELONGS_TO,
-                'models\Media',
-                array('mediaId'=>'id'),
-                'with'=>array('src', 'smallThumb', 'bigThumb', 'cover')
-            )
         );
     }
 
@@ -160,9 +175,7 @@ class Pictures extends ActiveRecord{
             $criteria=new \CDbCriteria();
         }
 
-        $relations=array('data');
-
-        $criteria->with=$relations;
+        $criteria->with=array('src', 'smallThumb', 'bigThumb', 'cover');
         $criteria->condition='typeId=:typeId';
         $criteria->params=array('typeId'=>$typeId);
 
@@ -181,20 +194,23 @@ class Pictures extends ActiveRecord{
     }
 
     /**
-     * Formats array records
+     * Returns upload src url
      *
-     * @param {array} $records. Records to format
+     * @param string $filename. File's name create url for
+     * @param bool $isAbsolute. Whether return absolute or relative url
      * @return mixed
      */
-    public static function format(&$records){
-        foreach($records as &$record){
-            if(!isset($record['data'])){
-                continue;
-            }
+    public static function createSourceUrl($filename, $isAbsolute=true){
+        return self::createUrl(self::SOURCES_DIRECTORY, $filename, $isAbsolute);
+    }
 
-            Media::format($record['data']);
-        }
-
-        return $records;
+    /**
+     * Returns upload src path
+     *
+     * @param string $filename. File name
+     * @return string
+     */
+    public static function createSourcePath($filename){
+        return self::createPath(self::SOURCES_DIRECTORY, $filename);
     }
 }

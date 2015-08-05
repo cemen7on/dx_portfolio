@@ -1,12 +1,19 @@
 <?php
-class SPictures{
+namespace admin\api;
+
+class PicturesException extends \Exception{}
+
+use admin\components;
+use models;
+
+class Pictures{
     /**
      * Finds record by pk.
      *
      * @param int $id. PK of record
      * @param string|array $with. Relations for record
-     * @return CActiveRecord|CPictures
-     * @throws Exception
+     * @return models\ActiveRecord|models\Pictures
+     * @throws PicturesException
      */
     protected function findRecordById($id, $with=array()){
         if(is_string($with)){
@@ -17,80 +24,63 @@ class SPictures{
         $record=$pModel->with($with)->findByPk($id);
 
         if(empty($record)){
-            throw new Exception("Record #{$id} was not found");
+            throw new PicturesException("Record #{$id} was not found");
         }
 
         return $record;
     }
 
     /**
-     * Formats data in model
-     *
-     * @param CPictures $model. Model containing data to format
-     * @return ActiveRecord|CPictures
-     */
-    protected function format($model){
-        if(isset($model->imageSrc->name)){
-            $model->src=components\CPictures::createSrcUrl($model->imageSrc->name);
-        }
-
-        if(isset($model->thumbSmall->name)){
-            $model->thumb_small=components\CPictures::createSmallThumbUrl($model->thumbSmall->name);
-        }
-
-        if(isset($model->thumbBig->name)){
-            $model->thumb_big=components\CPictures::createBigThumbUrl($model->thumbBig->name);
-        }
-
-        return $model;
-    }
-
-    /**
      * Uploads picture to server from $_POST
      *
      * @return array. Saved pictures paths array
-     * @throws Exception
+     * @throws PicturesException
      */
     public function upload(){
-        if(empty($_POST['Pictures'])){
-            throw new Exception('Invalid $_POST request. $_POST[\'Pictures\'] is missing');
+        if(empty($_POST['models_Pictures'])){
+            throw new PicturesException('Invalid $_POST request. $_POST[\'models_Pictures\'] is missing');
         }
 
-        $pModel=new models\Pictures('input');
-        $pModel->attributes=$_POST['Pictures'];
+        $pictureModel=new models\Pictures('input');
+        $pictureModel->attributes=$_POST['models_Pictures'];
 
-        if(!$pModel->validate()){
-            throw new ApiException('Form validation failed. Check all fields', $pModel->getErrors());
+        if(!$pictureModel->validate()){
+            throw new PicturesException('Form validation failed. Check all fields');
         }
 
-        $upload=CUploadedFile::getInstance($pModel, 'src');
+        $upload=\CUploadedFile::getInstance($pictureModel, 'src');
         $extension=$upload->getExtensionName();
 
         // Save src image
         $image=models\Images::blank();
-        $src=components\CPictures::createSrcPath($image->getFileName($extension));
+        $src=models\Pictures::createSourcePath($image->getFileName($extension));
         $upload->saveAs($src);
-        $pModel->src=$image->saveSrc($src);
+        $pictureModel->srcId=$image->saveSrc($src);
 
         // Save small thumb image from src image
         $image=models\Images::blank();
-        $pModel->thumb_small=$image->saveSmallThumb($src, components\CPictures::createSmallThumbPath($image->getFileName($extension)));
+        $pictureModel->smallThumbId=$image->saveSmallThumb($src, models\Pictures::createSmallThumbPath($image->getFileName($extension)));
 
         // Save big thumb image from src image
         $image=models\Images::blank();
-        $pModel->thumb_big=$image->saveBigThumb($src, components\CPictures::createBigThumbPath($image->getFileName($extension)));
+        $pictureModel->bigThumbId=$image->saveBigThumb($src, models\Pictures::createBigThumbPath($image->getFileName($extension)));
 
-        $pModel->setScenario('create');
-        if(!$pModel->create()){
-            throw new Exception('Failed to update record with images');
+        // Save cover
+        $image=models\Images::blank();
+        $pictureModel->coverId=$image->cropCover($src, models\Pictures::createCoverPath($image->getFileName($extension)));
+
+        $pictureModel->setScenario('create');
+        if(!$pictureModel->create()){
+            throw new PicturesException('Failed to update record with images');
         }
 
-        $dataTable=new DataTables(models\Pictures::DT_COLUMNS());
-        $pModel->with(array('imageSrc', 'thumbSmall', 'thumbBig', 'imageCover'))->refresh();
+        $dataTable=new components\DataTables(models\Pictures::DT_COLUMNS());
+        $pictureModel->with(array('smallThumb', 'bigThumb', 'src', 'cover'))->refresh();
+        $pictureModelArray=$pictureModel->toArray();
 
         return array(
-            'row'=>$dataTable->formatData(array($pModel))[0],
-            'data'=>$this->format($pModel)->toArray()
+            'row'=>$dataTable->formatData(array($pictureModel))[0],
+            'data'=>models\Pictures::format($pictureModelArray)
         );
     }
 
@@ -100,30 +90,34 @@ class SPictures{
      * @param int $pictureId. Picture id to create crop for
      * @param int $left. Left start crop coordinate in px
      * @return bool
-     * @throws Exception
+     * @throws PicturesException
      */
     public function crop($pictureId, $left){
-        $picture=$this->findRecordById($pictureId, array('thumbBig', 'imageCover'));
+        $picture=$this->findRecordById($pictureId, array('bigThumb', 'cover'));
 
-        if($picture->imageCover){
-            $picture->imageCover->remove(components\CPictures::createCoverPath($picture->imageCover->name));
+        if($picture->cover){
+            $picture->cover->remove(models\Pictures::createCoverPath($picture->cover->name));
         }
 
-        $source=components\CPictures::createBigThumbPath($picture->thumbBig->name);
+        $source=models\Pictures::createBigThumbPath($picture->bigThumb->name);
         $extension=pathinfo($source, PATHINFO_EXTENSION);
 
         $image=models\Images::blank();
-        $picture->cover=$image->cropCover(
+        $picture->coverId=$image->cropCover(
             $source,
-            components\CPictures::createCoverPath($image->getFileName($extension)),
+            models\Pictures::createCoverPath($image->getFileName($extension)),
             $left
         );
 
         if(!$picture->save(false)){
-            throw new Exception('Failed to update record with cover image');
+            throw new PicturesException('Failed to update record with cover image');
         }
 
-        return array('html'=>Html::cover(components\CPictures::createCoverUrl($image->name)));
+        return array('html'=>\CHtml::image(
+            models\Pictures::createCoverUrl($image->name),
+            '',
+            array('data-big-thumb'=>models\Pictures::createBigThumbUrl($picture->bigThumb->name))
+        ));
     }
 
     /**
@@ -132,11 +126,10 @@ class SPictures{
      * @return array
      */
     public function content(){
-        $criteria=new CDbCriteria();
-        $criteria->with=array('thumbSmall', 'thumbBig', 'imageCover');
+        $criteria=new \CDbCriteria();
+        $criteria->with=array('src', 'smallThumb', 'bigThumb', 'cover');
 
-        $dataTable=new DataTables(models\Pictures::DT_COLUMNS(), new models\Pictures(), $criteria);
-
+        $dataTable=new components\DataTables(models\Pictures::DT_COLUMNS(), new models\Pictures(), $criteria);
         return $dataTable->request()->format();
     }
 
@@ -178,26 +171,30 @@ class SPictures{
      *
      * @param int $pictureId. Picture id to update record of
      * @return string
-     * @throws Exception
+     * @throws PicturesException
      */
     public function updateCover($pictureId){
-        $pModel=$this->findRecordById($pictureId, 'imageCover');
+        $pictureModel=$this->findRecordById($pictureId, 'cover');
 
-        if($pModel->imageCover){
-            $pModel->imageCover->remove(components\CPictures::createCoverPath($pModel->imageCover->name));
+        if($pictureModel->cover){
+            $pictureModel->cover->remove(models\Pictures::createCoverPath($pictureModel->cover->name));
         }
 
         $image=models\Images::blank();
-        $upload=CUploadedFile::getInstance($pModel, 'cover');
+        $upload=\CUploadedFile::getInstance($pictureModel, 'cover');
         $extension=$upload->getExtensionName();
 
-        $pModel->cover=$image->cropCover($upload->getTempName(), components\CPictures::createCoverPath($image->getFileName($extension)));
+        $pictureModel->coverId=$image->cropCover($upload->getTempName(), models\Pictures::createCoverPath($image->getFileName($extension)));
 
-        if(!$pModel->save(false)){
-            throw new Exception('Failed to update record cover');
+        if(!$pictureModel->save(false)){
+            throw new PicturesException('Failed to update record cover');
         }
 
-        return array('html'=>Html::cover(components\CPictures::createCoverUrl($image->name)));
+        return array('html'=>\CHtml::image(
+            models\Pictures::createCoverUrl($image->name),
+            '',
+            array('data-big-thumb'=>models\Pictures::createBigThumbUrl($pictureModel->bigThumb->name))
+        ));
     }
 
     /**
@@ -254,24 +251,4 @@ class SPictures{
 
         return true;
     }
-
-    /**
-     * Removes cover of specific record
-     *
-     * @param int $pictureId. Picture id to remove cover of
-     * @return bool
-     * @throws Exception
-     */
-    public function deleteCover($pictureId){
-        $picture=$this->findRecordById($pictureId, 'imageCover');
-        $picture->cover=new CDbExpression('NULL');
-
-        $picture->imageCover->remove(components\CPictures::createCoverPath($picture->imageCover->name));
-
-        if(!$picture->save(false)){
-            throw new Exception('Failed to remove cover');
-        }
-
-        return true;
-    }
-} 
+}

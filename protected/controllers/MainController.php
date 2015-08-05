@@ -1,6 +1,7 @@
 <?php
 namespace controllers;
 
+use components\REST;
 use models\Facade;
 
 class MainController extends BaseController{
@@ -15,25 +16,30 @@ class MainController extends BaseController{
 	 * Action is triggered when error occurred.
 	 */
 	public function actionError(){
-        $error=\Yii::app()->errorHandler->error;
-
-        echo '<pre>';
-        print_r($error);
-        /*
         $error=array();
-        if(!empty(Yii::app()->errorHandler->error)){
-            $error=Yii::app()->errorHandler->error;
+        if(!empty(\Yii::app()->errorHandler->error)){
+            $error=\Yii::app()->errorHandler->error;
         }
 
         $message=isset($error['message'])?$error['message']:'Internal server error';
         $code=isset($error['errorCode'])?$error['errorCode']:0;
+        $exception=\Yii::app()->errorHandler->getException();
 
-        if(Yii::app()->request->isAjaxRequest){
-            REST::errorResponse($message, $code);
+        if(\Yii::app()->request->isAjaxRequest){
+            if(!empty($exception)){
+                REST::error($exception);
+            }
+            else{
+                REST::error($message, $code);
+            }
         }
         else{
-            echo 'Oooops, Error :(. '.$message.'. That\'s all we know';
+            if(YII_DEBUG){
+                print_r($error);
+            }
+            else{
+                echo 'Oooops, Error :(. '.$message.'. That\'s all we know';
+            }
         }
-        */
 	}
 }

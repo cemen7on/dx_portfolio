@@ -41,17 +41,15 @@ use('Views.Art').Aside=Core.View.extend(function(){
      * @returns {*}
      */
     this.render=function(){
-        var data=this.model.get('data');
-
-        if(!data || (Array.isArray(data) && !data.length)){
+        if(!this.model){
             return this;
         }
 
         this.linkEl=document.createElement('a');
 
         this.linkEl.href='javascript:void(0)';
-        this.linkEl.title=data.title;
-        this.linkEl.textContent=data.title;
+        this.linkEl.title=this.model.get('title');
+        this.linkEl.textContent=this.model.get('title');
 
         this.el.appendChild(this.linkEl);
 

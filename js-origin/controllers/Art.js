@@ -176,7 +176,7 @@ use('Controllers').Art=Core.Controller.extend(new function(){
             _Gallery=new Components.Gallery();
         }
 
-        _Gallery.show(new Models.Media(view.model.get('data')));
+        _Gallery.show(view.model);
     };
 
     /**
