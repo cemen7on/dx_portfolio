@@ -26,7 +26,7 @@ class MediaController extends \CController{
         $criteria=new \CDbCriteria();
         $criteria->order="t.id {$orderDirection}";
         $criteria->limit=1;
-        $criteria->condition="t.id{$comparisonSign}:id AND typeId=typeId";
+        $criteria->condition="t.id{$comparisonSign}:id AND typeId=(SELECT typeId FROM Pictures WHERE id={$mediaId})";
         $criteria->params=array('id'=>$mediaId);
 
         $record=$mediaModel->with('source', 'smallThumb', 'bigThumb', 'cover')->find($criteria);
