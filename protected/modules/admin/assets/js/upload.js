@@ -154,7 +154,7 @@ $(document).ready(function(){
                 $loadBtn.attr('disabled', 'disabled');
 
                 $.ajax({
-                    url:'/admin/pictures/'+recordId+'/crop',
+                    url:location.pathname+'/'+recordId+'/crop',
                     type:'POST',
                     dataType:'json',
                     data:{left:Math.floor(cropData.x)},
@@ -215,7 +215,6 @@ $(document).ready(function(){
     });
 
     // Remove item
-    /*
     $document.on('click', '.remove-link', function(event){
         event.preventDefault(); // Escape from following a link
 
@@ -227,7 +226,7 @@ $(document).ready(function(){
             table=$this.parents('table').data('dataTable'),
             $row=$this.parents('tr');
 
-        Core.Request.send({
+        $.ajax({
             type:'DELETE',
             url:this.href,
             success:function(){
@@ -236,7 +235,6 @@ $(document).ready(function(){
             }
         });
     });
-    */
 
     /**
      * Creates edit field instead of content
@@ -334,17 +332,16 @@ $(document).ready(function(){
     */
 
     // Changes cover order
-    /*
     $document.on('change', 'tbody .cover-order', function(){
         var _this=this,
             $this=$(_this),
-            coverOrder=$this.val(),
+            facadeIndex=$this.val(),
             id=$this.parents('tr').data('id');
 
-        Core.Request.send({
+        $.ajax({
             url:location.pathname+'/'+id,
             type:'PUT',
-            data:{cover_order:coverOrder},
+            data:{facadeIndex:facadeIndex},
             success:function(){
                 // Update table content
                 $this.parents('table').data('dataTable').draw(false);
@@ -354,5 +351,4 @@ $(document).ready(function(){
             }
         });
     });
-    */
 });

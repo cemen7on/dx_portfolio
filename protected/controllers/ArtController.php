@@ -7,7 +7,7 @@ class ArtController extends BaseController{
     /**
      * Records per page limit
      */
-    const RECORDS_LIMIT=1;
+    const RECORDS_LIMIT=9;
 
     /**
      * Returns records for Animations section.

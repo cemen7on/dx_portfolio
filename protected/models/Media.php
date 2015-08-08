@@ -42,9 +42,9 @@ abstract class Media extends ActiveRecord{
      * @return mixed
      */
     private static function _format(&$record){
-        $relations=array('src', 'smallThumb', 'bigThumb', 'cover');
+        $relations=array('source', 'smallThumb', 'bigThumb', 'cover');
         $methods=array(
-            'src'=>'source',
+            'source'=>'source',
             'smallThumb'=>'smallThumb',
             'bigThumb'=>'bigThumb',
             'cover'=>'cover'

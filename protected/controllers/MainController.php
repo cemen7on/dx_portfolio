@@ -9,7 +9,7 @@ class MainController extends BaseController{
 	 * Start page
 	 */
 	public function actionIndex(){
-        $this->sendData(Facade::retrieve());
+        $this->sendData(Facade::compile());
     }
 
 	/**

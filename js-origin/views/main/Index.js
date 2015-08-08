@@ -130,7 +130,7 @@ use('Views.Main').Index=Core.View.extend(function(){
         for(var i=0, end=images.length; i<end; i++){
             image=document.createElement('div');
             image.classList.add('nav-menu-item-pic');
-            image.style.backgroundImage='url('+images[i].data.cover.url+')';
+            image.style.backgroundImage='url('+images[i].cover.url+')';
 
             section.appendChild(image);
         }

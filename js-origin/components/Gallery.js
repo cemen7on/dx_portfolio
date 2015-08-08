@@ -391,7 +391,7 @@ use('Components').Gallery=Backbone.View.extend(function(){
         _setWindowSize(data.bigThumb.width, data.bigThumb.height);
 
         this.image=data.bigThumb.url;
-        this.source=data.src.url;
+        this.source=data.source.url;
     }.bind(this);
 
     /**

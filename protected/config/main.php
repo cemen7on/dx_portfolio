@@ -99,8 +99,8 @@ return array(
             'login'=>'root',
             'password'=>sha1('root')
         ),
-        'covers'=>array(
-            'animation'=>array('count'=>2),
+        'facade'=>array(
+            'animations'=>array('count'=>2),
             'pictures2d'=>array('count'=>2),
             'art3d'=>array('count'=>4)
         )

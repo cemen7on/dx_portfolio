@@ -7,7 +7,7 @@ class Html extends CHtml{
      * @param int $count. Maximum serial number of cover
      * @return string
      */
-    public static function coverOrder($default, $count){
+    public static function facadeOrder($default, $count){;
         $data=array(0=>'No order');
 
         for($i=1; $i<=$count; $i++){

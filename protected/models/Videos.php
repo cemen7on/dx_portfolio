@@ -93,11 +93,10 @@ class Videos extends Media{
                 ),
                 array(
                     'index'=>7,
-                    'name'=>'coverId',
+                    'name'=>'facadeIndex',
                     'caption'=>'Display on start',
                     'formatter'=>function($order){
-                        // return Html::coverOrder($order, Yii::app()->params['covers']['animation']['count']);
-                        return 'Hello';
+                        return \Html::facadeOrder($order, \Yii::app()->params['facade']['animations']['count']);
                     }
                 ),
                 array(

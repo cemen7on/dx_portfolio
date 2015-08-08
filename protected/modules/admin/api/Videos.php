@@ -90,16 +90,15 @@ class Videos{
         $image=models\Images::blank();
         $videoModel->bigThumbId=$image->saveBigThumb($temp, models\Videos::createBigThumbPath($image->getFileName($extension)));
 
-        // Save cover
-        $image=models\Images::blank();
-        $videoModel->coverId=$image->cropCover($temp, models\Videos::createCoverPath($image->getFileName($extension)));
-
         // Remove temporary file
         @unlink($temp);
 
         if(!$videoModel->create($videoId, $title, $description)){
             throw new VideosException('Failed to create record');
         }
+
+        // Save cover
+        $this->crop($videoModel->id);
 
         $dataTable=new components\DataTables(models\Videos::DT_COLUMNS());
         $videoModel->with(array('smallThumb', 'bigThumb', 'cover'))->refresh();
@@ -109,6 +108,42 @@ class Videos{
             'row'=>$dataTable->formatData(array($videoModel))[0],
             'data'=>models\Pictures::format($videoModelArray)
         );
+    }
+
+    /**
+     * Crops cover from big thumb of created video
+     *
+     * @param int $videoId. Video id to create crop for
+     * @param int|string $left. Left start crop coordinate in px
+     * @return bool
+     * @throws VideosException
+     */
+    public function crop($videoId, $left='center'){
+        $video=$this->findRecordById($videoId, array('bigThumb', 'cover'));
+
+        if($video->cover){
+            $video->cover->remove(models\Videos::createCoverPath($video->cover->name));
+        }
+
+        $source=models\Videos::createBigThumbPath($video->bigThumb->name);
+        $extension=pathinfo($source, PATHINFO_EXTENSION);
+
+        $image=models\Images::blank();
+        $video->coverId=$image->cropCover(
+            $source,
+            models\Videos::createCoverPath($image->getFileName($extension)),
+            $left
+        );
+
+        if(!$video->save(false)){
+            throw new VideosException('Failed to update record with cover image');
+        }
+
+        return array('html'=>\CHtml::image(
+            models\Videos::createCoverUrl($image->name),
+            '',
+            array('data-big-thumb'=>models\Videos::createBigThumbUrl($video->bigThumb->name))
+        ));
     }
 
     /**
@@ -128,16 +163,17 @@ class Videos{
      * Updates video's attributes
      *
      * @param int $videoId. Video's to update id
-     * @param int $attributes. Attributes to update
+     * @param array $attributes. Attributes to update
+     * @param bool $force. Force update
      * @return bool
-     * @throws Exception
+     * @throws VideosException
      */
-    public function update($videoId, $attributes){
-        $vModel=new Videos();
+    public function update($videoId, $attributes, $force=true){
+        $videosModel=new models\Videos();
 
-        $result=$vModel->updateByPk($videoId, $attributes);
-        if(!$result){
-            throw new Exception('Failed to update record');
+        $result=$videosModel->updateByPk($videoId, $attributes);
+        if($force && !$result){
+            throw new VideosException('Failed to update record');
         }
 
         return true;
@@ -149,51 +185,59 @@ class Videos{
      *
      * @param int $videoId. Video id to update record of
      * @return string
-     * @throws Exception
+     * @throws VideosException
      */
     public function updateCover($videoId){
-        $vModel=$this->findRecordById($videoId, 'imageCover');
+        $video=$this->findRecordById($videoId, 'cover');
+        $video->cover->remove(models\Videos::createCoverPath($video->cover->name));
 
-        if($vModel->imageCover){
-            $vModel->imageCover->remove(CVideos::createCoverPath($vModel->imageCover->name));
-        }
-
-        $image=Images::blank();
-        $upload=CUploadedFile::getInstance($vModel, 'cover');
+        $image=models\Images::blank();
+        $upload=\CUploadedFile::getInstance($video, 'cover');
         $extension=$upload->getExtensionName();
 
-        $vModel->cover=$image->cropCover($upload->getTempName(), CVideos::createCoverPath($image->getFileName($extension)));
-
-        if(!$vModel->save(false)){
-            throw new Exception('Failed to update record cover');
+        $video->coverId=$image->cropCover($upload->getTempName(), models\Videos::createCoverPath($image->getFileName($extension)));
+        if(!$video->save(false)){
+            throw new VideosException('Failed to update record cover');
         }
 
-        return array('html'=>Html::cover(CVideos::createCoverUrl($image->name)));
+        return array('html'=>\CHtml::image(
+            models\Videos::createCoverUrl($image->name),
+            '',
+            array('data-big-thumb'=>models\Pictures::createBigThumbUrl($video->bigThumb->name))
+        ));
     }
 
     /**
      * Updates cover order of specific record
      *
      * @param int $videoId. Video's id to update cover order
-     * @param mixed $coverOrder. New value to update
+     * @param mixed $facadeIndex. New value to set
+     * @param bool $force. Force update or not
      * @return bool
      */
-    public function updateCoverOrder($videoId, $coverOrder){
-        $this->findRecordById($videoId);
+    public function updateFacadeIndex($videoId, $facadeIndex, $force=true){
+        $video=$this->findRecordById($videoId);
 
-        if(!empty($coverOrder)){
-            // Reset old cover's order value
-            $vModel=new Videos();
-            $vModel->updateAll(
-                array('cover_order'=>new CDbExpression('NULL')),
-                'cover_order=:cover_order',
-                array('cover_order'=>$coverOrder)
+        // Cast value type
+        if(empty($facadeIndex)){
+            $facadeIndex=new \CDbExpression('NULL');
+        }
+
+        // Value has not been changed
+        if($video->facadeIndex==$facadeIndex){
+            return false;
+        }
+
+        if(!empty($facadeIndex)){
+            $videosModel=new models\Videos();
+            $videosModel->updateAll(
+                array('facadeIndex'=>new \CDbExpression('NULL')),
+                'facadeIndex=:facadeIndex',
+                array('facadeIndex'=>$facadeIndex)
             );
         }
 
-        $value=!empty($coverOrder)?(int)$coverOrder:new CDbExpression('NULL');
-
-        return $this->update($videoId, array('cover_order'=>$value));
+        return $this->update($videoId, array('facadeIndex'=>$facadeIndex), $force);
     }
 
     /**
@@ -201,20 +245,17 @@ class Videos{
      *
      * @param int $videoId. Video's to delete id
      * @return bool
-     * @throws Exception
+     * @throws VideosException
      */
     public function delete($videoId){
-        $video=$this->findRecordById($videoId, array('thumbSmall', 'thumbBig', 'imageCover'));
+        $video=$this->findRecordById($videoId, array('smallThumb', 'bigThumb', 'cover'));
 
-        $video->thumbSmall->remove(CVideos::createSmallThumbPath($video->thumbSmall->name));
-        $video->thumbBig->remove(CVideos::createBigThumbPath($video->thumbBig->name));
-
-        if($video->imageCover){
-            $video->imageCover->remove(CVideos::createCoverPath($video->imageCover->name));
-        }
+        $video->smallThumb->remove(models\Videos::createSmallThumbPath($video->smallThumb->name));
+        $video->bigThumb->remove(models\Videos::createBigThumbPath($video->bigThumb->name));
+        $video->cover->remove(models\Videos::createCoverPath($video->cover->name));
 
         if(!$video->delete()){
-            throw new Exception('Failed to remove record');
+            throw new VideosException('Failed to remove record');
         }
 
         return true;

@@ -40,6 +40,17 @@ class VideosController extends UploadController{
     }
 
     /**
+     * Handles crop request for big thumb.
+     * Crops big thumb for front preview
+     */
+    public function actionCrop(){
+        REST::execute($this->api, 'crop', array(
+            \Yii::app()->RestRequest->requireQuery('id'),
+            \Yii::app()->RestRequest->requirePost('left')
+        ));
+    }
+
+    /**
      * Handles ajax pictures request.
      * Returns json encoded content for videos table
      */
@@ -55,13 +66,14 @@ class VideosController extends UploadController{
      * @put string description. New picture's description
      */
     public function actionUpdate(){
-        $videoId=Yii::app()->rest->requireQuery('id');
+        $videoId=\Yii::app()->RestRequest->requireQuery('id');
 
-        $coverOrder=Yii::app()->rest->getPut('cover_order');
-        if(isset($coverOrder)){
-            REST::execute($this->api, 'updateCoverOrder', array($videoId, $coverOrder));
+        $facadeIndex=\Yii::app()->RestRequest->getPut('facadeIndex');
+        if(isset($facadeIndex)){
+            REST::execute($this->api, 'updateFacadeIndex', array($videoId, $facadeIndex));
         }
 
+        /*
         $title=Yii::app()->rest->getPut('title');
         $description=Yii::app()->rest->getPut('description');
 
@@ -80,6 +92,7 @@ class VideosController extends UploadController{
         }
 
         REST::execute($this->api, 'update', array($videoId, $attributes));
+        */
     }
 
     /**
@@ -90,7 +103,7 @@ class VideosController extends UploadController{
      */
     public function actionCover(){
         REST::execute($this->api, 'updateCover', array(
-            Yii::app()->rest->requireQuery('id')
+            \Yii::app()->RestRequest->requireQuery('id')
         ));
     }
 
@@ -101,7 +114,7 @@ class VideosController extends UploadController{
      */
     public function actionDelete(){
         REST::execute($this->api, 'delete', array(
-            Yii::app()->rest->requireQuery('id'))
+            \Yii::app()->RestRequest->requireQuery('id'))
         );
     }
 

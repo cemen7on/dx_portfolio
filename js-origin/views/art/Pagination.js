@@ -49,7 +49,7 @@ use('Views.Art').Pagination=Core.View.extend(function(){
      *
      * @type {number}
      */
-    this.perPage=1;
+    this.perPage=9;
 
     /**
      * Pagination list element field

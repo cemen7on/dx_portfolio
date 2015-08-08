@@ -29,7 +29,7 @@ class MediaController extends \CController{
         $criteria->condition="t.id{$comparisonSign}:id AND typeId=typeId";
         $criteria->params=array('id'=>$mediaId);
 
-        $record=$mediaModel->with('src', 'smallThumb', 'bigThumb', 'cover')->find($criteria);
+        $record=$mediaModel->with('source', 'smallThumb', 'bigThumb', 'cover')->find($criteria);
         if(empty($record)){
             $success=array();
         }

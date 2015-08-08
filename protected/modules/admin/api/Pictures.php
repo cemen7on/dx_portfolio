@@ -65,17 +65,16 @@ class Pictures{
         $image=models\Images::blank();
         $pictureModel->bigThumbId=$image->saveBigThumb($src, models\Pictures::createBigThumbPath($image->getFileName($extension)));
 
-        // Save cover
-        $image=models\Images::blank();
-        $pictureModel->coverId=$image->cropCover($src, models\Pictures::createCoverPath($image->getFileName($extension)));
-
         $pictureModel->setScenario('create');
         if(!$pictureModel->create()){
             throw new PicturesException('Failed to update record with images');
         }
 
+        // Create cover
+        $this->crop($pictureModel->id);
+
         $dataTable=new components\DataTables(models\Pictures::DT_COLUMNS());
-        $pictureModel->with(array('smallThumb', 'bigThumb', 'src', 'cover'))->refresh();
+        $pictureModel->with(array('smallThumb', 'bigThumb', 'source', 'cover'))->refresh();
         $pictureModelArray=$pictureModel->toArray();
 
         return array(
@@ -88,11 +87,11 @@ class Pictures{
      * Crops cover from big thumb of created picture
      *
      * @param int $pictureId. Picture id to create crop for
-     * @param int $left. Left start crop coordinate in px
+     * @param int|string $left. Left start crop coordinate in px
      * @return bool
      * @throws PicturesException
      */
-    public function crop($pictureId, $left){
+    public function crop($pictureId, $left='center'){
         $picture=$this->findRecordById($pictureId, array('bigThumb', 'cover'));
 
         if($picture->cover){
@@ -127,7 +126,7 @@ class Pictures{
      */
     public function content(){
         $criteria=new \CDbCriteria();
-        $criteria->with=array('src', 'smallThumb', 'bigThumb', 'cover');
+        $criteria->with=array('source', 'smallThumb', 'bigThumb', 'cover');
 
         $dataTable=new components\DataTables(models\Pictures::DT_COLUMNS(), new models\Pictures(), $criteria);
         return $dataTable->request()->format();
@@ -140,14 +139,14 @@ class Pictures{
      * @param array $attributes. Attributes to update
      * @param bool $force. Force update
      * @return bool
-     * @throws Exception
+     * @throws PicturesException
      */
     public function update($pictureId, $attributes, $force=true){
-        $pModel=new models\Pictures();
+        $picturesModel=new models\Pictures();
 
-        $result=$pModel->updateByPk($pictureId, $attributes);
+        $result=$picturesModel->updateByPk($pictureId, $attributes);
         if($force && !$result){
-            throw new Exception('Failed to update record');
+            throw new PicturesException('Failed to update record');
         }
 
         return true;
@@ -160,10 +159,12 @@ class Pictures{
      * @param int $typeId. New type id
      * @return bool
      */
+    /*
     public function updateType($pictureId, $typeId){
         $this->updateCoverOrder($pictureId, null, false);
         return $this->update($pictureId, array('type_id'=>$typeId));
     }
+    */
 
     /**
      * Updates record's cover.
@@ -201,31 +202,33 @@ class Pictures{
      * Updates cover order of specific record
      *
      * @param int $pictureId. Picture's id to update cover order
-     * @param mixed $coverOrder. New value to update
+     * @param mixed $facadeIndex. New value to set
      * @param bool $force. Force update or not
      * @return bool
      */
-    public function updateCoverOrder($pictureId, $coverOrder, $force=true){
+    public function updateFacadeIndex($pictureId, $facadeIndex, $force=true){
         $picture=$this->findRecordById($pictureId);
 
-        $value=!empty($coverOrder)?(int)$coverOrder:new CDbExpression('NULL');
+        // Cast value type
+        if(empty($facadeIndex)){
+            $facadeIndex=new \CDbExpression('NULL');
+        }
 
         // Value has not been changed
-        if($picture->cover_order==$value){
+        if($picture->facadeIndex==$facadeIndex){
             return false;
         }
 
-        if(!empty($coverOrder)){
-            // Reset old cover's order value
-            $pModel=new models\Pictures();
-            $pModel->updateAll(
-                array('cover_order'=>new CDbExpression('NULL')),
-                'cover_order=:cover_order AND type_id=:type_id',
-                array('type_id'=>$picture->type_id, 'cover_order'=>$coverOrder)
+        if(!empty($facadeIndex)){
+            $picturesModel=new models\Pictures();
+            $picturesModel->updateAll(
+                array('facadeIndex'=>new \CDbExpression('NULL')),
+                'facadeIndex=:facadeIndex AND typeId=:typeId',
+                array('typeId'=>$picture->typeId, 'facadeIndex'=>$facadeIndex)
             );
         }
 
-        return $this->update($pictureId, array('cover_order'=>$value), $force);
+        return $this->update($pictureId, array('facadeIndex'=>$facadeIndex), $force);
     }
 
     /**
@@ -233,20 +236,18 @@ class Pictures{
      *
      * @param int $pictureId. Picture's to delete id
      * @return bool
-     * @throws Exception
+     * @throws PicturesException
      */
     public function delete($pictureId){
-        $picture=$this->findRecordById($pictureId, array('imageSrc', 'thumbSmall', 'thumbBig', 'imageCover'));
+        $picture=$this->findRecordById($pictureId, array('smallThumb', 'bigThumb', 'source', 'cover'));
 
-        $picture->imageSrc->remove(components\CPictures::createSrcPath($picture->imageSrc->name));
-        $picture->thumbSmall->remove(components\CPictures::createSmallThumbPath($picture->thumbSmall->name));
-        $picture->thumbBig->remove(components\CPictures::createBigThumbPath($picture->thumbBig->name));
-
-        isset($picture->imageCover)
-            ? $picture->imageCover->remove(components\CPictures::createCoverPath($picture->imageCover->name)):null;
+        $picture->smallThumb->remove(models\Pictures::createSmallThumbPath($picture->smallThumb->name));
+        $picture->bigThumb->remove(models\Pictures::createBigThumbPath($picture->bigThumb->name));
+        $picture->source->remove(models\Pictures::createSourcePath($picture->source->name));
+        $picture->cover->remove(models\Pictures::createCoverPath($picture->cover->name));
 
         if(!$picture->delete()){
-            throw new Exception('Failed to remove record');
+            throw new PicturesException('Failed to remove record');
         }
 
         return true;

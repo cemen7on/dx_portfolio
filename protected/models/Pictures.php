@@ -49,7 +49,7 @@ class Pictures extends Media{
      */
     public function relations(){
         $relations=parent::relations();
-        $relations['src']=array(self::BELONGS_TO, 'models\Images', array('srcId'=>'id'));
+        $relations['source']=array(self::BELONGS_TO, 'models\Images', array('srcId'=>'id'));
 
         return $relations;
     }
@@ -108,18 +108,14 @@ class Pictures extends Media{
                 ),
                 array(
                     'index'=>7,
-                    'name'=>'coverId',
+                    'name'=>'facadeIndex',
                     'caption'=>'Display on start',
                     'formatter'=>function($order, $data){
-                        /*
-                            $key=$data->typeId==PicturesType::PICTURES_2D
-                            ? 'pictures2d'
-                            : 'art3d';
+                        $key=$data['typeId']==PicturesType::PICTURES_2D
+                        ? 'pictures2d'
+                        : 'art3d';
 
-                            return \Html::coverOrder($order, \Yii::app()->params['covers'][$key]['count']);
-                        */
-
-                        return 'Hello';
+                        return \Html::facadeOrder($order, \Yii::app()->params['facade'][$key]['count']);
                     }
                 ),
                 array(
@@ -175,9 +171,8 @@ class Pictures extends Media{
             $criteria=new \CDbCriteria();
         }
 
-        $criteria->with=array('src', 'smallThumb', 'bigThumb', 'cover');
-        $criteria->condition='typeId=:typeId';
-        $criteria->params=array('typeId'=>$typeId);
+        $criteria->with=array('source', 'smallThumb', 'bigThumb', 'cover');
+        $criteria->addCondition("typeId={$typeId}");
 
         return $this->findAll($criteria);
     }

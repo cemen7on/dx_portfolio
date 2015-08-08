@@ -67,15 +67,15 @@ class PicturesController extends UploadController{
      * @put string title. New picture's title
      * @put string description. New picture's description
      */
-    /*
     public function actionUpdate(){
-        $pictureId=Yii::app()->rest->requireQuery('id');
+        $pictureId=\Yii::app()->RestRequest->requireQuery('id');
 
-        $coverOrder=Yii::app()->rest->getPut('cover_order');
-        if(isset($coverOrder)){
-            components\REST::execute($this->api, 'updateCoverOrder', array($pictureId, $coverOrder));
+        $facadeIndex=\Yii::app()->RestRequest->getPut('facadeIndex');
+        if(isset($facadeIndex)){
+            REST::execute($this->api, 'updateFacadeIndex', array($pictureId, $facadeIndex));
         }
 
+        /*
         $typeId=Yii::app()->rest->getPut('type_id');
         if(isset($typeId)){
             components\REST::execute($this->api, 'updateType', array($pictureId, $typeId));
@@ -98,8 +98,8 @@ class PicturesController extends UploadController{
         }
 
         components\REST::execute($this->api, 'update', array($pictureId, $attributes));
+        */
     }
-    */
 
     /**
      * Updates cover of specified record
@@ -118,11 +118,9 @@ class PicturesController extends UploadController{
      *
      * @get int id. Picture id
      */
-    /*
     public function actionDelete(){
-        components\REST::execute($this->api, 'delete', array(
-            Yii::app()->rest->requireQuery('id'))
+        REST::execute($this->api, 'delete', array(
+            \Yii::app()->RestRequest->requireQuery('id'))
         );
     }
-    */
 }
