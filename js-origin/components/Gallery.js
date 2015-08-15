@@ -68,11 +68,33 @@ use('Components').Gallery=Backbone.View.extend(function(){
     var _offKeyboard=false;
 
     /**
-     * Image element HTML element
+     * Image element HTML element field
      *
      * @type {null|HTMLElement}
      */
-    this.imageEl=null;
+    var _imageEl=null;
+
+    Object.defineProperty(this, 'imageEl', {
+        get:function(){
+            return _imageEl;
+        },
+        set:function(value){
+            // Remove existing image if exist
+            if(_imageEl){
+                this.modal.contentEl.removeChild(_imageEl);
+            }
+
+            // Only remove
+            if(!value){
+                return ;
+            }
+
+            _imageEl=value;
+
+            // Add new image element
+            this.modal.contentEl.appendChild(_imageEl);
+        }
+    });
 
     /**
      * Previous control button HTML Element
@@ -227,7 +249,6 @@ use('Components').Gallery=Backbone.View.extend(function(){
 
         _addEventListeners();
 
-        this.modal.contentEl.appendChild(this.imageEl);
         this.modal.windowEl.appendChild(this.prevButtonEl);
         this.modal.windowEl.appendChild(this.nextButtonEl);
         this.modal.windowEl.appendChild(this.sourceButtonEl);
@@ -323,6 +344,11 @@ use('Components').Gallery=Backbone.View.extend(function(){
 
                         if(data.bigThumb.url){
                             cachedThumb.src=data.bigThumb.url;
+
+                            _siblingModel.bigThumbLoaded=false;
+                            cachedThumb.onload=function(){
+                                _siblingModel.bigThumbLoaded=true;
+                            }
                         }
                     }
                 },
@@ -390,6 +416,13 @@ use('Components').Gallery=Backbone.View.extend(function(){
 
         _setWindowSize(data.bigThumb.width, data.bigThumb.height);
 
+        // If big thumb is being loaded at the moment,
+        // but not completed yet - re create image element,
+        // so old thumb will be deleted
+        if(model.bigThumbLoaded===false){
+            this.imageEl=_createImageEl();
+        }
+
         this.image=data.bigThumb.url;
         this.source=data.source.url;
     }.bind(this);
@@ -442,6 +475,9 @@ use('Components').Gallery=Backbone.View.extend(function(){
      */
     this.hide=function(){
         this.modal.hide();
+
+        // Re create image element, so old thumb will not appear again
+        this.imageEl=_createImageEl();
 
         _disableControl();
 
