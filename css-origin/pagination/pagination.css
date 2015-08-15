@@ -38,7 +38,7 @@
     border-right:1px solid white;
 }
 
-.pagination ul li:last-child > a{
+.pagination ul li.last > a, .pagination ul li:last-child > a{
     border-right:none;
 }
 

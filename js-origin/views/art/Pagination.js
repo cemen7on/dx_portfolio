@@ -1,5 +1,13 @@
 use('Views.Art').Pagination=Core.View.extend(function(){
     /**
+     * Visible pages number
+     *
+     * @type {number}
+     * @private
+     */
+    var _visiblePages=4;
+
+    /**
      * Total number of records field
      *
      * @type {number}
@@ -134,6 +142,8 @@ use('Views.Art').Pagination=Core.View.extend(function(){
             this.activePageEl=event.currentTarget.parentNode;
             this.activePageEl.classList.add('active');
 
+            _calculateVisibleSet();
+
             Controllers.App.captureRedirect(event);
         }
     };
@@ -178,7 +188,64 @@ use('Views.Art').Pagination=Core.View.extend(function(){
             pageEl.appendChild(linkEl);
             this.el.appendChild(pageEl);
         }
+
+        _calculateVisibleSet();
     };
+
+    /**
+     * Since number of pages could be infinitive,
+     * we should display only certain number of pages.
+     * This method calculates visible set of page elements.
+     * Hides all elements, that are not in that set
+     *
+     * @private
+     */
+    var _calculateVisibleSet=function(){
+        // Do not need to hide anything
+        if(this.pagesNumber==_visiblePages){
+            return ;
+        }
+
+        // Define indexes of pages to display
+        var index=this.$activePageEl.index()+1,
+            i,
+            startIndex=index-1,
+            lastIndex,
+            lastIndexCalculated,
+            selector='';
+
+        // If there is no previous page - start with first one
+        if(startIndex<1){
+            startIndex=1;
+        }
+
+        lastIndexCalculated=startIndex-1+_visiblePages;
+        lastIndex=lastIndexCalculated;
+
+        // From start index to calculated end - check for page existence
+        for(i=startIndex;  i<=lastIndexCalculated; i++){
+            // If page does not exist - move start index to one position back
+            // (and last index also)
+            if(i>this.pagesNumber){
+                startIndex--;
+                lastIndex--;
+            }
+        }
+
+        // Hide pages outside of calculated indexes range
+        for(i=startIndex;  i<=lastIndex; i++){
+            selector+=':not(:nth-child('+(i)+'))';
+        }
+
+        // Clear from previous state
+        this.$el.children().removeClass('hidden').removeClass('last');
+
+        // Hide calculated elements
+        this.$el.children(selector).addClass('hidden');
+
+        // Mark last non hidden page with css class
+        this.$el.children(':not(.hidden):last').addClass('last');
+    }.bind(this);
 
     /**
      * Creates loader element
