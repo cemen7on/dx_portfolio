@@ -24,7 +24,7 @@ use('Collections').ArtCollection=Core.Collection.extend(function(){
     };
 
     /**
-     * Parses response from server before
+     * Parses response from server before setting is to models
      *
      * @param {object} response. Response to parse
      * @returns {object}

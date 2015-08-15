@@ -37,6 +37,26 @@ var App=new function(){
     });
 
     /**
+     * Current controller object field
+     *
+     * @type {null|Core.Controller}
+     * @private
+     */
+    var _Controller=null;
+
+    /**
+     * Current controller object field
+     *
+     * @type {null|Core.Controller}
+     * @readonly
+     */
+    Object.defineProperty(_this, 'Controller', {
+        get:function(){
+            return _Controller;
+        }
+    });
+
+    /**
      * Parses handler and retrieves execution environment
      *
      * @param {*} handler. Handler to parse
@@ -108,25 +128,35 @@ var App=new function(){
 
                     (function(){
                         var environment=_retrieveHandlerExecutionEnvironment(routes[path]),
-                            beforeMethodName='beforeAction',
-                            afterMethodName='afterAction';
+                            beforeMethodName='beforeRoute',
+                            afterMethodName='afterRoute';
 
                         this.route(path, function(){
                             if(data){
                                 Array.prototype.push.call(arguments, data);
+
+                                data=null;
                             }
 
+                            // Change App controller
+                            // If controller is set and has been changed - call blur method
+                            if(_this.Controller && _this.Controller!=environment.behalf){
+                                _this.Controller.blur();
+                            }
+                            _Controller=environment.behalf;
+
+                            // Call beforeRoute method
                             if(environment.behalf[beforeMethodName]){
                                 environment.behalf[beforeMethodName]();
                             }
 
+                            // Call route handler
                             environment.method.apply(environment.behalf, arguments);
 
+                            // Call afterRoute
                             if(environment.behalf[afterMethodName]){
                                 environment.behalf[afterMethodName]();
                             }
-
-                            data=null;
                         });
                     }.bind(this))();
                 }

@@ -31,6 +31,15 @@ use('Components').Player=Backbone.View.extend(function(){
     this.modal=null;
 
     /**
+     * Whether modal window has been closed,
+     * but YT player has npt been initialized yet
+     *
+     * @type {boolean}
+     * @private
+     */
+    var _isNonLoadedPlayerClosed=false;
+
+    /**
      * Initializes modal window instance.
      * Defines size
      *
@@ -46,8 +55,11 @@ use('Components').Player=Backbone.View.extend(function(){
 
         // When window modal is closed - stop video playing
         this.modal.onhide=function(){
-            if(_YTPlayer){
+            if(_YTPlayer && _YTPlayer.stopVideo){
                 _YTPlayer.stopVideo();
+            }
+            else{
+                _isNonLoadedPlayerClosed=true;
             }
         };
     }.bind(this);
@@ -93,10 +105,15 @@ use('Components').Player=Backbone.View.extend(function(){
      */
     this.play=function(videoId){
         _YTPlayerReadyPromise.then(function(){
+            if(_isNonLoadedPlayerClosed){
+                return ;
+            }
+
             _YTPlayer.loadVideoById(videoId);
         });
 
         this.modal.show();
+        _isNonLoadedPlayerClosed=false;
 
         return this;
     };

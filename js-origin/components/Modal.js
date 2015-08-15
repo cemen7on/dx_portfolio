@@ -8,12 +8,24 @@ use('Components').Modal=Backbone.View.extend(function(){
     var _Events=[];
 
     /**
-     * Whether modal window is hidden
+     * Whether modal window is hidden field
      *
      * @type {boolean}
      * @private
      */
     var _isHidden=true;
+
+    /**
+     * Whether modal window is hidden property
+     *
+     * @type {boolean}
+     * @readonly
+     */
+    Object.defineProperty(this, 'isHidden', {
+        get:function(){
+            return _isHidden;
+        }
+    });
 
     /**
      * Modal windows' container HTML element

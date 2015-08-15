@@ -166,6 +166,15 @@ use('Controllers').Art=Core.Controller.extend(new function(){
     };
 
     /**
+     * Controller's blur method.
+     * Is called implicitly when route has been changed,
+     * before calling another controller's action
+     */
+    this.blur=function(){
+        _clearState();
+    };
+
+    /**
      * Opens thumb in gallery modal window
      *
      * @param {Event} event. HTML Event object

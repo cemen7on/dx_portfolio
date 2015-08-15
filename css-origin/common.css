@@ -9,6 +9,22 @@ body{
 	margin:0;
 }
 
+#logo{
+    display:block;
+
+    position:absolute;
+    top:40px;
+    left:40px;
+
+    width:150px;
+
+    z-index:2;
+}
+
+#logo > img{
+    width:inherit;
+}
+
 #substrate{
 	position:absolute;
 	top:0;

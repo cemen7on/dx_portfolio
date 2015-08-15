@@ -74,6 +74,23 @@ use('Core').Promise=function Promise(callback){
     };
 
     /**
+     * Executes passed function deferred
+     *
+     * @param {function} callback. Callback function to execute
+     * @param {array} args. Arguments to pass to callback
+     * @param {*} thisArg. Argument to apply callback call to
+     * @private
+     */
+    var _deferredCall=function(callback, args, thisArg){
+        args=args || [];
+        thisArg=thisArg || window;
+
+        setTimeout(function(){
+            callback.apply(thisArg, args);
+        }, 0);
+    };
+
+    /**
      * Registers resolve and reject callbacks
      *
      * @param {Function} _onResolve. Custom resolve callback
@@ -82,7 +99,7 @@ use('Core').Promise=function Promise(callback){
     this.then=function(_onResolve, _onReject){
         if(isFunction(_onResolve)){
             if(_isResolveExecuted){
-                _onResolve();
+                _deferredCall(_onResolve);
             }
             else{
                 onResolve.push(_onResolve);
@@ -91,7 +108,7 @@ use('Core').Promise=function Promise(callback){
 
         if(isFunction(_onReject)){
             if(_isRejectExecuted){
-                _onReject();
+                _deferredCall(_onReject);
             }
             else{
                 onReject.push(_onReject);
@@ -99,7 +116,5 @@ use('Core').Promise=function Promise(callback){
         }
     };
 
-    setTimeout(function(){
-        callback(resolve, reject);
-    }, 0);
+    _deferredCall(callback, [resolve, reject]);
 };

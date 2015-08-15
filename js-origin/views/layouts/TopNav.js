@@ -118,7 +118,7 @@ use('Views.Layouts').TopNav=Core.ViewLayout.extend(function(){
         Views.Layouts.Main.render();
         this.el.appendChild(_createNavEl());
 
-        Views.Layouts.Main.el.appendChild(this.el);
+        Views.Layouts.Main.bodyEl.appendChild(this.el);
 
         this.rendered=true;
 
@@ -136,7 +136,6 @@ use('Views.Layouts').TopNav=Core.ViewLayout.extend(function(){
         }.bind(this));
     };
 
-
     /**
      * Adds to element "absolute" css class,
      * so that z-index of element increases
@@ -145,6 +144,18 @@ use('Views.Layouts').TopNav=Core.ViewLayout.extend(function(){
      */
     this.toTopLayer=function(){
         this.el.classList.add('absolute');
+
+        return this;
+    };
+
+    /**
+     * Resets layout's state
+     *
+     * @returns {*}
+     */
+    this.reset=function(){
+        this.el.classList.remove('absolute');
+        _resetActiveCaption();
 
         return this;
     };
@@ -160,12 +171,21 @@ use('Views.Layouts').TopNav=Core.ViewLayout.extend(function(){
             return ;
         }
 
-        if(_activeNavEl){
-            _activeNavEl.firstChild.classList.remove('active');
-        }
+        _resetActiveCaption();
 
         _activeNavEl=captionEl;
         captionEl.firstChild.classList.add('active');
+    };
+
+    /**
+     * Removes highlight from active caption element
+     *
+     * @private
+     */
+    var _resetActiveCaption=function(){
+        if(_activeNavEl){
+            _activeNavEl.firstChild.classList.remove('active');
+        }
     };
 
     /**

@@ -1,5 +1,19 @@
 use('Views.Layouts').Art=Core.ViewLayout.extend(function(){
     /**
+     * Thumbs container HTML element
+     *
+     * @type {null|HTMLElement}
+     */
+    this.thumbsEl=null;
+
+    /**
+     * Aside menu HTML element
+     *
+     * @type {null|HTMLElement}
+     */
+    this.asideEl=null;
+
+    /**
      * Aside menu caption element
      *
      * @type {null|HTMLElement}
@@ -90,12 +104,30 @@ use('Views.Layouts').Art=Core.ViewLayout.extend(function(){
             return this;
         }
 
+        Views.Layouts.Main.render()
+                          .BodyRegion.display(this);
+
+        this.rendered=true;
+
+        return this;
+    };
+
+    /**
+     * Appends HTML to DOM.
+     *
+     * @param {Core.Region} region. Region instance to display current view in
+     */
+    this.display=function(region){
         var thumbsStructureEl=_createThumbsStructure();
-        Views.Layouts.Main.el.appendChild(thumbsStructureEl.structureEl);
+        region.el.appendChild(thumbsStructureEl.structureEl);
+
+        this.thumbsEl=thumbsStructureEl.structureEl;
 
         var asideStructure=_createAsideStructure();
-        Views.Layouts.Main.el.appendChild(asideStructure.structureEl);
+        region.el.appendChild(asideStructure.structureEl);
         _asideCaptionEl=asideStructure.captionEl;
+
+        this.asideEl=asideStructure.structureEl;
 
         var paginationEl=_createPaginationEl();
         thumbsStructureEl.mediumEl.appendChild(paginationEl);
@@ -104,8 +136,19 @@ use('Views.Layouts').Art=Core.ViewLayout.extend(function(){
         this.ThumbsRegion=new Core.Region(thumbsStructureEl.previewEl);
         this.AsideRegion=new Core.Region(asideStructure.listEl);
         this.PaginationRegion=new Core.Region(paginationEl);
+    };
 
-        this.rendered=true;
+    /**
+     * Removes view from DOM.
+     * Resets object state
+     *
+     * @returns {*}
+     */
+    this.remove=function(){
+        this.thumbsEl.remove();
+        this.asideEl.remove();
+
+        this.rendered=false;
 
         return this;
     };

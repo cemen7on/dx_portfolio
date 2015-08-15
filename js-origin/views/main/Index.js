@@ -109,6 +109,8 @@ use('Views.Main').Index=Core.View.extend(function(){
             art3dEl.parentNode.removeChild(art3dEl);
         }
 
+        this.undelegateEvents();
+
         return this;
     };
 
