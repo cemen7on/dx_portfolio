@@ -72,19 +72,12 @@ use('Views.Layouts').Main=Core.ViewLayout.extend(function(){
         var substrate=document.createElement('div');
         substrate.id='substrate';
         // Substrate has to be in square shape
-        // substrate.style.height=window.innerWidth/2+'px';
-
-        var imageEl=document.createElement('img');
-        imageEl.src=Core.createAbsoluteUrl('/img/gradient.png');
-
-        substrate.appendChild(imageEl);
+        substrate.style.height=window.innerWidth/2+'px';
 
         // Keep square shape if window resize
-        /*
         window.addEventListener('resize', function(){
             substrate.style.height=window.innerWidth/2+'px';
         });
-        */
 
         this.substrateEl=substrate;
         this.el.appendChild(this.substrateEl);
