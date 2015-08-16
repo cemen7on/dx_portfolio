@@ -1,5 +1,9 @@
 RewriteEngine on
 
+<Limit GET POST PUT DELETE>
+  Allow from all
+</Limit>
+
 # php5_value post_max_size 100M
 # php5_value upload_max_filesize 100M
 # php5_value memory_limit 300M
