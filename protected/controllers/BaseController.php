@@ -55,7 +55,8 @@ class BaseController extends \CController{
         '/css-origin/pagination',
         '/css-origin/common.css',
         '/css-origin/main.css',
-        '/css-origin/art.css'
+        '/css-origin/art.css',
+        '/css-origin/contacts.css'
     );
 
     /**

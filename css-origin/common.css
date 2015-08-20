@@ -6,6 +6,8 @@ body{
     background:#3b3b3b;
     height:100%;
 
+    font-family:Kalinga;
+
 	margin:0;
 }
 
@@ -46,6 +48,5 @@ body{
     height:100%;
 	z-index:1;
 
-    font-family:Kalinga;
     text-align:center;
 }

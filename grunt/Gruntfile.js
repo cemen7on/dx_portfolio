@@ -67,6 +67,7 @@ module.exports=function(grunt){
                         '<%=meta.jsOriginPath%>views/art/ThumbsCollection.js',
                         '<%=meta.jsOriginPath%>views/art/*.js',
                         '<%=meta.jsOriginPath%>views/layouts/*.js',
+                        '<%=meta.jsOriginPath%>views/components/*.js',
                         '<%=meta.jsOriginPath%>views/main/*.js',
                         '<%=meta.jsOriginPath%>index.js'
                     ]

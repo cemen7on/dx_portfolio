@@ -39,6 +39,7 @@ use('Views.Layouts').Main=Core.ViewLayout.extend(function(){
         _renderBodyEl();
         _renderSubstrateEl();
         _renderLogoEl();
+        _renderContactsEl();
 
         this.BodyRegion=new Core.Region(this.bodyEl);
 
@@ -102,5 +103,17 @@ use('Views.Layouts').Main=Core.ViewLayout.extend(function(){
         this.logoEl=logoEl;
 
         this.el.appendChild(this.logoEl);
+    }.bind(this);
+
+    /**
+     * Renders contact element
+     *
+     * @private
+     */
+    var _renderContactsEl=function(){
+        var contactsView=new Views.Components.Contacts();
+        contactsView.render();
+
+        this.el.appendChild(contactsView.el);
     }.bind(this);
 });
