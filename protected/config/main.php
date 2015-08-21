@@ -101,7 +101,7 @@ return array(
         ),
         'facade'=>array(
             'animations'=>array('count'=>2),
-            'pictures2d'=>array('count'=>2),
+            'pictures2d'=>array('count'=>3),
             'art3d'=>array('count'=>4)
         )
     ),
