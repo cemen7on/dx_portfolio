@@ -1,8 +1,8 @@
 .contacts{
     position:absolute;
 
-    top:20px;
-    right:25px;
+    top:33px;
+    right:35px;
 
     color:white;
 
@@ -18,7 +18,7 @@
     background:transparent;
 
     color:white;
-    font-size:10px;
+    font-size:12px;
 
     cursor:pointer;
     padding:5px 8px;
@@ -31,7 +31,7 @@
 .contacts-caption i{
     font-size:13px;
 
-    margin-left:5px;
+    margin-left:10px;
 }
 
 .contacts-list{
@@ -46,7 +46,6 @@
 }
 
 .contacts-list__contact{
-    cursor:pointer;
     list-style:none;
 
     padding:8px 0;

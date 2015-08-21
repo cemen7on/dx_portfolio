@@ -19,7 +19,7 @@ use('Views.Components').Contacts=Core.View.extend(function(){
 
     this.events={
         'click .contacts__caption':function(){
-            $(this.listEl).toggleClass('hidden');
+            $(this.listEl).slideToggle(100);
         }.bind(this)
     };
 
@@ -71,7 +71,8 @@ use('Views.Components').Contacts=Core.View.extend(function(){
             skypeContactEl=document.createElement('li'),
             emailContactEl=document.createElement('li');
 
-        listEl.className='contacts-list hidden';
+        listEl.className='contacts-list';
+        listEl.style.display='none';
 
         skypeContactEl.className='contacts-list__contact';
         skypeContactEl.textContent='Skype: DDDimaXXX';

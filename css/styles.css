@@ -186,7 +186,7 @@
 
 #modal .window > .source, #modal .window > .close{
     position:absolute;
-    top:5px;
+    bottom:5px;
 
     padding:5px;
 
@@ -200,11 +200,11 @@
 }
 
 #modal .window > .close{
-    right:5px;
+    left:calc(50% + 3px);
 }
 
 #modal .window > .source{
-    right:43px;
+    left:calc(50% - 33px);
 }
 
 #modal .window > .source .fa, #modal .window > .close .fa{
@@ -407,8 +407,8 @@ body{
 .contacts{
     position:absolute;
 
-    top:20px;
-    right:25px;
+    top:33px;
+    right:35px;
 
     color:white;
 
@@ -424,7 +424,7 @@ body{
     background:transparent;
 
     color:white;
-    font-size:10px;
+    font-size:12px;
 
     cursor:pointer;
     padding:5px 8px;
@@ -437,7 +437,7 @@ body{
 .contacts-caption i{
     font-size:13px;
 
-    margin-left:5px;
+    margin-left:10px;
 }
 
 .contacts-list{
@@ -452,7 +452,6 @@ body{
 }
 
 .contacts-list__contact{
-    cursor:pointer;
     list-style:none;
 
     padding:8px 0;

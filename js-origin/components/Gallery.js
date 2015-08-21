@@ -1,18 +1,5 @@
 use('Components').Gallery=Backbone.View.extend(function(){
     /**
-     * Default values for modal window
-     *
-     * @type {object}
-     */
-    var _defaults={
-        minWidth:550,
-        minHeight:550,
-
-        maxWidth:window.innerWidth-100,
-        maxHeight:window.innerHeight-100
-    };
-
-    /**
      * Modal window instance
      *
      * @type {null|Components.Modal}
@@ -146,6 +133,22 @@ use('Components').Gallery=Backbone.View.extend(function(){
     });
 
     /**
+     * Returns size defaults
+     *
+     * @returns {object}
+     * @private
+     */
+    var _getSizeDefaults=function(){
+        return {
+            minWidth:550,
+            minHeight:550,
+
+            maxWidth:window.innerWidth-100,
+            maxHeight:window.innerHeight-100
+        };
+    };
+
+    /**
      * Computes window size according to window size, based on specified image size
      *
      * @param {number} width. Specified window width
@@ -154,19 +157,20 @@ use('Components').Gallery=Backbone.View.extend(function(){
      * @private
      */
     var _setWindowSize=function(width, height){
-        var ratio;
+        var ratio,
+            defaults=_getSizeDefaults();
 
-        if(width>_defaults.maxWidth){
-            ratio=_defaults.maxWidth/width;
+        if(width>defaults.maxWidth){
+            ratio=defaults.maxWidth/width;
 
-            width=_defaults.maxWidth;
+            width=defaults.maxWidth;
             height=height*ratio;
         }
 
-        if(height>_defaults.maxHeight){
-            ratio=_defaults.maxHeight/height;
+        if(height>defaults.maxHeight){
+            ratio=defaults.maxHeight/height;
 
-            height=_defaults.maxHeight;
+            height=defaults.maxHeight;
             width=width*ratio;
         }
 
@@ -292,6 +296,11 @@ use('Components').Gallery=Backbone.View.extend(function(){
                 e.preventDefault();
             }
         }.bind(this));
+
+        window.addEventListener('resize', function(){
+            // Recalculate current window's size
+            _setWindowSize(this.width, this.height);
+        }.bind(this));
     }.bind(this);
 
     /**
@@ -413,6 +422,9 @@ use('Components').Gallery=Backbone.View.extend(function(){
         if(!data){
             return ;
         }
+
+        this.width=data.bigThumb.width;
+        this.height=data.bigThumb.height;
 
         _setWindowSize(data.bigThumb.width, data.bigThumb.height);
 
