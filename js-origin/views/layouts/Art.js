@@ -145,8 +145,8 @@ use('Views.Layouts').Art=Core.ViewLayout.extend(function(){
      * @returns {*}
      */
     this.remove=function(){
-        this.thumbsEl.remove();
-        this.asideEl.remove();
+        this.thumbsEl.parentNode.removeChild(this.thumbsEl);
+        this.asideEl.parentNode.removeChild(this.asideEl);
 
         this.rendered=false;
 
