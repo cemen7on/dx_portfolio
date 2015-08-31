@@ -75,19 +75,18 @@ class PicturesController extends UploadController{
             REST::execute($this->api, 'updateFacadeIndex', array($pictureId, $facadeIndex));
         }
 
-        /*
-        $typeId=Yii::app()->rest->getPut('type_id');
+        $typeId=\Yii::app()->RestRequest->getPut('typeId');
         if(isset($typeId)){
-            components\REST::execute($this->api, 'updateType', array($pictureId, $typeId));
+            REST::execute($this->api, 'updateType', array($pictureId, $typeId));
         }
 
         $attributes=array();
-        $title=Yii::app()->rest->getPut('title');
-        $description=Yii::app()->rest->getPut('description');
+        $title=\Yii::app()->RestRequest->getPut('title');
+        $description=\Yii::app()->RestRequest->getPut('description');
 
         if(isset($title)){
             if(empty($title)){
-                throw new RestException('Title can not be blank');
+                throw new \exceptions\Rest('Title can not be blank');
             }
 
             $attributes['title']=$title;
@@ -97,8 +96,7 @@ class PicturesController extends UploadController{
             $attributes['description']=$description;
         }
 
-        components\REST::execute($this->api, 'update', array($pictureId, $attributes));
-        */
+        REST::execute($this->api, 'update', array($pictureId, $attributes));
     }
 
     /**

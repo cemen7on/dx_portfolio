@@ -74,7 +74,7 @@ class Pictures{
         $this->crop($pictureModel->id);
 
         $dataTable=new components\DataTables(models\Pictures::DT_COLUMNS());
-        $pictureModel->with(array('smallThumb', 'bigThumb', 'source', 'cover'))->refresh();
+        $pictureModel=$pictureModel->with(array('smallThumb', 'bigThumb', 'source', 'cover'))->findByPk($pictureModel->id);
         $pictureModelArray=$pictureModel->toArray();
 
         return array(
@@ -159,12 +159,11 @@ class Pictures{
      * @param int $typeId. New type id
      * @return bool
      */
-    /*
     public function updateType($pictureId, $typeId){
-        $this->updateCoverOrder($pictureId, null, false);
-        return $this->update($pictureId, array('type_id'=>$typeId));
+        $this->updateFacadeIndex($pictureId, null, false);
+
+        return $this->update($pictureId, array('typeId'=>$typeId));
     }
-    */
 
     /**
      * Updates record's cover.

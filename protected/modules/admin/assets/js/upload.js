@@ -25,6 +25,8 @@ $(document).ready(function(){
         this.previousValue=this.value; // Save current value as previous for future select
     });
 
+    var smallThumbModal=new Modal('cropSmallThumbModal');
+
     // Submit upload form asynchronously
     $('.upload-form').submit(function(event){
         event.preventDefault();
@@ -51,10 +53,85 @@ $(document).ready(function(){
 
                 // Add row to table
                 contentTable.row.add(response.row).draw();
-
                 $this.trigger('file.upload', response.data);
 
                 _this.reset();
+
+                return ;
+
+                // Add cropper
+                var modal=smallThumbModal,
+                    $window=$(window),
+                    $cropper=$('<div class="cropper"></div>'),
+                    $image=$('<img src="'+response.data.bigThumb.url+'" />'),
+                    $container=$('<div class="cropper-controls"></div>'),
+                    $submitBtn=$('<button class="float-right cropper-submit">Crop</button>'),
+                    $loadBtn=$('<button class="float-left cropper-load">Load another</button>');
+
+                // Set bounds for preview image
+                $cropper.css('max-width', ($window.width()-100)+'px');
+                $cropper.css('max-height', ($window.height()-200)+'px');
+
+                $cropper.append($image);
+                modal.content=$cropper;
+                $cropper.after($container.append($submitBtn).append($loadBtn));
+
+                modal.show();
+
+                // When image is loaded - configure image cropper,
+                // because we use image size
+                $image.load(function(){
+                    var cropWidth=300,
+                        cropHeight=210,
+                        cropData=null;
+
+                    $image.cropper({
+                        data:{
+                            width:cropWidth,
+                            height:cropHeight,
+                            x:this.naturalWidth/2-cropWidth/2,
+                            y:this.naturalHeight/2-cropHeight/2
+                        },
+                        resizable:false,
+                        dashed:false,
+                        dragCrop:false,
+                        done:function(data){
+                            cropData=data;
+                        }
+                    });
+
+                    $submitBtn.click(function(){
+                        $submitBtn.attr('disabled', 'disabled');
+                        $loadBtn.attr('disabled', 'disabled');
+
+                        $.ajax({
+                            url:location.pathname+'/'+recordId+'/crop',
+                            type:'POST',
+                            dataType:'json',
+                            data:{left:Math.floor(cropData.x)},
+                            success:function(data){
+                                var $td=$('#contentRow'+recordId).children(':nth-child(7)');
+
+                                // Update table with received content
+                                $td.html(data.html);
+
+                                modal.hide();
+                            }
+                        });
+                    });
+
+                    // Trigger hidden form file input click
+                    $loadBtn.click(function(){
+                        $submitBtn.attr('disabled', 'disabled');
+                        $loadBtn.attr('disabled', 'disabled');
+
+                        $('#coverInput').data('record_id', recordId)
+                            .trigger('click');
+
+                        modal.hide();
+                    });
+                });
+
             },
             error:function(message, code, data){
                 alert('Upload failed. Reason: '+message+'. Look console for more information');
@@ -242,7 +319,6 @@ $(document).ready(function(){
      * @param {HTMLElement|jQuery|string|*} parent. Parent element
      * @param {HTMLElement|jQuery|string|*} field. Field to replace by
      */
-    /*
     function createField(parent, field){
         var $parent=$(parent),
             $field=$(field),
@@ -272,14 +348,12 @@ $(document).ready(function(){
     $document.on('click', 'tbody .editable-description', function(){
         createField(this, $('<textarea></textarea>'));
     });
-    */
 
     /**
      * Saves value of edited field and reverts it to usual state
      *
      * @param {HTMLElement} field. Editable field html element
      */
-    /*
     function editField(field){
         var $field=$(field),
             $parent=$field.parents('td'),
@@ -304,7 +378,7 @@ $(document).ready(function(){
             return ;
         }
 
-        Core.Request.send({
+        $.ajax({
             url:location.pathname+'/'+recordId,
             type:'PUT',
             data:data,
@@ -319,17 +393,35 @@ $(document).ready(function(){
             }
         });
     }
-    */
 
     // Update value
-    /*
     $document.on('focusout', 'tbody .edit-field', function(){
             editField(this);
         })
         .on('click', 'tbody .edit-field', function(event){
             event.stopImmediatePropagation();
         });
-    */
+
+    // Change picture type.
+    $document.on('change', '.dropdown-type', function(){
+        var _this=this,
+            $this=$(_this),
+            typeId=$this.val(),
+            id=$this.parents('tr').data('id');
+
+        $.ajax({
+            type:'PUT',
+            url:'/admin/pictures/'+id,
+            data:{typeId:typeId},
+            success:function(){
+                // Update table content
+                $this.parents('table').data('dataTable').draw(false);
+            },
+            error:function(){
+                $this.val(_this.previousValue); // Go back to the previous state
+            }
+        });
+    });
 
     // Changes cover order
     $document.on('change', 'tbody .cover-order', function(){

@@ -73,15 +73,14 @@ class VideosController extends UploadController{
             REST::execute($this->api, 'updateFacadeIndex', array($videoId, $facadeIndex));
         }
 
-        /*
-        $title=Yii::app()->rest->getPut('title');
-        $description=Yii::app()->rest->getPut('description');
+        $title=\Yii::app()->RestRequest->getPut('title');
+        $description=\Yii::app()->RestRequest->getPut('description');
 
         $attributes=array();
 
         if(isset($title)){
             if(empty($title)){
-                throw new RestException('Title can not be blank');
+                throw new \exceptions\Rest('Title can not be blank');
             }
 
             $attributes['title']=$title;
@@ -92,7 +91,6 @@ class VideosController extends UploadController{
         }
 
         REST::execute($this->api, 'update', array($videoId, $attributes));
-        */
     }
 
     /**

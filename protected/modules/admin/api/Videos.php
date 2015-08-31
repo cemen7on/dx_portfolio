@@ -101,7 +101,7 @@ class Videos{
         $this->crop($videoModel->id);
 
         $dataTable=new components\DataTables(models\Videos::DT_COLUMNS());
-        $videoModel->with(array('smallThumb', 'bigThumb', 'cover'))->refresh();
+        $videoModel=$videoModel->with(array('smallThumb', 'bigThumb', 'cover'))->findByPk($videoModel->id);
         $videoModelArray=$videoModel->toArray();
 
         return array(
