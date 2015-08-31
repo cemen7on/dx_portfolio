@@ -96,8 +96,8 @@ return array(
 
     'params'=>array(
         'admin'=>array(
-            'login'=>'root',
-            'password'=>sha1('root')
+            'login'=>'DDDimaXXX',
+            'password'=>sha1('32623262@')
         ),
         'facade'=>array(
             'animations'=>array('count'=>2),
