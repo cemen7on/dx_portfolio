@@ -5,7 +5,7 @@ $config['components']['db']=array(
     'connectionString'=>'mysql:host=localhost;dbname=DxPortfolio',
     'emulatePrepare'=>true,
     'username'=>'root',
-    'password'=>'123',
+    'password'=>'',
     'charset'=>'utf8',
 );
 

@@ -158,7 +158,8 @@ use('Components').Gallery=Backbone.View.extend(function(){
      */
     var _setWindowSize=function(width, height){
         var ratio,
-            defaults=_getSizeDefaults();
+            defaults=_getSizeDefaults(),
+            controlsWidth;
 
         if(width>defaults.maxWidth){
             ratio=defaults.maxWidth/width;
@@ -174,9 +175,13 @@ use('Components').Gallery=Backbone.View.extend(function(){
             width=width*ratio;
         }
 
+        controlsWidth=(window.outerWidth-width)/2;
+
         this.modal.width=width;
         this.modal.height=height;
         this.modal.contentEl.style.lineHeight=height+'px';
+
+        this.prevButtonEl.style.width=controlsWidth+'px';
     }.bind(this);
 
     /**
@@ -212,7 +217,9 @@ use('Components').Gallery=Backbone.View.extend(function(){
         var iconEl=document.createElement('i');
         iconEl.className='fa fa-angle-'+typeToIcon[type];
 
-        buttonEl.appendChild(iconEl);
+        if(type!='next'){
+            buttonEl.appendChild(iconEl);
+        }
 
         return buttonEl;
     };
@@ -247,14 +254,17 @@ use('Components').Gallery=Backbone.View.extend(function(){
         this.modal=new Components.Modal();
 
         this.imageEl=_createImageEl();
+
         this.prevButtonEl=_createControlEl('prev');
         this.nextButtonEl=_createControlEl('next');
+
         this.sourceButtonEl=_createSourceEl();
 
         _addEventListeners();
 
-        this.modal.windowEl.appendChild(this.prevButtonEl);
-        this.modal.windowEl.appendChild(this.nextButtonEl);
+        this.modal.windowEl.insertBefore(this.prevButtonEl, this.modal.contentEl);
+        this.modal.contentEl.appendChild(this.nextButtonEl);
+
         this.modal.windowEl.appendChild(this.sourceButtonEl);
     }.bind(this);
 

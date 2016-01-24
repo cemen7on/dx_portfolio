@@ -240,6 +240,8 @@ use('Components').Modal=Backbone.View.extend(function(){
     var _createHTMLStructure=function(){
         this.containerEl=_getContainerEl();
 
+        this.overlayEl=_getOverlayEl();
+
         var centerEl=this.containerEl.querySelector('.center');
         if(!centerEl){
             centerEl=document.createElement('div');
@@ -248,7 +250,6 @@ use('Components').Modal=Backbone.View.extend(function(){
             this.containerEl.appendChild(centerEl);
         }
 
-        this.overlayEl=_getOverlayEl();
         this.windowEl=_createWindowEl();
         this.titleEl=_createTitleEl();
         this.contentEl=_createContentEl();
